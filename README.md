@@ -19,7 +19,8 @@ git clone https://github.com/a63976659/ComfyUI-prompt-formula.git
 手动在模版文件夹Template中进行添加、编辑、删除模版，点击快捷键r刷新后，即可看到改变后的模版文件
 
 ## 插件作者
-- **Bilibili:**猪的飞行梦
+- BiliBili:猪的飞行梦
+- 企鹅群202018000
 
 
 Permission is hereby granted, free of charge, to any person obtaining
