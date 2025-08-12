@@ -1,2 +1,3 @@
-# ComfyUI-prompt-formula
+# ComfyUI-提示公式
 comfyui使用的提示词便捷输入节点，能够保存提示词预设文本
+提示词预设文本可以直接在插件文件Template中进行添加、编辑、删除
