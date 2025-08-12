@@ -2,5 +2,41 @@
 comfyui使用的提示词便捷输入节点
 <img width="4958" height="2452" alt="图像提示词公式使用示例" src="https://github.com/user-attachments/assets/5883d566-10c8-40a9-b628-f72c08bae277" />
 
- 提示词预设文本可以直接在插件文件Template中进行添加、编辑、删除
+提示词预设文本可以直接在插件文件Template中进行添加、编辑、删除
 <img width="1110" height="378" alt="预设文本png" src="https://github.com/user-attachments/assets/4261ffe3-eb60-4135-8377-321de0e0c815" />
+## 安装说明
+1. 确保已安装ComfyUI
+2. 将此仓库克隆到ComfyUI的`custom_nodes`目录下：
+```bash
+cd ComfyUI/custom_nodes
+git clone https://github.com/a63976659/ComfyUI-prompt-formula.git
+```
+## 使用方法
+1. 在右键添加节点中，您可以在"📃提示词公式"类别下找到所有工具节点,点击名称即可将节点加入到工作区
+2. 在节点库（快捷键n）在"📃提示词公式"类别下找到所有工具节点,将需要的节点拖入工作区使用
+支持提示词历史记录10条，超过自动清理时间最远的记录，不用担心缓存文件过多。
+支持将历史记录保存为模版，在历史记录和模板管理节点，为模版命名，并连接任意节点执行一次，点击快捷键r刷新后在提示词模版选择节点中即可找到
+手动在模版文件夹Template中进行添加、编辑、删除模版，点击快捷键r刷新后，即可看到改变后的模版文件
+
+## 插件作者
+- **Bilibili:**猪的飞行梦
+
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
