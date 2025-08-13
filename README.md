@@ -3,7 +3,16 @@ comfyui使用的提示词便捷输入节点
 <img width="4958" height="2452" alt="图像提示词公式使用示例" src="https://github.com/user-attachments/assets/5883d566-10c8-40a9-b628-f72c08bae277" />
 
 提示词预设文本可以直接在插件文件Template中进行添加、编辑、删除
-<img width="1110" height="378" alt="预设文本png" src="https://github.com/user-attachments/assets/4261ffe3-eb60-4135-8377-321de0e0c815" />
+<img width="1380" height="528" alt="预设文本png" src="https://github.com/user-attachments/assets/39b9396c-27e3-43c3-92c8-30d00578af42" />
+## 更新说明
+20250814
+. 增加提示词预设文件格式json支持
+. 优化读取机制，减少算力占用
+. 支持输入内容为空，选择项为无时，不输出内容
+. 将原来的 "Template" 文件夹改为 "提示词预设文件夹"，更方便中国宝宝找到文件夹进行编辑
+. 节点名称优化、选择项内容增加
+
+
 ## 安装说明
 1. 确保已安装ComfyUI
 2. 将此仓库克隆到ComfyUI的`custom_nodes`目录下：
