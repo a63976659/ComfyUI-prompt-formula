@@ -17,7 +17,8 @@ comfyui使用的提示词便捷输入节点
 20250816
 1. 增加提示词保存为预设节点，支持格式txt和json
 2. 增加千问图像多种类型提示词公式节点
-<img width="2709" height="1496" alt="预设文本png" src="https://github.com/user-attachments/assets/f8b0c3f6-a47d-437e-8768-0ed4e54c9e4e" />
+<img width="2709" height="1496" alt="预设文本" src="https://github.com/user-attachments/assets/acf84548-7f34-4def-a028-8d5072f341fd" />
+
 
 
 ## 安装说明
