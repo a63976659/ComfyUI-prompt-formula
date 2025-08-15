@@ -1,4 +1,4 @@
-<img width="2709" height="1496" alt="预设文本png" src="https://github.com/user-attachments/assets/d0f0331b-f0dd-4a26-a36e-a5ec9f9ac8d6" /># ComfyUI-提示公式
+# ComfyUI-提示公式
 
 comfyui使用的提示词便捷输入节点
 
