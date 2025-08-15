@@ -1,4 +1,4 @@
-# ComfyUI-提示公式
+<img width="2709" height="1496" alt="预设文本png" src="https://github.com/user-attachments/assets/d0f0331b-f0dd-4a26-a36e-a5ec9f9ac8d6" /># ComfyUI-提示公式
 
 comfyui使用的提示词便捷输入节点
 
@@ -14,6 +14,10 @@ comfyui使用的提示词便捷输入节点
 3. 支持输入内容为空，选择项为无时，不输出内容
 4. 将原来的 "Template" 文件夹改为`提示词预设文件夹`，更方便中国宝宝找到文件夹进行编辑
 5. 节点名称优化、选择项内容增加
+20250816
+1. 增加提示词保存为预设节点，支持格式txt和json
+2. 增加千问图像多种类型提示词公式节点
+<img width="2709" height="1496" alt="预设文本png" src="https://github.com/user-attachments/assets/f8b0c3f6-a47d-437e-8768-0ed4e54c9e4e" />
 
 
 ## 安装说明
