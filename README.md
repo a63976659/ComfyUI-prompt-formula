@@ -19,6 +19,7 @@ comfyui使用的提示词便捷输入节点
 2. 增加千问图像多种类型提示词公式节点
 <img width="2709" height="1496" alt="预设文本" src="https://github.com/user-attachments/assets/acf84548-7f34-4def-a028-8d5072f341fd" />
 <img width="3840" height="1854" alt="千问提示词节点效果" src="https://github.com/user-attachments/assets/df576479-2f1d-417d-8d7a-c856152de5c6" />
+
 ## 20250819
 1. 视频提示词公式节点，运镜效果提升
 2. 增加情绪、运动、光源、风格更多可选项
