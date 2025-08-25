@@ -610,171 +610,59 @@ class 视频提示词公式:
                     "default": "一个女孩身穿粉色长裙，头戴蝴蝶发卡",
                     "display_name": "主体描述"
                 }),
-                "主体权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "主体权重"
-                }),
                 "人物情绪": (EMOTIONS, {
                     "default": "无", 
                     "display_name": "人物情绪"
                 }),
-                "情绪权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "情绪权重"
-                }),
                 "主体运动": (CHARACTER_MOVEMENTS, {
                     "default": "无", 
                     "display_name": "主体运动"
-                }),
-                "运动权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "运动权重"
                 }),
                 "场景描述": ("STRING", {
                     "multiline": False,
                     "default": "在樱花树下",
                     "display_name": "场景描述"
                 }),
-                "场景权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "场景权重"
-                }),
                 "光源类型": (LIGHT_SOURCE_TYPES, {
                     "default": "无", 
                     "display_name": "光源类型"
-                }),
-                "光源权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "光源权重"
                 }),
                 "光线类型": (LIGHT_TYPE, {
                     "default": "无", 
                     "display_name": "光线类型"
                 }),
-                "光线权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "光线权重"
-                }),
                 "时间段": (TIME_PERIODS, {
                     "default": "无", 
                     "display_name": "时间段"
-                }),
-                "时间段权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "时间段权重"
                 }),
                 "景别描述": (SHOT_TYPES, {
                     "default": "无", 
                     "display_name": "景别描述"
                 }),
-                "景别权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "景别权重"
-                }),
                 "构图描述": (COMPOSITION_STYLES, {
                     "default": "无", 
                     "display_name": "构图描述"
-                }),
-                "构图权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "构图权重"
                 }),
                 "镜头焦段": (LENS_TYPES, {
                     "default": "无", 
                     "display_name": "镜头焦段"
                 }),
-                "焦段权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "焦段权重"
-                }),
                 "机位角度": (CAMERA_ANGLES, {
                     "default": "无", 
                     "display_name": "机位角度"
                 }),
-                "角度权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "角度权重"
-                }),
                 "镜头类型": (SHOT_COMPOSITIONS, {
                     "default": "无", 
                     "display_name": "镜头类型"
-                }),
-                "镜头类型权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "镜头类型权重"
                 }),
                 "镜头目标": ("STRING", {
                     "multiline": False,
                     "default": "主体",
                     "display_name": "镜头目标"
                 }),
-                "目标权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "目标权重"
-                }),
                 "运镜方式": (CAMERA_MOVEMENTS, {
                     "default": "无", 
                     "display_name": "运镜方式"
-                }),
-                "运镜权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "运镜权重"
                 }),
                 "色调": ([
                     "无", "暖色调", "冷色调", "高饱和度", "低饱和度"
@@ -782,25 +670,9 @@ class 视频提示词公式:
                     "default": "无", 
                     "display_name": "色调"
                 }),
-                "色调权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "色调权重"
-                }),
                 "视觉风格": (VISUAL_STYLES, {
                     "default": "无", 
                     "display_name": "视觉风格"
-                }),
-                "风格权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "风格权重"
                 }),
             },
             "optional": {
@@ -808,14 +680,6 @@ class 视频提示词公式:
                     "multiline": True,
                     "default": "",
                     "display_name": "附加提示词"
-                }),
-                "附加权重": ("FLOAT", {
-                    "default": 1.0, 
-                    "min": 0.1, 
-                    "max": 2.0, 
-                    "step": 0.1,
-                    "display": "slider",
-                    "display_name": "附加权重"
                 }),
                 "自动保存到历史": ("BOOLEAN", {
                     "default": True,
@@ -829,98 +693,117 @@ class 视频提示词公式:
     FUNCTION = "生成提示词"
     CATEGORY = "📃提示词公式"
 
-    def 生成提示词(self, 主体描述, 主体权重, 人物情绪, 情绪权重, 主体运动, 运动权重,
-                      场景描述, 场景权重, 光源类型, 光源权重, 光线类型, 光线权重,
-                      时间段, 时间段权重, 景别描述, 景别权重,
-                      构图描述, 构图权重, 镜头焦段, 焦段权重, 机位角度, 角度权重,
-                      镜头类型, 镜头类型权重, 镜头目标, 目标权重, 运镜方式, 运镜权重, 
-                      色调, 色调权重,视觉风格, 风格权重,
-                      附加提示词="", 附加权重=1.0, 自动保存到历史=True):
-        # 更新预设内容，包含新增组件
-        预设内容 = "{主体}, {人物情绪}, {主体运动}, {场景}, {光源类型}, {光线类型}, {时间段}, {景别}, {构图}, {镜头焦段}, {机位角度}, {镜头类型}, {运镜}, {色调}, {视觉风格}"
+    def 生成提示词(self, 主体描述, 人物情绪, 主体运动,
+                      场景描述, 光源类型, 光线类型,
+                      时间段, 景别描述,
+                      构图描述, 镜头焦段, 机位角度,
+                      镜头类型, 镜头目标, 运镜方式,
+                      色调, 视觉风格,
+                      附加提示词="", 自动保存到历史=True):
         
         # 处理各组件，选择"无"或内容为空时不加入提示词
-        组件 = {
-            "主体": apply_weight(主体描述, 主体权重),
-            "人物情绪": apply_weight(人物情绪, 情绪权重),
-            "主体运动": apply_weight(主体运动, 运动权重),
-            "场景": apply_weight(场景描述, 场景权重),
-            "光源类型": apply_weight(光源类型, 光源权重),
-            "光线类型": apply_weight(光线类型, 光线权重),
-            "时间段": apply_weight(时间段, 时间段权重),
-            "景别": apply_weight(景别描述, 景别权重),
-            "构图": apply_weight(构图描述, 构图权重),
-            "镜头焦段": apply_weight(镜头焦段, 焦段权重),
-            "机位角度": apply_weight(机位角度, 角度权重),
-            "镜头类型": apply_weight(镜头类型, 镜头类型权重),
-            "运镜": self._get_camera_movement_desc(运镜方式, 镜头目标, 运镜权重) if 运镜方式 != "无" else "",
-            "色调": apply_weight(色调, 色调权重),
-            "视觉风格": apply_weight(视觉风格, 风格权重)
-        }
+        组件列表 = []
         
-        # 生成提示词，过滤空值
-        提示词组件 = [value for value in 组件.values() if value]
-        提示词 = "\n".join(提示词组件)
+        # 处理主体描述
+        if 主体描述 and clean_text(主体描述):
+            组件列表.append(clean_text(主体描述))
         
-        # 处理附加提示词，使用逗号分隔
+        # 处理其他组件
+        if 人物情绪 != "无":
+            组件列表.append(人物情绪)
+        
+        if 主体运动 != "无":
+            组件列表.append(主体运动)
+        
+        if 场景描述 and clean_text(场景描述):
+            组件列表.append(clean_text(场景描述))
+        
+        if 光源类型 != "无":
+            组件列表.append(光源类型)
+        
+        if 光线类型 != "无":
+            组件列表.append(光线类型)
+        
+        if 时间段 != "无":
+            组件列表.append(时间段)
+        
+        if 景别描述 != "无":
+            组件列表.append(景别描述)
+        
+        if 构图描述 != "无":
+            组件列表.append(构图描述)
+        
+        if 镜头焦段 != "无":
+            组件列表.append(镜头焦段)
+        
+        if 机位角度 != "无":
+            组件列表.append(机位角度)
+        
+        if 镜头类型 != "无":
+            组件列表.append(镜头类型)
+        
+        if 运镜方式 != "无":
+            运镜描述 = self._get_camera_movement_desc(运镜方式, 镜头目标)
+            if 运镜描述:
+                组件列表.append(运镜描述)
+        
+        if 色调 != "无":
+            组件列表.append(色调)
+        
+        if 视觉风格 != "无":
+            组件列表.append(视觉风格)
+        
+        # 处理附加提示词
         if 附加提示词 and clean_text(附加提示词):
-            加权附加词 = apply_weight(clean_text(附加提示词), 附加权重)
-            if 加权附加词:
-                if 提示词:
-                    提示词 += "\n" + 加权附加词
-                else:
-                    提示词 = 加权附加词
+            组件列表.append(clean_text(附加提示词))
         
-        # 最终清理：确保没有连续的逗号和多余空格
-        提示词 = re.sub(r',\s+,', ',', 提示词)
-        提示词 = re.sub(r'\s+', ' ', 提示词).strip()
+        # 生成最终提示词
+        提示词 = ", ".join(组件列表)
         
         # 处理历史记录保存
         if 自动保存到历史 and 提示词:
-            timestamp = datetime.now().strftime("%H:%M")
-            subject_preview = 主体描述[:10] + ("..." if len(主体描述) > 10 else "")
-            save_name = f"[视频] {timestamp} {subject_preview}"
-            save_to_history(提示词, save_name, manual_save=False)
-        
+            # 使用主体描述作为名称，如果为空则使用场景描述
+            名称 = clean_text(主体描述) or clean_text(场景描述) or "未命名提示词"
+            save_to_history(提示词, 名称, manual_save=False)
+            
         return (提示词,)
 
-    def _get_camera_movement_desc(self, movement, target, weight=1.0):
+    def _get_camera_movement_desc(self, movement, target):
         effective_target = target if target and target != "无" else "主体"
         movement_descriptions = {
             "固定镜头": "镜头位置保持不动，构图稳定，画面无明显抖动。",
-            "推近镜头": f"镜头缓慢向前推进，逐步聚焦{target}细节。背景渐渐虚化，细节清晰锐利。最终停留在特写构图，画面稳定。",
-            "拉远镜头": f"{target}位于画面中央，镜头缓慢向后移动，从近景过渡到全景，{target}始终保持居中，焦点稳定。",
-            "快速推近": f"{target}位于画面中央，镜头快速向前推进至中近景或特写，焦点锁定{target}，背景产生轻微动感模糊。",
-            "快速拉远": f"{target}位于画面中央，镜头快速向后拉远至全景，背景空间迅速扩展，{target}位置保持居中。",
-            "俯视角度": f"{target}位于画面中央，镜头缓慢升至俯视角度，焦点锁定{target}，背景在画面下方展开。",
-            "仰视角度": f"{target}位于画面中央，镜头缓慢下降至仰视角度，焦点锁定{target}，背景在画面上方延伸。",
-            "上移镜头": "镜头从正前方启动，缓慢升高并俯视{target}，保持居中构图。随后缓慢下降回到平视位置，画面稳定。",
+            "推近镜头": f"镜头缓慢向前推进，逐步聚焦{effective_target}细节。背景渐渐虚化，细节清晰锐利。最终停留在特写构图，画面稳定。",
+            "拉远镜头": f"{effective_target}位于画面中央，镜头缓慢向后移动，从近景过渡到全景，{effective_target}始终保持居中，焦点稳定。",
+            "快速推近": f"{effective_target}位于画面中央，镜头快速向前推进至中近景或特写，焦点锁定{effective_target}，背景产生轻微动感模糊。",
+            "快速拉远": f"{effective_target}位于画面中央，镜头快速向后拉远至全景，背景空间迅速扩展，{effective_target}位置保持居中。",
+            "俯视角度": f"{effective_target}位于画面中央，镜头缓慢升至俯视角度，焦点锁定{effective_target}，背景在画面下方展开。",
+            "仰视角度": f"{effective_target}位于画面中央，镜头缓慢下降至仰视角度，焦点锁定{effective_target}，背景在画面上方延伸。",
+            "上移镜头": f"镜头从正前方启动，缓慢升高并俯视{effective_target}，保持居中构图。随后缓慢下降回到平视位置，画面稳定。",
             "下移镜头": "镜头从高处俯视缓慢下降到平视，停留在特写位置。",
-            "左摇镜头": f"镜头缓慢向左平移，{target}缓慢向右平移，从画面右侧消失，画面中仅保留向左移动的背景。",
-            "右摇镜头": f"镜头缓慢向右平移，{target}缓慢向左平移，从画面左侧消失，画面中仅保留向右移动的背景。",
-            "上仰镜头": f"镜头缓慢上移，{target}缓慢下移，从画面下方消失，画面中仅保留向上移动的背景。",
-            "下俯镜头": f"镜头缓慢下移，{target}缓慢上移，从画面上方消失，画面中仅保留向下移动的背景。",
-            "前进后退交替": f"镜头快速推进至{target}特写，然后平稳拉远至全景，重复两次，节奏一致，焦点始终锁定{target}。",
-            "前进后退循环": f"镜头快速推进至特写，再平稳拉远至全景，重复两次，焦点始终锁定{target}。",
-            "右弧线移动(半圈)": f"镜头从左前方缓慢移动到右前方，形成半圆运动轨迹，{target}清晰，背景轻微模糊。",
-            "左弧线移动(半圈)": f"镜头从右前方缓慢移动到左前方，形成半圆运动轨迹，{target}清晰，背景轻微模糊。",
-            "水平快速平移": f"{target}位于画面中央不动，镜头高速从左向右平移掠过{target}正面，背景形成流动残影，随后镜头迅速回到原位，构图稳定。",
-            "水平环绕": f"{target}位于画面中央，保持静止，镜头从正前方启动，顺时针环绕180度至{target}背面，背景轻微模糊。镜头继续顺时针环绕180度回到正前方位置，{target}始终居中，画面稳定收束。",
-            "环绕+拉近": f"镜头从正前方启动，顺时针环绕90度，同时缓慢拉近至局部细节，背景虚化，{target}清晰。",
-            "环绕+翻转": f"{target}保持静止，正面朝向镜头。镜头从{target}右后方启动，顺时针水平环绕一整圈，画面同步翻转180度使{target}出现在画面下方，背景倒置悬浮在上方。镜头继续环绕至270°位置，在倒置状态中缓慢恢复水平构图，最终停留在{target}正面中近景，背景略带旋转残影。",
-            "原地旋转": f"镜头从正前方启动，顺时针环绕90度至{target}侧面，再顺时针环绕90度至{target}背面，背景在运动中轻微模糊。最后镜头回到正前方，{target}始终居中，画面稳定收束。",
+            "左摇镜头": f"镜头缓慢向左平移，{effective_target}缓慢向右平移，从画面右侧消失，画面中仅保留向左移动的背景。",
+            "右摇镜头": f"镜头缓慢向右平移，{effective_target}缓慢向左平移，从画面左侧消失，画面中仅保留向右移动的背景。",
+            "上仰镜头": f"镜头缓慢上移，{effective_target}缓慢下移，从画面下方消失，画面中仅保留向上移动的背景。",
+            "下俯镜头": f"镜头缓慢下移，{effective_target}缓慢上移，从画面上方消失，画面中仅保留向下移动的背景。",
+            "前进后退交替": f"镜头快速推进至{effective_target}特写，然后平稳拉远至全景，重复两次，节奏一致，焦点始终锁定{effective_target}。",
+            "前进后退循环": f"镜头快速推进至特写，再平稳拉远至全景，重复两次，焦点始终锁定{effective_target}。",
+            "右弧线移动(半圈)": f"镜头从左前方缓慢移动到右前方，形成半圆运动轨迹，{effective_target}清晰，背景轻微模糊。",
+            "左弧线移动(半圈)": f"镜头从右前方缓慢移动到左前方，形成半圆运动轨迹，{effective_target}清晰，背景轻微模糊。",
+            "水平快速平移": f"{effective_target}位于画面中央不动，镜头高速从左向右平移掠过{effective_target}正面，背景形成流动残影，随后镜头迅速回到原位，构图稳定。",
+            "水平环绕": f"{effective_target}位于画面中央，保持静止，镜头从正前方启动，顺时针环绕180度至{effective_target}背面，背景轻微模糊。镜头继续顺时针环绕180度回到正前方位置，{effective_target}始终居中，画面稳定收束。",
+            "环绕+拉近": f"镜头从正前方启动，顺时针环绕90度，同时缓慢拉近至局部细节，背景虚化，{effective_target}清晰。",
+            "环绕+翻转": f"{effective_target}保持静止，正面朝向镜头。镜头从{effective_target}右后方启动，顺时针水平环绕一整圈，画面同步翻转180度使{effective_target}出现在画面下方，背景倒置悬浮在上方。镜头继续环绕至270°位置，在倒置状态中缓慢恢复水平构图，最终停留在{effective_target}正面中近景，背景略带旋转残影。",
+            "原地旋转": f"镜头从正前方启动，顺时针环绕90度至{effective_target}侧面，再顺时针环绕90度至{effective_target}背面，背景在运动中轻微模糊。最后镜头回到正前方，{effective_target}始终居中，画面稳定收束。",
             "俯视旋转": f"镜头从上方斜俯角度启动，保持轻微下视。镜头顺时针环绕90度，同时缓慢下降至平视角度，最终停留在正前方构图，背景略虚化。",
-            "垂直升降 + 停顿": f"镜头从平视缓慢升至俯视，短暂停顿后缓慢下降回到平视位置，焦点始终锁定{target}。",
-            "对角上升": f"镜头从左下方斜向上缓慢移动至俯视位置，{target}始终居中。",
-            "对角下移推进": f"{target}位于画面中央，镜头从右上方斜向下缓慢推进，逐渐接近{target}细节，焦点稳定锁定。",
-            "对角穿越": f"镜头从左下方斜向上推进，掠过{target}上方后从右上方缓慢下降至平视位置，背景虚化再恢复。",
+            "垂直升降 + 停顿": f"镜头从平视缓慢升至俯视，短暂停顿后缓慢下降回到平视位置，焦点始终锁定{effective_target}。",
+            "对角上升": f"镜头从左下方斜向上缓慢移动至俯视位置，{effective_target}始终居中。",
+            "对角下移推进": f"{effective_target}位于画面中央，镜头从右上方斜向下缓慢推进，逐渐接近{effective_target}细节，焦点稳定锁定。",
+            "对角穿越": f"镜头从左下方斜向上推进，掠过{effective_target}上方后从右上方缓慢下降至平视位置，背景虚化再恢复。",
             "镜头抖动": "镜头短暂左右轻微抖动，随后恢复稳定。",
-            "冲击震动": f"{target}位于画面中央，镜头贴近{target}的正前方，突然发生短暂震动抖动，背景轻微模糊，随后画面恢复稳定。",
+            "冲击震动": f"{effective_target}位于画面中央，镜头贴近{effective_target}的正前方，突然发生短暂震动抖动，背景轻微模糊，随后画面恢复稳定。",
             "贝塞尔拉远": "镜头先以正常速度后退，突然加速拉远，再次减速稳定收束，节奏感明显。",
             "贝塞尔拉近": "镜头先缓慢推进，再突然加速至特写，最后减速收束。"
         }
-        desc = movement_descriptions.get(movement, "")
-        return f"({desc}:{weight:.1f})" if weight != 1.0 else desc
+        return movement_descriptions.get(movement, "")
 
 # 图像提示词公式节点
 class 图像提示词公式:
@@ -1051,30 +934,28 @@ class 图像提示词公式:
                       景别描述="无", 景别权重=1.0,
                       构图描述="无", 构图权重=1.0,
                       附加提示词="", 附加权重=1.0, 自动保存到历史=True):
-        # 使用默认图像预设内容，组件间用逗号分隔
-        预设内容 = "{主体}, {主体细节}, {场景}, {光影}, {景别}, {构图}, {风格}"
         
         # 处理各组件，选择"无"或内容为空时不加入提示词
         组件 = {
-            "主体": apply_weight(主体描述, 主体权重),
-            "主体细节": apply_weight(表情动作描述, 表情动作权重),
-            "场景": apply_weight(场景描述, 场景权重),
-            "光影": apply_weight(光影描述, 光影权重),
-            "风格": apply_weight(画面风格, 风格权重),
-            "景别": apply_weight(景别描述, 景别权重),
-            "构图": apply_weight(构图描述, 构图权重)
+            "主体": self._apply_weight_with_default(主体描述, 主体权重, "无"),
+            "主体细节": self._apply_weight_with_default(表情动作描述, 表情动作权重, "无"),
+            "场景": self._apply_weight_with_default(场景描述, 场景权重, "无"),
+            "光影": self._apply_weight_with_default(光影描述, 光影权重, "无"),
+            "风格": self._apply_weight_with_default(画面风格, 风格权重, "无"),
+            "景别": self._apply_weight_with_default(景别描述, 景别权重, "无"),
+            "构图": self._apply_weight_with_default(构图描述, 构图权重, "无")
         }
         
         # 生成提示词，过滤空值
         提示词组件 = [value for value in 组件.values() if value]
-        提示词 = "\n".join(提示词组件)
+        提示词 = ", ".join(提示词组件)  # 改为用逗号分隔
         
         # 处理附加提示词，使用逗号分隔
         if 附加提示词 and clean_text(附加提示词):
-            加权附加词 = apply_weight(clean_text(附加提示词), 附加权重)
+            加权附加词 = self._apply_weight_with_default(附加提示词, 附加权重, "")
             if 加权附加词:
                 if 提示词:
-                    提示词 += "\n" + 加权附加词
+                    提示词 += ", " + 加权附加词  # 改为用逗号连接
                 else:
                     提示词 = 加权附加词
         
@@ -1090,7 +971,18 @@ class 图像提示词公式:
             save_to_history(提示词, save_name, manual_save=False)
         
         return (提示词,)
-    
+
+    def _apply_weight_with_default(self, text, weight, default_val="无"):
+        """处理权重应用，权重为1时不输出权重"""
+        cleaned_text = clean_text(text)
+        # 如果内容为空或为默认值，则不输出
+        if not cleaned_text or cleaned_text == default_val:
+            return ""
+        # 权重为1.0时不需要特别标记，直接返回文本
+        if weight == 1.0:
+            return cleaned_text
+        return f"({cleaned_text}:{weight:.1f})"    
+
 # 历史记录和预设管理节点
 class 历史记录和预设管理:
     @classmethod
@@ -1574,7 +1466,7 @@ class 表情包生成:
             
         return ("\n".join(parts),)
 
-# 新增提示词保存为预设节点
+# 提示词保存为预设节点
 class 提示词保存为预设:
     @classmethod
     def INPUT_TYPES(cls):
@@ -1607,6 +1499,7 @@ class 提示词保存为预设:
     RETURN_NAMES = ("操作结果",)
     FUNCTION = "保存预设"
     CATEGORY = "📃提示词公式"
+    OUTPUT_NODE = True  # 添加这个属性，表示节点有输出但不强制连接
 
     def 保存预设(self, 新预设名称, 提示词="", 保存为TXT="开", 保存为JSON="关"):
         if not 提示词.strip():
