@@ -53,6 +53,8 @@ git clone https://github.com/a63976659/ComfyUI-prompt-formula.git
 ## 插件作者
 - BiliBili:猪的飞行梦
 - 企鹅群202018000
+- 觉得插架还不错，支持一下作者
+![微信图片_2025-08-26_170541_386](https://github.com/user-attachments/assets/b6ae0001-a39f-41b4-af9d-fbefe9d30cd0)
 
 
 Permission is hereby granted, free of charge, to any person obtaining
