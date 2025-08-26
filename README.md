@@ -33,6 +33,10 @@ comfyui使用的提示词便捷输入节点
 <img width="3422" height="1284" alt="Wan视频提示词生成模版" src="https://github.com/user-attachments/assets/ee5bc83b-990f-4b50-b3eb-e46556ff6278" />
 
 
+https://github.com/user-attachments/assets/f4633e4b-1666-4573-9aef-c195e6e3d1d8
+
+
+
 ## 安装说明
 1. 确保已安装ComfyUI
 2. 将此仓库克隆到ComfyUI的`custom_nodes`目录下：
