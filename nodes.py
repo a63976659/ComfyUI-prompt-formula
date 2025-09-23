@@ -1,4 +1,5 @@
 import os
+import random
 import re
 import time
 from pathlib import Path
@@ -29,14 +30,14 @@ MAX_HISTORY_COUNT = 10
 
 # 常量配置 - 提取可复用选项列表
 VISUAL_STYLES = [
-    "无", "像素风格", "油画风格", "版画风格", "壁画风格",
+    "无", "写实风格", "像素风格", "油画风格", "版画风格", "壁画风格",
     "素描风格", "黑白电影风格", "科幻风格", "抽象风格", "迷幻风格",
-    "文艺复兴", "水彩风格", "赛博朋克风格", "写实风格", "动漫风格",
+    "文艺复兴", "水彩风格", "赛博朋克风格", "动漫风格", "中国水墨风格", "中式传统风格",
     "黑白动画风格", "浮世绘风格", "点彩派风格", "蒸汽朋克风格",
     "皮克斯风格", "吉卜力风格", "迪士尼风格", "美漫风格",
     "故障艺术风格", "全息投影效果", "数据可视化风格", "UI界面风格", 
-    "毛毡风格", "3D卡通风格", "木偶动画风格", "3D游戏风格", "黏土风格", "二次元风格", "低多边形风格",
-    "中式传统风格", "中国水墨风格", "印度风格", "阿拉伯风格", "印第安风格", "非洲部落风格", "东南亚风格"
+    "毛毡风格", "3D卡通风格", "木偶动画风格", "3D游戏风格", "黏土风格", "二次元风格",
+    "低多边形风格", "印度风格", "阿拉伯风格", "印第安风格", "非洲部落风格", "东南亚风格"
 ]
 
 CAMERA_MOVEMENTS = [
@@ -100,7 +101,6 @@ CHARACTER_MOVEMENTS = [
     "慢跑前进", "快速奔跑", "跳跃前进", "侧身移动", "后退行走",
     "太极拳式", "武术招式", "空翻动作", "踢腿动作", "格斗姿势",  
     "瑜伽姿势", "拉伸动作", "俯卧撑式", "深蹲动作", "举重姿势",
-    "网球", "羽毛球", "跳绳", "乒乓球", "滑雪", "篮球", 
     "骑车姿势", "拉丁舞", "侧手翻", "玩手机", "打电话"
 ]
 
@@ -116,6 +116,14 @@ WEATHER_TYPES = [
     "朝霞", "晚霞", "星空", "月光", "日食", "月食", "流星雨"
 ]
 
+BACKGROUNDS = [
+    "无", "室内", "室外", "城市街道", "自然风景", "海滩", "森林", "山脉", 
+    "湖泊", "公园", "咖啡馆", "图书馆", "办公室", "卧室", "客厅", "厨房",
+    "工作室", "美术馆", "音乐厅", "体育馆", "学校", "大学校园", "商场",
+    "餐厅", "酒吧", "夜店", "婚礼现场", "派对场景", "纯色",
+    "渐变", "抽象", "未来科技", "复古", "梦幻"
+]
+
 COLOR_PRESETS = [
     "无", "奶油樱花", "香芋奶茶", "莫兰迪粉灰", "粉金大理石", "午夜芭蕾", 
     "金属工业粉", "赛博甜心", "热带果汁", "像素游戏", "老电影滤镜", 
@@ -128,8 +136,8 @@ EYE_SHAPES = [
     "细长眼", "下垂眼", "上挑眼", "内双眼", "单眼皮", "双眼皮",
     "深窝眼", "肿泡眼", "眯缝眼", "三角眼", "大小眼", "三白眼",
     "四白眼", "瑞凤眼", "睡凤眼", "柳叶眼", "铜铃眼", "圆眼",
-    "狼眼", "蛇眼", "猫眼", "鹿眼", "鱼眼" "异色瞳", "渐变瞳",
-    "星空瞳", "竖瞳", "十字瞳孔", "金色眼睛", "紫色眼睛"
+    "狼眼", "蛇眼", "猫眼", "鹿眼", "鱼眼", "异色瞳", "渐变瞳",
+    "星空瞳", "竖瞳", "十字瞳孔", "金色眼睛", "紫色眼睛",
     "琥珀色眼睛", "绿色眼睛", "蓝色眼睛", "灰色眼睛"
 ]
 
@@ -702,7 +710,7 @@ class 视频提示词公式:
             "optional": {
                 "附加提示词": ("STRING", {
                     "multiline": True,
-                    "default": "",
+                    "default": "兼具超凡脱俗的美感与灵性，数字艺术风格，超现实景观，高分辨率",
                     "display_name": "附加提示词"
                 }),
                 "自动保存到历史": ("BOOLEAN", {
@@ -834,6 +842,291 @@ class 视频提示词公式:
             "贝塞尔拉近": "镜头先缓慢推进，再突然加速至特写，最后减速收束"
         }
         return movement_descriptions.get(movement, "")
+    
+class 随机提示词人像:
+    # 1. 定义人像特有的常量
+    FACE_SHAPES = ["椭圆脸", "圆脸", "方脸", "长脸", "菱形脸", "国字脸", "梨形脸"]
+    HAIRSTYLES = ["短发", "长发", "卷发", "直发", "盘发"]
+    ACCESSORIES = ["眼镜", "项链", "耳环", "发卡", "蝴蝶发卡", "时尚发饰", "戒指", "发带", "头绳", "耳坠", "丝巾", "手链"]
+    CLOTHING_TYPES = ["休闲装", "正装", "运动装", "时尚装", "传统服饰", "汉服", "齐胸襦裙", "道士道袍", "侠客劲装", "宫廷华服", "丝绸长袍"]
+    
+    # 人物选项
+    CHARACTER_OPTIONS = ["随机", "无", "幼儿", "小女孩", "小男孩", "少女", "少男", 
+                        "年轻女孩", "年轻男孩", "中年女性", "中年男性", "老年女性", "老年男性"]
+    
+    # 2. 输入参数配置
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "语言": (["中文", "English"], {"default": "中文"}),
+                "人物": (cls.CHARACTER_OPTIONS, {"default": "随机"}),
+                "国籍": (["随机", "亚洲人", "白人", "黑人", "拉丁裔", "无"], {"default": "亚洲人"}),
+                "随机脸型": ("BOOLEAN", {"default": True}),
+                "随机发型": ("BOOLEAN", {"default": True}),
+                "随机饰品": ("BOOLEAN", {"default": True}),
+                "随机服装": ("BOOLEAN", {"default": True}),
+                "随机眼型": ("BOOLEAN", {"default": False}),
+            },
+            "optional": {
+                "表情": (["随机", "微笑", "大笑", "中性", "无"], {"default": "随机"}),
+                "身材": (["随机", "苗条", "健美", "丰满", "无"], {"default": "随机"}),
+                "动作": (["随机", "和平手势", "招手", "点赞", "抱臂", "无"], {"default": "随机"}),
+                "景别": (["随机", "半身照", "全身照", "中近景", "中全景", "无"], {"default": "随机"}),
+                "背景类型": (["随机"] + [bg for bg in BACKGROUNDS if bg != "无"], {"default": "随机"}),
+                "合照类型": (["随机", "单人照", "家庭照", "亲子照", "兄弟姐妹", "朋友合照", "无"], {"default": "单人照"}),
+                "艺术风格": (["随机", "无"] + [style for style in VISUAL_STYLES if style != "无"], {"default": "随机"}),
+                "附加提示词": ("STRING", {"default": "兼具超凡脱俗的美感与灵性，数字艺术风格", "multiline": True, "placeholder": "在此处添加额外的提示词，如环境、灯光、细节等"}),
+                "随机种子": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "forceInput": True})
+            }
+        }
+    
+    # 3. 输出参数定义
+    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_NAMES = ("正面提示词", "负面提示词")
+    FUNCTION = "generate_prompt"
+    CATEGORY = "📃提示词公式"
+
+    # 4. 生成提示词的核心逻辑
+    def generate_prompt(self, 语言, 人物, 国籍, 随机脸型, 随机发型, 随机饰品, 随机服装, 随机眼型,
+                   表情="随机", 身材="随机", 动作="随机", 景别="随机", 合照类型="单人照", 
+                   艺术风格="随机", 附加提示词="", 随机种子=0, 背景类型="随机"):
+        # 设置随机种子
+        if 随机种子 != 0:
+            random.seed(随机种子)
+        
+        # 选项池
+        options_pool = {
+            "国籍": ["亚洲人", "白人", "黑人", "拉丁裔"],
+            "表情": ["微笑", "大笑", "中性"],
+            "身材": ["苗条", "健美", "丰满"],
+            "动作": ["和平手势", "招手", "点赞", "抱臂"],
+            "景别": ["半身照", "全身照", "中近景", "中全景"],
+            "背景类型": [bg for bg in BACKGROUNDS if bg != "无"],
+            "合照类型": ["单人照", "家庭照", "亲子照", "兄弟姐妹", "朋友合照"],
+            "艺术风格": [style for style in VISUAL_STYLES if style != "无"]
+        }
+    
+        # 处理选择的选项
+        selected_options = {}
+        
+        # 处理人物选项
+        if 人物 == "随机":
+            selected_options["人物"] = random.choice(self.CHARACTER_OPTIONS[2:])  # 排除"随机"和"无"
+        elif 人物 == "无":
+            selected_options["人物"] = None
+        else:
+            selected_options["人物"] = 人物
+        
+        # 处理国籍选项
+        if 国籍 == "随机":
+            selected_options["国籍"] = random.choice(options_pool["国籍"])
+        elif 国籍 == "无":
+            selected_options["国籍"] = None
+        else:
+            selected_options["国籍"] = 国籍
+        
+        # 处理其他选项
+        option_keys = ["表情", "身材", "动作", "景别", "合照类型", "艺术风格"]
+        option_values = [表情, 身材, 动作, 景别, 合照类型, 艺术风格]
+        
+        for key, value in zip(option_keys, option_values):
+            if value == "随机":
+                selected_options[key] = random.choice(options_pool[key])
+            elif value == "无":
+                selected_options[key] = None
+            else:
+                selected_options[key] = value
+
+        # 处理背景类型
+        if 背景类型 == "随机":
+            selected_options["背景类型"] = random.choice(options_pool["背景类型"])
+        elif 背景类型 == "无":
+            selected_options["背景类型"] = None
+        else:
+            selected_options["背景类型"] = 背景类型
+    
+        # 处理脸型、发型等特有的随机选项
+        selected_options["脸型"] = random.choice(self.FACE_SHAPES) if 随机脸型 else None
+        selected_options["发型"] = random.choice(self.HAIRSTYLES) if 随机发型 else None
+        selected_options["服装种类"] = random.choice(self.CLOTHING_TYPES) if 随机服装 else None
+        selected_options["眼型"] = random.choice(EYE_SHAPES) if 随机眼型 else None
+        selected_options["饰品"] = random.choice(self.ACCESSORIES) if 随机饰品 else None
+    
+        # 构建提示词片段
+        prompt_parts = []
+        
+        # 首先添加人物描述
+        if selected_options.get("人物"):
+            prompt_parts.append(selected_options["人物"])
+        
+        # 添加国籍描述
+        if selected_options.get("国籍"):
+            prompt_parts.append(selected_options["国籍"])
+        
+        # 添加合照类型（如果不是单人照）
+        if selected_options.get("合照类型") and selected_options["合照类型"] != "单人照":
+            prompt_parts.append(selected_options["合照类型"])
+    
+        # 添加外貌特征
+        for key in ["脸型", "身材", "发型", "眼型"]:
+            if selected_options.get(key):
+                prompt_parts.append(selected_options[key])
+    
+        # 添加表情
+        if selected_options.get("表情"):
+            prompt_parts.append(selected_options["表情"])
+    
+        # 添加服装
+        if selected_options.get("服装种类"):
+            prompt_parts.append(f"穿着{selected_options['服装种类']}")
+    
+        # 添加饰品
+        if selected_options.get("饰品"):
+            prompt_parts.append(f"佩戴{selected_options['饰品']}")
+    
+        # 添加动作
+        if selected_options.get("动作"):
+            prompt_parts.append(f"做出{selected_options['动作']}的动作")
+    
+        # 添加景别
+        if selected_options.get("景别"):
+            prompt_parts.append(selected_options["景别"])
+    
+        # 添加背景描述
+        if selected_options.get("背景类型"):
+            prompt_parts.append(f"{selected_options['背景类型']}背景")
+    
+        # 添加艺术风格
+        if selected_options.get("艺术风格"):
+            prompt_parts.append(selected_options["艺术风格"])
+    
+        # 添加通用质量词（根据语言选择）
+        if 语言 == "English":
+            prompt_parts.extend(["high definition", "high quality", "photorealistic", "sharp focus", "studio lighting"])
+        else:
+            prompt_parts.extend(["高清", "高质量", "照片级真实感", "锐利焦点", "影棚灯光"])
+
+        # 处理中英文翻译
+        if 语言 == "English":
+            # 修复：正确构建英文映射字典
+            english_map = {
+                "幼儿": "baby", "小女孩": "little girl", "小男孩": "little boy",
+                "少女": "teenage girl", "少男": "teenage boy", 
+                "年轻女孩": "young woman", "年轻男孩": "young man",
+                "中年女性": "middle-aged woman", "中年男性": "middle-aged man",
+                "老年女性": "elderly woman", "老年男性": "elderly man",
+                "亚洲人": "Asian", "白人": "Caucasian", "黑人": "African American", 
+                "拉丁裔": "Latino",
+                "微笑": "smiling", "大笑": "laughing", "中性": "neutral expression",
+                "椭圆脸": "oval face", "圆脸": "round face", "方脸": "square face", 
+                "长脸": "long face", "菱形脸": "diamond face", "国字脸": "square jaw face", 
+                "梨形脸": "pear-shaped face",
+                "苗条": "slim", "健美": "athletic", "丰满": "curvy",
+                "短发": "short hair", "长发": "long hair", "卷发": "curly hair", 
+                "直发": "straight hair", "盘发": "bun hair",
+                "休闲装": "casual wear", "正装": "formal wear", "运动装": "sportswear", 
+                "时尚装": "fashionable clothing", "传统服饰": "traditional clothing",
+                "汉服": "Hanfu", "齐胸襦裙": "High-waisted Ruqun",
+                "道士道袍": "Taoist Robe", "侠客劲装": "Swordsman's Dynamic Outfit",
+                "宫廷华服": "Palace Gorgeous Costume", "丝绸长袍": "silk robe",
+                "和平手势": "peace sign", "招手": "waving", "点赞": "thumbs up", 
+                "抱臂": "crossed arms",
+                "半身照": "upper body shot", "全身照": "full body shot", "中近景": "Medium Close-Up", "中全景": "Medium Wide Shot",
+                "单人照": "single person", "家庭照": "family photo", "亲子照": "parent-child photo", 
+                "兄弟姐妹": "siblings", "朋友合照": "friends together",
+                "眼镜": "glasses", "项链": "necklace", "耳环": "earrings",
+                "发卡": "hair clip", "蝴蝶发卡": "Butterfly hairpin", "时尚发饰": "Fashion hair accessories",
+                "戒指": "Ring Hairpin", "发带": "Hairband", "头绳": "Hair tie",
+                "耳坠": "eardrop", "丝巾": "scarf", "手链": "Hand bracelet",
+                # 背景翻译
+                "室内": "indoor", "室外": "outdoor", "城市街道": "city street", 
+                "自然风景": "natural scenery", "海滩": "beach", "森林": "forest", 
+                "山脉": "mountains", "湖泊": "lake", "公园": "park", 
+                "咖啡馆": "cafe", "图书馆": "library", "办公室": "office", 
+                "卧室": "bedroom", "客厅": "living room", "厨房": "kitchen",
+                "工作室": "studio", "美术馆": "art gallery", "音乐厅": "concert hall", 
+                "体育馆": "gymnasium", "学校": "school", "大学校园": "university campus", 
+                "商场": "shopping mall", "餐厅": "restaurant", "酒吧": "bar", 
+                "夜店": "nightclub", "婚礼现场": "wedding venue", "派对场景": "party scene",
+                "纯色": "solid color", "梦幻": "dreamy",
+                "渐变": "gradient", "抽象": "abstract",
+                "未来科技": "futuristic tech", "复古": "vintage",
+                # 眼型翻译
+                "丹凤眼": "phoenix eyes", "狐狸眼": "fox eyes", "杏眼": "almond eyes", 
+                "桃花眼": "peach blossom eyes", "龙眼": "dragon eyes", "凤眼": "phoenix eyes",
+                "细长眼": "slender eyes", "下垂眼": "downturned eyes", "上挑眼": "upturned eyes",
+                "内双眼": "double eyelids with inner fold", "单眼皮": "monolids", "双眼皮": "double eyelids",
+                "深窝眼": "deep-set eyes", "肿泡眼": "puffy eyes", "眯缝眼": "narrow eyes",
+                "三角眼": "triangular eyes", "大小眼": "asymmetrical eyes", "三白眼": "sanpaku eyes",
+                "四白眼": "four-white eyes", "瑞凤眼": "auspicious phoenix eyes", "睡凤眼": "sleepy phoenix eyes",
+                "柳叶眼": "willow leaf eyes", "铜铃眼": "bell eyes", "圆眼": "round eyes",
+                "狼眼": "wolf eyes", "蛇眼": "snake eyes", "猫眼": "cat eyes",
+                "鹿眼": "deer eyes", "鱼眼": "fish eyes", "异色瞳": "heterochromia",
+                "渐变瞳": "gradient eyes", "星空瞳": "starry eyes", "竖瞳": "vertical pupils",
+                "十字瞳孔": "cross-shaped pupils", "金色眼睛": "golden eyes", "紫色眼睛": "purple eyes",
+                "琥珀色眼睛": "amber eyes", "绿色眼睛": "green eyes", "蓝色眼睛": "blue eyes",
+                "灰色眼睛": "gray eyes",
+                # 艺术风格翻译
+                "写实风格": "photorealistic style", "油画风格": "oil painting style",
+                "版画风格": "printmaking style", "壁画风格": "murals style",
+                "素描风格": "sketch style", "黑白电影风格": "black and white film style",
+                "科幻风格": "sci-fi style", "抽象风格": "abstract style", "迷幻风格": "psychedelic style",
+                "文艺复兴": "Renaissance style", "水彩风格": "watercolor style",
+                "赛博朋克风格": "cyberpunk style", "像素风格": "pixel art style",
+                "动漫风格": "anime style", "黑白动画风格": "black and white animation style",
+                "浮世绘风格": "ukiyo-e style", "点彩派风格": "pointillism style",
+                "蒸汽朋克风格": "steampunk style", "皮克斯风格": "Pixar style",
+                "吉卜力风格": "Ghibli style", "迪士尼风格": "Disney style",
+                "美漫风格": "American comic style", "故障艺术风格": "glitch art style",
+                "全息投影效果": "holographic effect", "数据可视化风格": "data visualization style",
+                "UI界面风格": "UI interface style", "毛毡风格": "felt style",
+                "3D卡通风格": "3D cartoon style", "木偶动画风格": "puppet animation style",
+                "3D游戏风格": "3D game style", "黏土风格": "claymation style",
+                "二次元风格": "anime style", "低多边形风格": "low poly style",
+                "中式传统风格": "traditional Chinese style", "中国水墨风格": "Chinese ink wash painting style",
+                "印度风格": "Indian style", "阿拉伯风格": "Arabic style",
+                "印第安风格": "Native American style", "非洲部落风格": "African tribal style",
+                "东南亚风格": "Southeast Asian style"
+            }
+            
+            english_parts = []
+            for part in prompt_parts:
+                if part in english_map:
+                    english_parts.append(english_map[part])
+                elif "穿着" in part:
+                    clothing = part.replace("穿着", "").strip()
+                    english_parts.append(f"wearing {english_map.get(clothing, clothing)}")
+                elif "佩戴" in part:
+                    accessory = part.replace("佩戴", "").strip()
+                    english_parts.append(f"wearing {english_map.get(accessory, accessory)}")
+                elif "做出" in part:
+                    gesture = part.replace("做出", "").replace("的动作", "").strip()
+                    english_parts.append(f"making {english_map.get(gesture, gesture)} gesture")
+                elif "背景" in part:
+                    bg = part.replace("背景", "").strip()
+                    english_parts.append(f"{english_map.get(bg, bg)} background")
+                else:
+                    english_parts.append(part)
+        
+            positive_prompt = ", ".join(english_parts) + ", complete arms, arms and hands fully in frame"
+        else:
+            positive_prompt = "，".join(prompt_parts) + "，完整的手臂，手臂未裁剪"
+    
+        # 添加附加提示词
+        if 附加提示词.strip():
+            if 语言 == "English":
+                positive_prompt += ", " + 附加提示词.strip()
+            else:
+                positive_prompt += "，" + 附加提示词.strip()
+    
+        # 负面提示词
+        if 语言 == "中文":
+            negative_prompt = "丑陋，畸形，模糊，坏手，多余手指，缺少手指，缺胳膊，缺腿，多肢体，多手指，多脚趾，多腿，多手臂，畸形手，畸形脸，畸形身体，文字，水印，签名，低质量，噪点，模糊，失焦，曝光不足，曝光过度，jpeg伪影，渲染问题，3D，CGI，不自然，塑料感，卡通，动漫，绘画，素描，油画，版画，雕塑，不真实"
+        else:
+            negative_prompt = "ugly, deformed, blurry, bad hands, extra fingers, missing fingers, missing arms, missing legs, extra limbs, extra fingers, extra toes, extra legs, extra arms, malformed hands, malformed face, malformed body, text, watermark, signature, low quality, noise, blurry, out of focus, underexposed, overexposed, jpeg artifacts, rendering issues, 3D, CGI, unnatural, plastic look, cartoon, anime, painting, sketch, oil painting, print, sculpture, unrealistic"
+    
+        return (positive_prompt, negative_prompt)
 
 # 图像提示词公式节点
 class 图像提示词公式:
@@ -935,7 +1228,7 @@ class 图像提示词公式:
                 }),
                 "附加提示词": ("STRING", {
                     "multiline": True,
-                    "default": "",
+                    "default": "兼具超凡脱俗的美感与灵性，数字艺术风格，超现实景观，高分辨率",
                     "display_name": "附加提示词"
                 }),
                 "附加权重": ("FLOAT", {
@@ -1383,19 +1676,19 @@ class 千问图像:
             "required": {
                 "主体": ("STRING", {
                     "multiline": False,
-                    "default": "一个年轻中国20岁少女",
+                    "default": "古代中国的仙女",
                     "display_name": "主体"
                 }),
             },
             "optional": {
                 "细节": ("STRING", {
                     "multiline": True,
-                    "default": "长发自然垂落，光泽柔顺，眼神清澈，透着一丝青春的俏皮，脸庞在柔和的光线下显得格外温暖，嘴角带着淡淡的微笑，穿着一件舒适的紫色jk海军制服",
+                    "default": "身着飘逸丝绸长袍",
                     "display_name": "细节"
                 }),
                 "场景": ("STRING", {
                     "multiline": False,
-                    "default": "一个典型的宿舍环境，晾晒的内裤、丝袜、文胸内衣物随意挂在一旁",
+                    "default": "飘浮于雾蒙蒙的山峰之上，脚踏七彩祥云",
                     "display_name": "场景"
                 }),
                 "景别": (SHOT_TYPES, {
@@ -1404,7 +1697,7 @@ class 千问图像:
                 }),
                 "附加提示词": ("STRING", {
                     "multiline": True,
-                    "default": "整体画面带有一种随性而真实的氛围，既有青春的活力，又透露出日常生活的朴实",
+                    "default": "兼具超凡脱俗的美感与灵性，数字艺术风格，超现实景观，高分辨率",
                     "display_name": "附加提示词"
                 }),
             }
@@ -1572,6 +1865,7 @@ NODE_CLASS_MAPPINGS = {
     "提示词预设": 提示词预设,
     "视频提示词公式": 视频提示词公式,
     "图像提示词公式": 图像提示词公式,
+    "随机提示词人像": 随机提示词人像,
     "历史记录和预设管理": 历史记录和预设管理,
     "提示词保存为预设": 提示词保存为预设,
     "LOGO生成": LOGO生成,
@@ -1586,6 +1880,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "提示词预设": "提示词预设",
     "视频提示词公式": "视频提示词公式",
     "图像提示词公式": "图像提示词公式",
+    "随机提示词人像": "随机提示词人像",  # 改为字符串
     "历史记录和预设管理": "历史记录和预设管理",
     "提示词保存为预设": "提示词保存为预设",
     "LOGO生成": "LOGO生成",
