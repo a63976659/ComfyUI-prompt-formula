@@ -32,6 +32,11 @@ comfyui使用的提示词便捷输入节点
 2. 增加工作流模版，在模版中可以查看使用示例
 <img width="3422" height="1284" alt="Wan视频提示词生成模版" src="https://github.com/user-attachments/assets/ee5bc83b-990f-4b50-b3eb-e46556ff6278" />
 
+## 20250923
+1. 新增随机人像节点，随机时需要前面连一个随机种子生成器，否则只在改变参数时执行随机
+2. 新增热门的图像变动态视频提示词示例（需配合Wan图生视频工作流），还有类似于纳米香蕉模型的图像变手办提示词示例
+![ComfyUI_05744_](https://github.com/user-attachments/assets/b3970029-4550-43b5-bb07-a84c2940aef0)
+
 
 https://github.com/user-attachments/assets/f4633e4b-1666-4573-9aef-c195e6e3d1d8
 
