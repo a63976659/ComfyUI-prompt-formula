@@ -40,7 +40,15 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 ## 20250923
 1. 新增随机人像节点，随机时需要前面连一个随机种子生成器，否则只在改变参数时执行随机
 2. 新增热门的图像变动态视频提示词示例（需配合Wan图生视频工作流），还有类似于纳米香蕉模型的图像变手办提示词示例
- 
+   
+ ## 20251002
+1. 更新海报生成节点，增加输入项，让海报包含更多信息
+   
+<img width="544" height="960" alt="ComfyUI_05842_" src="https://github.com/user-attachments/assets/203abcfa-0e09-48a4-9d23-1b8feeff88a7" />
+
+
+2. 更新千问图像节点，使用默认参考内容，生成仙女图像，如下图
+   
 ![ComfyUI_05744_](https://github.com/user-attachments/assets/b3970029-4550-43b5-bb07-a84c2940aef0)
 
 
@@ -66,7 +74,7 @@ git clone https://github.com/a63976659/ComfyUI-prompt-formula.git
 ## 插件作者
 - BiliBili:猪的飞行梦
 - 企鹅群202018000
-- 觉得插架还不错，支持一下作者
+- 觉得插件还不错，支持一下作者
 ![微信图片_2025-08-26_170541_386](https://github.com/user-attachments/assets/b6ae0001-a39f-41b4-af9d-fbefe9d30cd0)
 
 
