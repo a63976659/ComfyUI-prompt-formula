@@ -1162,7 +1162,7 @@ class 图像提示词公式:
                 }),
                 "场景描述": ("STRING", {
                     "multiline": False,
-                    "default": "火车站",
+                    "default": "校园",
                     "display_name": "场景描述"
                 }),
                 "场景权重": ("FLOAT", {
@@ -1478,7 +1478,7 @@ class LOGO生成:
             "required": {
                 "LOGO形象": ("STRING", {
                     "multiline": False,
-                    "default": "一只可爱的飞行员猪头相",
+                    "default": "一只可爱的飞行员猪头像",
                     "display_name": "LOGO形象"
                 }),
                 "LOGO文字": ("STRING", {
@@ -1603,39 +1603,63 @@ class 海报生成:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "主体": ("STRING", {
-                    "multiline": False,
-                    "default": "一个开爱的小猪坐在书桌前\n周围环绕智能书包、电竞耳机、笔记本电脑、手机等 “新装备”\n小猪穿着学生制服\n整体时尚写实，色彩明快吸睛",
-                    "display_name": "主体"
+                "海报类型": (POSTER_TYPES, {
+                    "default": "无",
+                    "tooltip": "海报类型"
+                }),
+                "主体_前景描述": ("STRING", {
+                    "multiline": True,  # 改为多行文本
+                    "default": "一个可爱的小猪坐在书桌前\n周围环绕智能书包、电竞耳机、笔记本电脑、手机等 \"新装备\"\n小猪穿着学生制服\n整体时尚写实，色彩明快吸睛",
+                    "placeholder": "描述主体或前景内容...",
+                    "tooltip": "主体(前景)描述"
                 }),
                 "海报主题文字": ("STRING", {
                     "multiline": False,
                     "default": "猪的飞行梦",
-                    "display_name": "海报主题文字"
+                    "tooltip": "海报主题文字"
+                }),
+                "副标题": ("STRING", {
+                    "multiline": False,
+                    "default": "开启新学期，追逐新梦想",
+                    "tooltip": "副标题"
+                }),
+                "中部标语": ("STRING", {
+                    "multiline": False,
+                    "default": "彩色圆角框内：全场1折起！限时优惠！",
+                    "tooltip": "中部标语"
+                }),
+                "活动亮点介绍": ("STRING", {
+                    "multiline": True,
+                    "default": "白色小字，居中四行\n• 新品首发，独家优惠\n• 满减活动，多买多省\n• 会员专享，额外福利\n• 礼品赠送，先到先得",
+                    "placeholder": "输入活动亮点介绍...",
+                    "tooltip": "活动亮点介绍"
+                }),
+                "底部日期与地点": ("STRING", {
+                    "multiline": False,
+                    "default": "2025年9月1日-9月30日 | 全国各大学校周边门店",
+                    "tooltip": "底部日期与地点"
                 }),
             },
             "optional": {
-                "海报类型": (POSTER_TYPES, {
-                    "default": "无",
-                    "display_name": "海报类型"
-                }),
                 "背景描述": ("STRING", {
-                    "multiline": False,
-                    "default": "校园教室",
-                    "display_name": "背景描述"
+                    "multiline": True,  # 改为多行文本
+                    "default": "校园教室背景\n阳光透过窗户洒进来\n墙上贴着学习海报和课程表\n书架上摆满书籍和文具",
+                    "placeholder": "描述背景环境...",
+                    "tooltip": "背景描述"
                 }),
                 "字体颜色": (COLOR_OPTIONS, {
                     "default": "无",
-                    "display_name": "字体颜色"
+                    "tooltip": "字体颜色"
                 }),
                 "背景颜色": (COLOR_OPTIONS, {
                     "default": "无",
-                    "display_name": "背景颜色"
+                    "tooltip": "背景颜色"
                 }),
                 "附加提示词": ("STRING", {
                     "multiline": True,
-                    "default": "特效艺术文字：开学焕新！全场1折！",
-                    "display_name": "附加提示词"
+                    "default": "特效艺术文字,加入电商主题装饰元素",
+                    "placeholder": "额外的要求...",
+                    "tooltip": "附加提示词"
                 }),
             }
         }
@@ -1645,10 +1669,16 @@ class 海报生成:
     FUNCTION = "生成提示词"
     CATEGORY = "📃提示词公式/千问"
 
-    def 生成提示词(self, 主体, 海报主题文字, 海报类型="无", 背景描述="", 字体颜色="无", 背景颜色="无", 附加提示词=""):
+    def 生成提示词(self, 主体_前景描述, 海报主题文字, 副标题, 中部标语, 
+                  活动亮点介绍, 底部日期与地点, 海报类型="无", 背景描述="", 
+                  字体颜色="无", 背景颜色="无", 附加提示词=""):
         parts = [
-            f"主体: {clean_text(主体)}",
-            f"海报主题文字: {clean_text(海报主题文字)}"
+            f"主体(前景)描述: {clean_text(主体_前景描述)}",
+            f"海报主题文字: {clean_text(海报主题文字)}",
+            f"副标题: {clean_text(副标题)}",
+            f"中部标语: {clean_text(中部标语)}",
+            f"活动亮点介绍: {clean_text(活动亮点介绍)}",
+            f"底部日期与地点: {clean_text(底部日期与地点)}"
         ]
         
         if 海报类型 != "无":
@@ -1739,6 +1769,7 @@ class 表情包生成:
                 "详细内容": ("STRING", {
                     "multiline": True,
                     "default": "第一行第一格是不开心的动作，文字是'不开心'\n第一行第二格高兴动作，文字是'下班了'\n第一行第三格躺着动作，文字是'躺平了'\n第二行第一格振臂动作，文字是'努力啊'\n第二行第二格大笑动作，文字是'哈哈哈'\n第二行第三格竖大拇指动作，文字是'厉害'\n第三行第一格思考动作，文字是'无聊'\n第三行第二格生气动作，文字是'不加班'\n第三行第三格害羞动作，文字是'好尴尬'",
+                    "placeholder": "详细描述（多宫格图像建议尺寸比例1：1）",
                     "display_name": "详细内容"
                 }),
             },
@@ -1788,6 +1819,7 @@ class 表情包生成:
             parts.append(f"附加提示词: {clean_text(附加提示词)}")
             
         return ("\n".join(parts),)
+
 
 # 提示词保存为预设节点
 class 提示词保存为预设:
@@ -1880,7 +1912,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "提示词预设": "提示词预设",
     "视频提示词公式": "视频提示词公式",
     "图像提示词公式": "图像提示词公式",
-    "随机提示词人像": "随机提示词人像",  # 改为字符串
+    "随机提示词人像": "随机提示词人像",
     "历史记录和预设管理": "历史记录和预设管理",
     "提示词保存为预设": "提示词保存为预设",
     "LOGO生成": "LOGO生成",
