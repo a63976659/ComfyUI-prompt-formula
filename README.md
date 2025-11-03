@@ -54,10 +54,10 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 ## 20251104
 1. 修复"提示词预设"节点读取文件时名称混乱。感谢网友 luckyu445 的建议。
 2. 新增工具节点 “合并多组提示词工具”有20个可输入项，分隔符多种可以选择（逗号，句号，斜杠，换行）。
-3. <img width="982" height="490" alt="合并多组字符串" src="https://github.com/user-attachments/assets/52d713cb-746b-45e2-b0b6-57a55f3e419b" />
+<img width="982" height="490" alt="合并多组字符串" src="https://github.com/user-attachments/assets/52d713cb-746b-45e2-b0b6-57a55f3e419b" />
 
-4. 新增工具节点 “字符串输入反转”与“图像输入反转”作用是交换输入.
-5. <img width="570" height="520" alt="字符串反转" src="https://github.com/user-attachments/assets/0b101b43-c93e-4f7d-bc32-ebaeb695c07c" />
+3. 新增工具节点 “字符串输入反转”与“图像输入反转”作用是交换输入.
+<img width="570" height="520" alt="字符串反转" src="https://github.com/user-attachments/assets/0b101b43-c93e-4f7d-bc32-ebaeb695c07c" />
 <img width="620" height="716" alt="图像反转" src="https://github.com/user-attachments/assets/a66e7db9-dace-4a6f-ac63-c0603b872357" />
 
 
