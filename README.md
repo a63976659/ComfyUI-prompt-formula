@@ -60,8 +60,10 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 <img width="570" height="520" alt="字符串反转" src="https://github.com/user-attachments/assets/0b101b43-c93e-4f7d-bc32-ebaeb695c07c" />
 <img width="620" height="716" alt="图像反转" src="https://github.com/user-attachments/assets/a66e7db9-dace-4a6f-ac63-c0603b872357" />
 
-
-
+## 20251110
+1. 新增千问单图编辑提示词公式节点，多个节点功能各不相同。
+2. <img width="1500" height="822" alt="千问单图编辑示例工作流" src="https://github.com/user-attachments/assets/9135c7f0-82ea-4837-b2cd-bbc044ba9e1d" />
+3. 工作流模版中加入示例，可参考示例工作流使用。
 
 
 ## 安装说明
