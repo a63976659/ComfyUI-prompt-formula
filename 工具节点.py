@@ -157,7 +157,7 @@ class 判断并输出加载的图像(基础图像加载器, 基础预览类):
     RETURN_TYPES = ("IMAGE", "STRING")
     RETURN_NAMES = ("图像", "状态")
     FUNCTION = "加载条件图像"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     OUTPUT_NODE = True
     
     def 加载条件图像(self, 文本内容, 目标文本, 图像文件, prompt=None, extra_pnginfo=None):
@@ -218,7 +218,7 @@ class 批量判断并输出同名图像(基础图像加载器):
     RETURN_TYPES = ("IMAGE", "IMAGE", "IMAGE", "STRING")
     RETURN_NAMES = ("图像1", "图像2", "图像3", "状态")
     FUNCTION = "加载同名图像"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     
     def 加载同名图像(self, 文本内容, 目标文本, 图像目录):
         状态 = ""
@@ -359,7 +359,7 @@ class 提取视频结束帧:
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("结束帧",)
     FUNCTION = "提取结束帧"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     
     def 提取结束帧(self, 图像序列):
         # 检查输入是否为空
@@ -394,7 +394,7 @@ class 字符串输入反转:
     RETURN_TYPES = ("STRING", "STRING")
     RETURN_NAMES = ("输出字符串1", "输出字符串2")
     FUNCTION = "切换输入"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     
     def IS_CHANGED(self, **kwargs):
         return float("NaN")
@@ -426,7 +426,7 @@ class 图像输入反转:
     RETURN_TYPES = ("IMAGE", "IMAGE")
     RETURN_NAMES = ("输出图像1", "输出图像2")
     FUNCTION = "切换输入"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     
     def IS_CHANGED(self, **kwargs):
         return float("NaN")
@@ -467,7 +467,7 @@ class 合并多组提示词:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("合并提示词",)
     FUNCTION = "合并提示词"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     
     def 合并提示词(self, 分隔符="逗号", **kwargs):
         # 收集所有非空的提示词
@@ -519,7 +519,7 @@ class 空图像防报错:
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("图像",)
     FUNCTION = "条件通过"
-    CATEGORY = "📃提示词公式/工具节点"
+    CATEGORY = "📕提示词公式/工具节点"
     
     def 条件通过(self, 图像=None):
         # 如果输入图像为None，则不输出

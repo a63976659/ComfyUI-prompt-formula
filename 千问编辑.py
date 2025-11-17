@@ -11,7 +11,7 @@ class 千问单图编辑_改变视角:
             "required": {
                 "目标": (QIANWEN_TARGETS, {"default": "主体"}),
                 "方向": (CAMERA_DIRECTIONS, {"default": "向左旋转"}),
-                "角度": (CAMERA_ANGLES, {"default": "30度"}),
+                "角度": (ANGLES, {"default": "无"}),
             },
             "optional": {
                 "附加提示词": ("STRING", {"multiline": True, "default": "保持一致性，视角连贯"}),
@@ -21,7 +21,7 @@ class 千问单图编辑_改变视角:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 目标, 方向, 角度, 附加提示词=""):
         提示词 = f"将{目标}{方向}{角度}。"
@@ -49,7 +49,7 @@ class 千问单图编辑_改变镜头:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 目标, 镜头, 附加提示词=""):
         # 构建镜头描述
@@ -79,7 +79,7 @@ class 千问单图编辑_人物换动作:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 角色, 动作, 附加提示词=""):
         详细动作 = ACTION_DESCRIPTIONS.get(动作, 动作)
@@ -108,7 +108,7 @@ class 千问单图编辑_物品换材质:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 目标, 材质, 附加提示词=""):
         详细材质 = MATERIAL_DESCRIPTIONS.get(材质, 材质)
@@ -137,7 +137,7 @@ class 千问单图编辑_图像变文创产品:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 目标, 样式, 附加提示词=""):
         详细样式 = CULTURAL_PRODUCT_DESCRIPTIONS.get(样式, 样式)
@@ -172,7 +172,7 @@ class 千问单图编辑_图像转绘:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 转绘风格, 色彩风格, 附加提示词=""):
         # 构建转绘风格部分
@@ -217,7 +217,7 @@ class 千问单图编辑_图像编辑:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("编辑提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问编辑"
+    CATEGORY = "📕提示词公式/千问编辑"
     
     def 生成提示词(self, 目标, 编辑类型, 附加提示词=""):
         # 获取编辑类型的详细描述

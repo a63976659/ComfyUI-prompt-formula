@@ -32,7 +32,7 @@ class LOGO生成(基础千问节点):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("LOGO提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问"
+    CATEGORY = "📕提示词公式/千问"
 
     def 生成提示词(self, LOGO形象, LOGO文字, 颜色预设="无", 附加提示词=""):
         components = {
@@ -97,7 +97,7 @@ class 艺术字体生成:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("艺术字体提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问"
+    CATEGORY = "📕提示词公式/千问"
 
     def 生成提示词(self, 文字内容, 字体风格, 视角方向="无", 排版方式="", 字体颜色="无", 背景颜色="无", 附加提示词=""):
         parts = [
@@ -192,7 +192,7 @@ class 海报生成:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("海报提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问"
+    CATEGORY = "📕提示词公式/千问"
 
     def 生成提示词(self, 主体_前景描述, 海报主题文字, 副标题, 中部标语, 
                   活动亮点介绍, 底部日期与地点, 海报类型="无", 背景描述="", 
@@ -261,7 +261,7 @@ class 千问图像:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("千问图像提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问"
+    CATEGORY = "📕提示词公式/千问"
 
     def 生成提示词(self, 主体, 细节="", 场景="", 景别="无", 附加提示词=""):
         parts = [f"主体: {clean_text(主体)}"]
@@ -322,7 +322,7 @@ class 表情包生成:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("表情包提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式/千问"
+    CATEGORY = "📕提示词公式/千问"
 
     def 生成提示词(self, 主体, 详细内容, 布局="九宫格", 表情包风格="无", 背景颜色="无", 附加提示词=""):
         parts = [

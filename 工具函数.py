@@ -16,9 +16,9 @@ PRESET_DIR = PLUGIN_DIR / "提示词预设文件夹"
 # 确保预设文件夹存在
 PRESET_DIR.mkdir(parents=True, exist_ok=True)
 
-# 历史记录文件
-HISTORY_FILE = PLUGIN_DIR / "prompt_history.json"
-MAX_HISTORY_COUNT = 10
+# 删除所有历史记录相关常量
+# HISTORY_FILE = PLUGIN_DIR / "prompt_history.json"
+# MAX_HISTORY_COUNT = 10
 
 # 预设缓存及刷新机制
 _preset_cache = {}
@@ -42,12 +42,9 @@ register_preset_folder()
 
 def initialize_files():
     """初始化必要的目录和文件"""
-    if not HISTORY_FILE.exists():
-        try:
-            with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-                json.dump([], f, ensure_ascii=False)
-        except Exception as e:
-            logging.error(f"创建历史记录文件失败: {str(e)}")
+    # 删除历史记录文件初始化
+    # 只确保预设文件夹存在
+    PRESET_DIR.mkdir(parents=True, exist_ok=True)
 
 def clean_text(text):
     """清理文本，去除多余符号和空格"""
@@ -253,66 +250,6 @@ def delete_preset(preset_name):
     
     return True, f"预设 '{preset_name}' 及相关文件已成功删除"
 
-def load_history():
-    """读取历史记录"""
-    if HISTORY_FILE.exists():
-        try:
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            logging.error("历史记录文件格式错误，将创建新文件")
-            try:
-                backup_path = f"{HISTORY_FILE}.bak"
-                os.rename(HISTORY_FILE, backup_path)
-                logging.error(f"已将损坏的历史记录文件备份至 {backup_path}")
-            except Exception as e:
-                logging.error(f"备份历史记录文件失败: {str(e)}")
-            return []
-        except Exception as e:
-            logging.error(f"读取历史记录文件失败: {str(e)}")
-            return []
-    return []
-
-def save_to_history(prompt, name, manual_save=False):
-    """保存到历史记录"""
-    try:
-        history = load_history()
-        new_entry = {
-            "prompt": prompt,
-            "name": name,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "manual": manual_save
-        }
-        history.insert(0, new_entry)
-        if len(history) > MAX_HISTORY_COUNT:
-            history = history[:MAX_HISTORY_COUNT]
-            
-        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(history, f, ensure_ascii=False, indent=2)
-        return history
-    except Exception as e:
-        logging.error(f"保存历史记录失败: {str(e)}")
-    return None
-
-def get_history_options():
-    """获取历史记录选项列表"""
-    try:
-        history = load_history()
-        options = ["不选择历史记录"]
-        for i, entry in enumerate(history):
-            preview = f"{entry['name']} ({entry['timestamp']})"
-            if entry.get("manual", False):
-                preview += " [手动保存]"
-            options.append(f"[{i}] {preview}")
-        return options
-    except Exception as e:
-        logging.error(f"获取历史记录选项错误: {str(e)}")
-        return ["不选择历史记录"]
-
-def validate_history(v):
-    """历史记录验证函数"""
-    history_options = get_history_options()
-    return v in history_options or v == ""
-
+# 彻底删除所有历史记录相关函数
 # 初始化文件系统
 initialize_files()

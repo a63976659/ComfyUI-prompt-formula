@@ -66,7 +66,7 @@ class 提示词预设:
     RETURN_TYPES = ("STRING", "STRING", "STRING")
     RETURN_NAMES = ("预设名称", "预设内容", "文件类型")
     FUNCTION = "选择预设"
-    CATEGORY = "📃提示词公式"
+    CATEGORY = "📕提示词公式"
 
     def 选择预设(self, 预设名称):
         try:
@@ -80,7 +80,7 @@ class 提示词预设:
             logging.error(f"选择预设时出错: {str(e)}")
             return (预设名称, "", "error")
 
-# 视频提示词公式节点 - 添加调试信息
+# 视频提示词公式节点 - 完全删除历史记录相关代码
 class 视频提示词公式:
     @classmethod
     def INPUT_TYPES(cls):
@@ -107,18 +107,17 @@ class 视频提示词公式:
             },
             "optional": {
                 "附加提示词": ("STRING", {"multiline": True, "default": "兼具超凡脱俗的美感与灵性，数字艺术风格，超现实景观，高分辨率", "display_name": "附加提示词"}),
-                "自动保存到历史": ("BOOLEAN", {"default": True, "display_name": "自动保存到历史记录"})
             }
         }
     
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式"
+    CATEGORY = "📕提示词公式"
 
     def 生成提示词(self, 主体描述, 人物情绪, 主体运动, 眼型描述, 场景描述, 天气, 光源类型,
                       光线类型, 时间段, 景别描述, 构图描述, 镜头焦段, 机位角度, 镜头类型, 
-                      镜头目标, 运镜方式, 色调, 视觉风格, 附加提示词="", 自动保存到历史=True):
+                      镜头目标, 运镜方式, 色调, 视觉风格, 附加提示词=""):
         
         try:
             组件列表 = []
@@ -166,11 +165,6 @@ class 视频提示词公式:
             # 生成最终提示词
             提示词 = ", ".join(组件列表)
             
-            # 处理历史记录保存
-            if 自动保存到历史 and 提示词:
-                名称 = clean_text(主体描述) or clean_text(场景描述) or "未命名提示词"
-                save_to_history(提示词, 名称, manual_save=False)
-                
             return (提示词,)
             
         except Exception as e:
@@ -215,9 +209,6 @@ class 视频提示词公式:
         }
         return movement_descriptions.get(movement, "")
 
-# 其他节点保持不变，但添加异常处理...
-# 随机提示词人像、图像提示词公式、历史记录和预设管理、提示词保存为预设
-
 # 随机提示词人像节点
 class 随机提示词人像:
     @classmethod
@@ -249,7 +240,7 @@ class 随机提示词人像:
     RETURN_TYPES = ("STRING", "STRING")
     RETURN_NAMES = ("正面提示词", "负面提示词")
     FUNCTION = "generate_prompt"
-    CATEGORY = "📃提示词公式"
+    CATEGORY = "📕提示词公式"
 
     def generate_prompt(self, 语言, 人物, 国籍, 随机脸型, 随机发型, 随机饰品, 随机服装, 随机眼型,
                    表情="随机", 身材="随机", 动作="随机", 景别="随机", 合照类型="单人照", 
@@ -275,7 +266,7 @@ class 随机提示词人像:
             error_msg = f"生成提示词时出错: {str(e)}"
             return (error_msg, error_msg)
 
-# 图像提示词公式节点
+# 图像提示词公式节点 - 完全删除历史记录相关代码
 class 图像提示词公式:
     @classmethod
     def INPUT_TYPES(cls):
@@ -386,24 +377,20 @@ class 图像提示词公式:
                     "display": "slider",
                     "display_name": "附加权重"
                 }),
-                "自动保存到历史": ("BOOLEAN", {
-                    "default": True,
-                    "display_name": "自动保存到历史记录"
-                })
             }
         }
     
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("提示词",)
     FUNCTION = "生成提示词"
-    CATEGORY = "📃提示词公式"
+    CATEGORY = "📕提示词公式"
 
     def 生成提示词(self, 主体描述, 主体权重, 表情动作描述, 表情动作权重, 
                       场景描述, 场景权重, 光影描述, 光影权重,
                       画面风格, 风格权重,
                       景别描述="无", 景别权重=1.0,
                       构图描述="无", 构图权重=1.0,
-                      附加提示词="", 附加权重=1.0, 自动保存到历史=True):
+                      附加提示词="", 附加权重=1.0):
         
         # 处理各组件，选择"无"或内容为空时不加入提示词
         组件 = {
@@ -433,13 +420,6 @@ class 图像提示词公式:
         提示词 = re.sub(r',\s+,', ',', 提示词)
         提示词 = re.sub(r'\s+', ' ', 提示词).strip()
         
-        # 处理历史记录保存
-        if 自动保存到历史 and 提示词:
-            timestamp = datetime.now().strftime("%H:%M")
-            subject_preview = 主体描述[:10] + ("..." if len(主体描述) > 10 else "")
-            save_name = f"[图像] {timestamp} {subject_preview}"
-            save_to_history(提示词, save_name, manual_save=False)
-        
         return (提示词,)
 
     def _apply_weight_with_default(self, text, weight, default_val="无"):
@@ -452,228 +432,3 @@ class 图像提示词公式:
         if weight == 1.0:
             return cleaned_text
         return f"({cleaned_text}:{weight:.1f})"
-
-# 历史记录和预设管理节点
-class 历史记录和预设管理:
-    @classmethod
-    def INPUT_TYPES(cls):
-        base_components = {
-            "optional": {
-                "输入提示词": ("STRING", {
-                    "multiline": True,
-                    "default": "",
-                    "display_name": "输入提示词（可选）"
-                }),
-                "查看历史记录": ("BOOLEAN", {
-                    "default": False,
-                    "display_name": "查看历史记录"
-                }),
-                "将选中历史存为预设": ("BOOLEAN", {
-                    "default": False,
-                    "display_name": "将选中历史存为预设"
-                }),
-                "新预设名称": ("STRING", {
-                    "multiline": False,
-                    "default": "",
-                    "display_name": "预设名称（可包含.txt或.json扩展名）"
-                }),
-                "从输入保存到历史": ("BOOLEAN", {
-                    "default": False,
-                    "display_name": "将输入提示词保存到历史"
-                }),
-                "清空历史记录": ("BOOLEAN", {
-                    "default": False,
-                    "display_name": "清空所有历史记录"
-                }),
-                "确认删除预设": ("BOOLEAN", {
-                    "default": False,
-                    "display_name": "确认删除所选预设"
-                }),
-                "选择要删除的预设": (["不删除预设"], {
-                    "default": "不删除预设", 
-                    "display_name": "选择要删除的预设"
-                }),
-                "新建预设内容": ("STRING", {
-                    "multiline": True,
-                    "default": "",
-                    "display_name": "新建预设内容（TXT文本或JSON格式）"
-                })
-            }
-        }
-        
-        try:
-            preset_files = folder_paths.get_filename_list("prompt_presets")
-            # 提取预设名称（去除扩展名）并去重，按名称排序
-            preset_names = ["不删除预设"] + sorted(list({os.path.splitext(f)[0] for f in preset_files}))
-            history_options = get_history_options()
-            
-            # 使用字符串引用外部验证函数，避免JSON序列化问题
-            base_components["optional"]["选择历史记录"] = (
-                history_options, 
-                {
-                    "default": "不选择历史记录", 
-                    "display_name": "选择历史记录",
-                    "validate": "validate_history"
-                }
-            )
-            base_components["optional"]["选择要删除的预设"] = (
-                preset_names, 
-                {"default": "不删除预设", "display_name": "选择要删除的预设"}
-            )
-            
-            return base_components
-        except Exception as e:
-            logging.error(f"历史记录和预设管理节点组件加载错误: {str(e)}")
-            return base_components
-    
-    RETURN_TYPES = ("STRING", "STRING", "STRING")
-    RETURN_NAMES = ("选中的提示词", "历史记录列表", "操作结果")
-    FUNCTION = "管理历史和预设"
-    CATEGORY = "📃提示词公式"
-    
-    def 管理历史和预设(self, 输入提示词=None, 查看历史记录=False, 选择历史记录="不选择历史记录",
-                      将选中历史存为预设=False, 新预设名称="", 从输入保存到历史=False, 清空历史记录=False,
-                      选择要删除的预设="不删除预设", 确认删除预设=False, 新建预设内容=""):
-        操作结果 = ""
-        
-        try:
-            # 先刷新历史记录选项，确保使用最新数据
-            current_history = load_history()
-            current_history_options = get_history_options()
-            
-            # 验证选择的历史记录是否仍然有效
-            if 选择历史记录 not in current_history_options and 选择历史记录 != "不选择历史记录":
-                操作结果 += f"警告: 所选历史记录已不存在，已自动重置\n"
-                选择历史记录 = "不选择历史记录"
-            
-            if 新预设名称 and 新建预设内容:
-                saved_name = save_preset(新预设名称, 新建预设内容)
-                if saved_name:
-                    操作结果 += f"新预设 '{saved_name}' 已保存到 提示词预设文件夹\n"
-                else:
-                    操作结果 += "保存预设失败\n"
-            
-            if 选择要删除的预设 != "不删除预设" and 确认删除预设:
-                success, message = delete_preset(选择要删除的预设)
-                操作结果 += message + "\n"
-            
-            if 清空历史记录:
-                try:
-                    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-                        json.dump([], f, ensure_ascii=False)
-                    操作结果 += "历史记录已清空\n"
-                    # 清空后重置选择
-                    选择历史记录 = "不选择历史记录"
-                except PermissionError:
-                    操作结果 += "无权限清空历史记录，请检查文件权限\n"
-                except Exception as e:
-                    操作结果 += f"清空历史记录失败: {str(e)}\n"
-            
-            if 从输入保存到历史 and 输入提示词 and clean_text(输入提示词):
-                timestamp = datetime.now().strftime("%H:%M")
-                content_preview = 输入提示词[:10] + ("..." if len(输入提示词) > 10 else "")
-                save_name = f"{timestamp} 手动输入:{content_preview}"
-                save_result = save_to_history(clean_text(输入提示词), save_name, manual_save=True)
-                if save_result is not None:
-                    操作结果 += "输入提示词已保存到历史记录\n"
-                else:
-                    操作结果 += "保存输入提示词到历史记录失败\n"
-            
-            history_index = -1
-            selected_prompt = ""
-            if 选择历史记录 != "不选择历史记录":
-                try:
-                    # 使用正则表达式更稳健地提取索引
-                    match = re.search(r'\[(\d+)\]', 选择历史记录)
-                    history_index = int(match.group(1)) if match else -1
-                except:
-                    history_index = -1
-            
-            # 检查索引是否有效
-            if history_index != -1 and history_index < len(current_history):
-                selected_prompt = current_history[history_index]["prompt"]
-            elif history_index != -1:
-                操作结果 += f"警告: 所选历史记录索引无效\n"
-                history_index = -1
-            
-            if 将选中历史存为预设 and 新预设名称 and history_index != -1 and history_index < len(current_history):
-                history_entry = current_history[history_index]
-                saved_name = save_preset(新预设名称, history_entry["prompt"])
-                if saved_name:
-                    操作结果 += f"历史记录已保存为预设 '{saved_name}' 到 提示词预设文件夹\n"
-                else:
-                    操作结果 += "将历史记录保存为预设失败\n"
-            
-            历史记录列表 = ""
-            if 查看历史记录:
-                for i, entry in enumerate(current_history):
-                    manual_tag = " [手动保存]" if entry.get("manual", False) else ""
-                    历史记录列表 += f"[{i}] {entry['name']} ({entry['timestamp']}){manual_tag}:\n{entry['prompt']}\n\n"
-        
-        except Exception as e:
-            操作结果 += f"操作出错: {str(e)}\n"
-        
-        操作结果 = 操作结果.strip()
-        
-        return (selected_prompt, 历史记录列表.strip(), 操作结果)
-
-# 提示词保存为预设节点
-class 提示词保存为预设:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "新预设名称": ("STRING", {
-                    "multiline": False,
-                    "default": "新预设",
-                    "display_name": "新预设名称"
-                }),
-            },
-            "optional": {
-                "保存为TXT": ([
-                    "关", "开"
-                ], {
-                    "default": "开",
-                    "display_name": "将预设保存为txt文件"
-                }),
-                "保存为JSON": ([
-                    "关", "开"
-                ], {
-                    "default": "关",
-                    "display_name": "将预设保存为json文件"
-                }),
-                "提示词": ("STRING", {"forceInput": True, "multiline": True})
-            }
-        }
-    
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("操作结果",)
-    FUNCTION = "保存预设"
-    CATEGORY = "📃提示词公式"
-    OUTPUT_NODE = True  # 添加这个属性，表示节点有输出但不强制连接
-
-    def 保存预设(self, 新预设名称, 提示词="", 保存为TXT="开", 保存为JSON="关"):
-        if not 提示词.strip():
-            return ("错误: 提示词不能为空",)
-        
-        if 保存为TXT == "关" and 保存为JSON == "关":
-            return ("错误: 必须至少选择一种保存格式",)
-        
-        操作结果 = []
-        
-        if 保存为TXT == "开":
-            txt_result = save_preset(新预设名称 + ".txt", 提示词)
-            if txt_result:
-                操作结果.append(f"已保存为TXT文件: {txt_result}.txt")
-            else:
-                操作结果.append("保存TXT文件失败")
-        
-        if 保存为JSON == "开":
-            # 直接保存原始提示词内容为JSON文件
-            json_result = save_preset(新预设名称 + ".json", 提示词)
-            if json_result:
-                操作结果.append(f"已保存为JSON文件: {json_result}.json")
-            else:
-                操作结果.append("保存JSON文件失败")
-        
-        return ("\n".join(操作结果),)
