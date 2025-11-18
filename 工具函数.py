@@ -62,8 +62,11 @@ def apply_weight(text, weight, default_val="无"):
         return cleaned_text
     return f"({cleaned_text}:{weight:.1f})"
 
+# 在 工具函数.py 的 get_preset_preview 函数中添加修复
 def get_preset_preview(preset_name):
     """获取预设的预览媒体文件路径"""
+    print(f"🔍 查找预设 '{preset_name}' 的预览文件")
+    
     # 首先尝试从注册的预设文件夹中查找
     txt_preset_path = folder_paths.get_full_path("prompt_presets", f"{preset_name}.txt")
     json_preset_path = folder_paths.get_full_path("prompt_presets", f"{preset_name}.json")
@@ -71,30 +74,41 @@ def get_preset_preview(preset_name):
     base_path = None
     if txt_preset_path:
         base_path = os.path.splitext(txt_preset_path)[0]
+        print(f"📄 找到TXT文件: {txt_preset_path}")
     elif json_preset_path:
         base_path = os.path.splitext(json_preset_path)[0]
+        print(f"📄 找到JSON文件: {json_preset_path}")
     else:
         # 如果通过folder_paths没找到，直接检查预设文件夹
+        print(f"🔍 通过folder_paths没找到，尝试直接扫描")
         txt_path = PRESET_DIR / f"{preset_name}.txt"
         json_path = PRESET_DIR / f"{preset_name}.json"
         if txt_path.exists():
             base_path = str(txt_path.with_suffix(''))
+            print(f"📄 直接找到TXT文件: {txt_path}")
         elif json_path.exists():
             base_path = str(json_path.with_suffix(''))
+            print(f"📄 直接找到JSON文件: {json_path}")
     
     if not base_path:
+        print(f"❌ 未找到预设文件: {preset_name}")
         return None, None
-        
-    for ext in ['.mp4']:
+    
+    print(f"📁 基础路径: {base_path}")
+    
+    # 检查预览文件
+    preview_extensions = [
+        ('.png', 'image'), ('.jpg', 'image'), ('.jpeg', 'image'),
+        ('.mp4', 'video'), ('.mov', 'video'), ('.avi', 'video')
+    ]
+    
+    for ext, file_type in preview_extensions:
         preview_path = f"{base_path}{ext}"
         if os.path.exists(preview_path):
-            return preview_path, 'video'
+            print(f"✅ 找到预览文件: {preview_path}, 类型: {file_type}")
+            return preview_path, file_type
     
-    for ext in ['.png', '.jpg', '.jpeg']:
-        preview_path = f"{base_path}{ext}"
-        if os.path.exists(preview_path):
-            return preview_path, 'image'
-    
+    print(f"❌ 未找到预览文件，尝试路径: {base_path}.*")
     return None, None
 
 def _actual_load_presets():
@@ -250,6 +264,5 @@ def delete_preset(preset_name):
     
     return True, f"预设 '{preset_name}' 及相关文件已成功删除"
 
-# 彻底删除所有历史记录相关函数
 # 初始化文件系统
 initialize_files()

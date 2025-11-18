@@ -169,8 +169,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "千问单图编辑-图像编辑": "千问单图编辑-图像编辑",
 }
 
+# 前端资源文件
+WEB_DIRECTORY = "./js"
+
 # 模块信息
-__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
 
 # 初始化日志
 logging.basicConfig(level=logging.INFO)
@@ -179,6 +182,7 @@ logger = logging.getLogger(__name__)
 print("📕 提示词公式节点包已加载")
 print(f"✅ 已加载 {len(NODE_CLASS_MAPPINGS)} 个节点")
 print("🔧 工具节点已添加到 '📕提示词公式/工具节点' 分类")
-print("⚠️  已彻底删除历史记录功能，插件不再读取历史记录文件")
+print("🖼️  提示词预设节点已增强预览功能")
+print("⚠️  插件不再读取历史记录文件")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")
