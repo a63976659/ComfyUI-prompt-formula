@@ -3,55 +3,40 @@ import random
 import re
 import json
 import os
+import shutil
+import base64
 from datetime import datetime
+from PIL import Image, ImageDraw, ImageFont
+import io
 
 import folder_paths
 from 常量配置 import *
 from 工具函数 import *
 
-# 提示词预设节点 - 修复读取和排序问题
+# 通用提示词公式.py - 修复预览显示问题
 class 提示词预设:
-    tooltip = "预设文件储存在此插件提示词预设文件夹，支持TXT和JSON格式。文件按名称排序，请手动展开选择。"
+    tooltip = "预设文件储存在此插件提示词预设文件夹，支持TXT和JSON格式。"
 
     @classmethod
     def INPUT_TYPES(cls):
         try:
-            # 强制刷新缓存，确保获取最新文件
+            # 强制刷新缓存
             global _preset_cache, _last_refresh_time
             _preset_cache = {}
             _last_refresh_time = 0
             
             presets = load_presets()
             preset_names = list(presets.keys())
-            
-            # 按名称排序
             preset_names.sort()
             
             if not preset_names:
                 preset_names = ["请先创建预设"]
-                presets = {"请先创建预设": {"content": "", "preview_path": None, "preview_type": None, "file_type": "unknown"}}
-            
-            preview_metadata = {}
-            for name in preset_names:
-                if name in presets:
-                    preview_metadata[name] = {
-                        "type": presets[name]["preview_type"] or "none",
-                        "path": presets[name]["preview_path"] or "",
-                        "file_type": presets[name]["file_type"] or "unknown"
-                    }
-                else:
-                    preview_metadata[name] = {
-                        "type": "none",
-                        "path": "",
-                        "file_type": "unknown"
-                    }
             
             return {
                 "required": {
                     "预设名称": (preset_names, {
                         "default": preset_names[0] if preset_names else "请先创建预设",
-                        "tooltip": cls.tooltip,
-                        "preview_metadata": json.dumps(preview_metadata)
+                        "tooltip": cls.tooltip
                     }),
                 }
             }
@@ -67,18 +52,90 @@ class 提示词预设:
     RETURN_NAMES = ("预设名称", "预设内容", "文件类型")
     FUNCTION = "选择预设"
     CATEGORY = "📕提示词公式"
+    OUTPUT_NODE = True
 
     def 选择预设(self, 预设名称):
         try:
+            print(f"🎯 用户选择了预设: {预设名称}")
+            
             presets = load_presets()
+            
             if 预设名称 in presets:
                 preset_info = presets[预设名称]
-                return (预设名称, preset_info["content"], preset_info["file_type"])
+                预设内容 = preset_info["content"]
+                文件类型 = preset_info["file_type"]
+                
+                print(f"📋 预设内容长度: {len(预设内容)}")
+                print(f"📁 文件类型: {文件类型}")
+                print(f"🖼️  预览路径: {preset_info.get('preview_path', '无')}")
+                print(f"🖼️  预览类型: {preset_info.get('preview_type', '无')}")
+                
+                # 处理预览文件
+                preview_result = {"ui": {}}
+                preview_path = preset_info.get("preview_path")
+                preview_type = preset_info.get("preview_type")
+                
+                if preview_path and os.path.exists(preview_path) and preview_type == 'image':
+                    print(f"✅ 找到预览文件，准备复制到临时目录")
+                    
+                    # 复制到临时目录
+                    temp_dir = folder_paths.get_temp_directory()
+                    os.makedirs(temp_dir, exist_ok=True)
+                    
+                    # 生成唯一文件名
+                    文件名前缀 = "preset_preview"
+                    计数器 = 1
+                    while True:
+                        # 使用简单的文件名避免特殊字符问题
+                        文件 = f"{文件名_prefix}_{计数器:04d}.png"
+                        完整路径 = os.path.join(temp_dir, 文件)
+                        if not os.path.exists(完整路径):
+                            break
+                        计数器 += 1
+                    
+                    try:
+                        # 复制文件
+                        import shutil
+                        shutil.copy2(preview_path, 完整路径)
+                        print(f"✅ 成功复制预览文件到: {完整路径}")
+                        
+                        # 构建预览结果 - 使用正确的格式
+                        preview_result["ui"]["images"] = [{
+                            "filename": 文件,
+                            "subfolder": "",  # 空子文件夹
+                            "type": "temp"    # 临时文件类型
+                        }]
+                        
+                        print(f"📤 发送预览数据: {preview_result}")
+                        
+                    except Exception as copy_error:
+                        print(f"❌ 复制预览文件失败: {copy_error}")
+                
+                # 返回结果
+                result = {
+                    "ui": preview_result["ui"],
+                    "result": (预设名称, 预设内容, 文件类型)
+                }
+                
+                print(f"📦 返回结果: UI keys = {list(result['ui'].keys())}")
+                return result
+                
             else:
-                return (预设名称, "", "unknown")
+                print(f"❌ 预设 '{预设名称}' 不存在")
+                return {
+                    "ui": {},
+                    "result": (预设名称, "", "unknown")
+                }
+                
         except Exception as e:
             logging.error(f"选择预设时出错: {str(e)}")
-            return (预设名称, "", "error")
+            print(f"💥 选择预设时出错: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return {
+                "ui": {},
+                "result": (预设名称, "", "error")
+            }
 
 # 视频提示词公式节点 - 完全删除历史记录相关代码
 class 视频提示词公式:
