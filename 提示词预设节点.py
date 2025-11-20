@@ -12,11 +12,14 @@ class 提示词预设:
         # 递归获取预设文件列表
         # 修改路径：使用插件目录下的"提示词预设"文件夹
         预设目录 = os.path.join(os.path.dirname(__file__), "提示词预设")
-        预设选项 = ["无"]
+        预设选项 = ["无"]  # 将"无"放在第一个
         
         # 如果预设目录不存在，创建它
         if not os.path.exists(预设目录):
             os.makedirs(预设目录)
+        
+        # 临时列表存储其他选项
+        其他选项 = []
         
         # 递归扫描所有txt文件
         for 根目录, 目录列表, 文件列表 in os.walk(预设目录):
@@ -28,9 +31,13 @@ class 提示词预设:
                         显示名称 = os.path.splitext(文件名)[0]
                     else:
                         显示名称 = f"{相对路径}/{os.path.splitext(文件名)[0]}"
-                    预设选项.append(显示名称)
+                    其他选项.append(显示名称)
         
-        预设选项.sort()
+        # 对其他选项进行排序
+        其他选项.sort()
+        
+        # 将排序后的其他选项添加到预设选项中
+        预设选项.extend(其他选项)
         
         return {
             "required": {
