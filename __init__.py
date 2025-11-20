@@ -26,7 +26,6 @@ except Exception as e:
 # 导入通用提示词公式节点
 try:
     from 通用提示词公式 import (
-        提示词预设,
         视频提示词公式,
         图像提示词公式,
         随机提示词人像,
@@ -44,7 +43,31 @@ except Exception as e:
         def placeholder(self, **kwargs):
             return ("节点加载失败",)
     
-    提示词预设 = 视频提示词公式 = 图像提示词公式 = 随机提示词人像 = 节点占位符
+    视频提示词公式 = 图像提示词公式 = 随机提示词人像 = 节点占位符
+
+# 导入提示词预设节点
+try:
+    from 提示词预设节点 import (
+        提示词预设,
+        NODE_CLASS_MAPPINGS as PRESET_NODES,
+        NODE_DISPLAY_NAME_MAPPINGS as PRESET_DISPLAY_NAMES
+    )
+except Exception as e:
+    logging.error(f"导入提示词预设节点失败: {str(e)}")
+    # 创建空的占位符类
+    class 提示词预设占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING",)
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式"
+        def placeholder(self, **kwargs):
+            return ("提示词预设节点加载失败",)
+    
+    提示词预设 = 提示词预设占位符
+    PRESET_NODES = {}
+    PRESET_DISPLAY_NAMES = {}
 
 # 导入千问提示词公式节点
 try:
@@ -140,6 +163,9 @@ NODE_CLASS_MAPPINGS = {
     "千问单图编辑-图像编辑": 千问单图编辑_图像编辑,
 }
 
+# 合并预设节点映射
+NODE_CLASS_MAPPINGS.update(PRESET_NODES)
+
 # 节点显示名称映射
 NODE_DISPLAY_NAME_MAPPINGS = {
     "提示词预设": "提示词预设",
@@ -169,11 +195,14 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "千问单图编辑-图像编辑": "千问单图编辑-图像编辑",
 }
 
-# 前端资源文件
-WEB_DIRECTORY = "./js"
+# 合并预设节点显示名称
+NODE_DISPLAY_NAME_MAPPINGS.update(PRESET_DISPLAY_NAMES)
 
 # 模块信息
-__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
+__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+
+# 网页资源目录
+WEB_DIRECTORY = "./网页资源"
 
 # 初始化日志
 logging.basicConfig(level=logging.INFO)
@@ -182,7 +211,7 @@ logger = logging.getLogger(__name__)
 print("📕 提示词公式节点包已加载")
 print(f"✅ 已加载 {len(NODE_CLASS_MAPPINGS)} 个节点")
 print("🔧 工具节点已添加到 '📕提示词公式/工具节点' 分类")
-print("🖼️  提示词预设节点已增强预览功能")
-print("⚠️  插件不再读取历史记录文件")
+print("📁 提示词预设节点，直接在节点上预览内容")
+print("⚠️  已彻底删除历史记录功能，插件不再读取历史记录文件")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")
