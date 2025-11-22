@@ -31,7 +31,7 @@ app.registerExtension({
                     border: 1px solid var(--border-color);
                     border-radius: 4px;
                     padding: 8px;
-                    margin: 5px 8px;
+                    margin: 5px auto;
                     font-size: 11px;
                     line-height: 1.3;
                     color: var(--input-text);
@@ -43,7 +43,8 @@ app.registerExtension({
                     display: flex;
                     align-items: flex-start;
                     box-sizing: border-box;
-                    width: calc(100% - 16px);
+                    width: calc(100% - 16px); /* 左右各留8px边距 */
+                    max-width: calc(100% - 16px);
                 }
                 
                 .preset-content-empty {
@@ -61,7 +62,7 @@ app.registerExtension({
                 
                 /* 节点样式优化 */
                 .node[data-type="提示词预设"] {
-                    min-width: 320px !important;
+                    min-width: 300px !important;
                     min-height: 180px !important;
                     resize: both;
                     overflow: hidden;
@@ -113,7 +114,7 @@ app.registerExtension({
                 if (!预设部件) return;
                 
                 // 从节点数据获取保存的节点尺寸
-                const 保存的宽度 = this._nodeWidth || 320;
+                const 保存的宽度 = this._nodeWidth || 300;
                 const 保存的高度 = this._nodeHeight || 200;
                 
                 // 设置节点初始大小
