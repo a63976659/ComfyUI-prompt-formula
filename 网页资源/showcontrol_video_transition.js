@@ -25,6 +25,7 @@ function videoTransitionHandler(node) {
         const motionDirectionWidget = findWidgetByName(node, "运动方向");
         const morphSubtypeWidget = findWidgetByName(node, "变形子类型");
         const occlusionTypeWidget = findWidgetByName(node, "遮挡物类型");
+        const characterChangeTypeWidget = findWidgetByName(node, "人物变化类型");
         const transitionRhythmWidget = findWidgetByName(node, "转场节奏");
         const visualConsistencyWidget = findWidgetByName(node, "视觉连贯性");
 
@@ -36,6 +37,7 @@ function videoTransitionHandler(node) {
         toggleWidget(node, motionDirectionWidget, false);
         toggleWidget(node, morphSubtypeWidget, false);
         toggleWidget(node, occlusionTypeWidget, false);
+        toggleWidget(node, characterChangeTypeWidget, false);
         toggleWidget(node, transitionRhythmWidget, false);
         toggleWidget(node, visualConsistencyWidget, false);
 
@@ -77,6 +79,12 @@ function videoTransitionHandler(node) {
             case "主体变形转场":
             case "画面渐变转场":
             case "主体遮挡转场":
+                toggleWidget(node, transitionRhythmWidget, true);
+                toggleWidget(node, visualConsistencyWidget, true);
+                break;
+                
+            case "人物到人物变化":
+                toggleWidget(node, characterChangeTypeWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
                 break;

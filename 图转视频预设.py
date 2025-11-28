@@ -59,6 +59,12 @@ class 视频首尾帧转场:
                     "display_name": "遮挡物类型"
                 }),
                 
+                # 人物变化专用参数
+                "人物变化类型": (CHARACTER_CHANGE_TYPES, {
+                    "default": "形态变形",
+                    "display_name": "人物变化类型"
+                }),
+                
                 # 新增：首帧主体和尾帧主体描述
                 "首帧主体": ("STRING", {
                     "multiline": False,
@@ -85,7 +91,6 @@ class 视频首尾帧转场:
                     "default": "",
                     "display_name": "附加转场描述"
                 }),
-                # 已取消"运镜提示词"输入组件
             }
         }
     
@@ -96,7 +101,7 @@ class 视频首尾帧转场:
 
     def 生成转场提示词(self, 首帧描述, 尾帧描述, 主要转场方式, 转场时长, 运动平滑度,
                     运动子类型="缩放转场", 运动方向="向前", 变形子类型="有机变形",
-                    遮挡物类型="云雾遮挡", 首帧主体="", 尾帧主体="",
+                    遮挡物类型="云雾遮挡", 人物变化类型="形态变形", 首帧主体="", 尾帧主体="",
                     转场节奏="缓入缓出", 视觉连贯性="风格统一", 附加转场描述=""):
         
         try:
@@ -113,6 +118,11 @@ class 视频首尾帧转场:
             if not 尾帧主体_清理 and 尾帧描述_清理:
                 尾帧主体_清理 = self._extract_main_subject(尾帧描述_清理)
             
+            # 对于人物到人物变化，特别优化主体提取
+            if 主要转场方式 == "人物到人物变化":
+                首帧主体_清理 = self._extract_character_subject(首帧描述_清理, 首帧主体_清理)
+                尾帧主体_清理 = self._extract_character_subject(尾帧描述_清理, 尾帧主体_清理)
+            
             # 确保主体不为空
             首帧主体_清理 = 首帧主体_清理 or "图像1主体"
             尾帧主体_清理 = 尾帧主体_清理 or "图像2主体"
@@ -120,7 +130,7 @@ class 视频首尾帧转场:
             # 根据转场方式生成对应的提示词
             转场提示词 = self._generate_transition_prompt(
                 主要转场方式, 运动子类型, 运动方向, 变形子类型, 遮挡物类型,
-                转场时长, 运动平滑度, 转场节奏, 视觉连贯性,
+                人物变化类型, 转场时长, 运动平滑度, 转场节奏, 视觉连贯性,
                 首帧主体_清理, 尾帧主体_清理
             )
             
@@ -132,7 +142,7 @@ class 视频首尾帧转场:
             # 生成技术说明
             技术说明 = self._generate_technical_note(
                 主要转场方式, 转场时长, 运动平滑度, 转场节奏,
-                首帧主体_清理, 尾帧主体_清理
+                首帧主体_清理, 尾帧主体_清理, 人物变化类型
             )
             
             return (转场提示词, 完整提示词, 技术说明)
@@ -184,6 +194,29 @@ class 视频首尾帧转场:
         
         return "主体"
 
+    def _extract_character_subject(self, description, existing_subject=""):
+        """专门提取人物主体 - 针对人物到人物变化优化"""
+        if existing_subject and existing_subject != "图像1主体" and existing_subject != "图像2主体":
+            return existing_subject
+            
+        if not description:
+            return "人物"
+        
+        # 人物相关关键词
+        character_keywords = ['女孩', '男孩', '女人', '男人', '女性', '男性', '人物', '人', '角色']
+        
+        # 首先检查是否包含人物关键词
+        for keyword in character_keywords:
+            if keyword in description:
+                # 尝试提取包含关键词的短语
+                pattern = rf'([\u4e00-\u9fa5]*{keyword}[\u4e00-\u9fa5]*)'
+                matches = re.findall(pattern, description)
+                if matches:
+                    return matches[0]
+        
+        # 如果没有明确的人物关键词，使用通用提取
+        return self._extract_main_subject(description) or "人物"
+
     def _refine_subject(self, subject):
         """进一步精炼提取的主体"""
         # 去除常见的修饰前缀
@@ -203,7 +236,7 @@ class 视频首尾帧转场:
         return subject.strip()
 
     def _generate_transition_prompt(self, 主要方式, 运动子类型, 运动方向, 变形子类型, 
-                                  遮挡物类型, 时长, 平滑度, 节奏, 连贯性,
+                                  遮挡物类型, 人物变化类型, 时长, 平滑度, 节奏, 连贯性,
                                   首帧主体, 尾帧主体):
         """生成具体的转场提示词"""
         
@@ -247,6 +280,9 @@ class 视频首尾帧转场:
             
         elif 主要方式 == "多重转场组合":
             return self._generate_multi_transition(运动子类型, 变形子类型, 时长格式化, 平滑度描述, 节奏描述)
+            
+        elif 主要方式 == "人物到人物变化":
+            return self._generate_character_change_transition(人物变化类型, 首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
         
         else:
             return ""
@@ -310,6 +346,15 @@ class 视频首尾帧转场:
         变形部分 = "形态变形" if not 变形子类型 or 变形子类型 == "无" else 变形子类型
         return f"首先通过{运动部分}开始变化，中途结合{变形部分}强化效果，历时{时长}秒，{平滑度}，{节奏}，整个过程流畅如一体"
 
+    def _generate_character_change_transition(self, 变化类型, 首帧人物, 尾帧人物, 时长, 平滑度, 节奏):
+        """生成人物到人物变化转场提示词"""
+        if 变化类型 == "无":
+            return f"从{首帧人物}变化为{尾帧人物}，历时{时长}秒，{平滑度}，{节奏}"
+        
+        # 获取人物变化描述
+        变化描述 = CHARACTER_CHANGE_DESCRIPTIONS.get(变化类型, f"从{首帧人物}变化为{尾帧人物}")
+        return f"{变化描述}，历时{时长}秒，变化过程{平滑度}，{节奏}"
+
     def _generate_full_prompt(self, 首帧, 尾帧, 转场, 附加描述):
         """生成完整提示词"""
         组件 = []
@@ -339,7 +384,7 @@ class 视频首尾帧转场:
         
         return 完整提示词
 
-    def _generate_technical_note(self, 主要方式, 时长, 平滑度, 节奏, 首帧主体, 尾帧主体):
+    def _generate_technical_note(self, 主要方式, 时长, 平滑度, 节奏, 首帧主体, 尾帧主体, 人物变化类型=""):
         """生成技术说明"""
         技术要点 = []
         
@@ -356,6 +401,10 @@ class 视频首尾帧转场:
         if 尾帧主体 and 尾帧主体 != "图像2主体":
             技术要点.append(f"尾帧主体: {尾帧主体}")
         
+        # 人物变化类型信息
+        if 主要方式 == "人物到人物变化" and 人物变化类型 and 人物变化类型 != "无":
+            技术要点.append(f"变化类型: {人物变化类型}")
+        
         if 主要方式 in ["运镜提示词转场", "运动匹配转场"]:
             技术要点.append("建议使用一致的摄像机运动参数")
         
@@ -367,6 +416,9 @@ class 视频首尾帧转场:
         
         if 主要方式 in ["主体变形转场", "主体遮挡转场"]:
             技术要点.append("需要清晰的主体定义")
+        
+        if 主要方式 == "人物到人物变化":
+            技术要点.append("保持人物比例和姿态的一致性")
         
         return " | ".join(技术要点) if 技术要点 else "无特殊技术要求"
 
