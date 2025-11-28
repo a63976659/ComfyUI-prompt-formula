@@ -101,45 +101,58 @@ function videoTransitionHandler(node) {
     }
 }
 
+// 视频动效提示词处理函数
+function videoEffectsHandler(node) {
+    if (node.comfyClass === "视频动效提示词") {
+        // 这个节点目前不需要动态组件控制，因为所有参数都是独立的
+        // 未来如果需要可以在这里添加逻辑
+    }
+}
+
 app.registerExtension({
     name: "video-transition.showcontrol",
     nodeCreated(node) {
-        if (node.comfyClass !== "视频首尾帧转场") {
-            return;
-        }
+        if (node.comfyClass === "视频首尾帧转场") {
+            // 初始处理
+            videoTransitionHandler(node);
+            
+            // 为所有widget添加值监听
+            for (const w of node.widgets || []) {
+                let widgetValue = w.value;
 
-        // 初始处理
-        videoTransitionHandler(node);
-        
-        // 为所有widget添加值监听
-        for (const w of node.widgets || []) {
-            let widgetValue = w.value;
-
-            // 存储原始描述符
-            let originalDescriptor = Object.getOwnPropertyDescriptor(w, 'value') || 
-                Object.getOwnPropertyDescriptor(Object.getPrototypeOf(w), 'value');
-            if (!originalDescriptor) {
-                originalDescriptor = Object.getOwnPropertyDescriptor(w.constructor.prototype, 'value');
-            }
-
-            Object.defineProperty(w, 'value', {
-                get() {
-                    let valueToReturn = originalDescriptor && originalDescriptor.get
-                        ? originalDescriptor.get.call(w)
-                        : widgetValue;
-                    return valueToReturn;
-                },
-                set(newVal) {
-                    if (originalDescriptor && originalDescriptor.set) {
-                        originalDescriptor.set.call(w, newVal);
-                    } else { 
-                        widgetValue = newVal;
-                    }
-
-                    // 值变化时重新处理widget状态
-                    videoTransitionHandler(node);
+                // 存储原始描述符
+                let originalDescriptor = Object.getOwnPropertyDescriptor(w, 'value') || 
+                    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(w), 'value');
+                if (!originalDescriptor) {
+                    originalDescriptor = Object.getOwnPropertyDescriptor(w.constructor.prototype, 'value');
                 }
-            });
+
+                Object.defineProperty(w, 'value', {
+                    get() {
+                        let valueToReturn = originalDescriptor && originalDescriptor.get
+                            ? originalDescriptor.get.call(w)
+                            : widgetValue;
+                        return valueToReturn;
+                    },
+                    set(newVal) {
+                        if (originalDescriptor && originalDescriptor.set) {
+                            originalDescriptor.set.call(w, newVal);
+                        } else { 
+                            widgetValue = newVal;
+                        }
+
+                        // 值变化时重新处理widget状态
+                        videoTransitionHandler(node);
+                    }
+                });
+            }
+        }
+        else if (node.comfyClass === "视频动效提示词") {
+            // 视频动效提示词节点处理
+            videoEffectsHandler(node);
+            
+            // 如果需要动态控制，可以在这里添加widget监听
+            // 目前所有参数都是独立的，不需要特殊处理
         }
     }
 });

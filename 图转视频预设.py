@@ -9,15 +9,15 @@ class 视频首尾帧转场:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "首帧描述": ("STRING", {
+                "首帧描述_非必填": ("STRING", {
                     "multiline": False,  # 改为单行输入
                     "default": "一朵含苞待放的荷花，清晨露珠挂在花瓣上",
-                    "display_name": "首帧描述"
+                    "display_name": "首帧描述-非必填"  # 修改显示名称
                 }),
-                "尾帧描述": ("STRING", {
+                "尾帧描述_非必填": ("STRING", {
                     "multiline": False,  # 改为单行输入
                     "default": "绽放的荷花特写，花瓣完全展开露出花蕊",
-                    "display_name": "尾帧描述"
+                    "display_name": "尾帧描述-非必填"  # 修改显示名称
                 }),
                 "主要转场方式": (TRANSITION_TYPES, {
                     "default": "运镜提示词转场",
@@ -69,12 +69,12 @@ class 视频首尾帧转场:
                 "首帧主体": ("STRING", {
                     "multiline": False,
                     "default": "",
-                    "display_name": "首帧主体"
+                    "display_name": "首帧主体(非必填)"  # 修改显示名称
                 }),
                 "尾帧主体": ("STRING", {
                     "multiline": False,
                     "default": "",
-                    "display_name": "尾帧主体"
+                    "display_name": "尾帧主体(非必填)"  # 修改显示名称
                 }),
                 
                 # 通用可选参数
@@ -99,29 +99,29 @@ class 视频首尾帧转场:
     FUNCTION = "生成转场提示词"
     CATEGORY = "📕提示词公式/图转视频"
 
-    def 生成转场提示词(self, 首帧描述, 尾帧描述, 主要转场方式, 转场时长, 运动平滑度,
+    def 生成转场提示词(self, 首帧描述_非必填, 尾帧描述_非必填, 主要转场方式, 转场时长, 运动平滑度,
                     运动子类型="缩放转场", 运动方向="向前", 变形子类型="有机变形",
                     遮挡物类型="云雾遮挡", 人物变化类型="形态变形", 首帧主体="", 尾帧主体="",
                     转场节奏="缓入缓出", 视觉连贯性="风格统一", 附加转场描述=""):
         
         try:
             # 清理输入文本
-            首帧描述_清理 = clean_text(首帧描述)
-            尾帧描述_清理 = clean_text(尾帧描述)
+            首帧描述_非必填_清理 = clean_text(首帧描述_非必填)
+            尾帧描述_非必填_清理 = clean_text(尾帧描述_非必填)
             附加描述_清理 = clean_text(附加转场描述)
             首帧主体_清理 = clean_text(首帧主体)
             尾帧主体_清理 = clean_text(尾帧主体)
             
             # 自动提取主体（如果用户没有手动输入）
-            if not 首帧主体_清理 and 首帧描述_清理:
-                首帧主体_清理 = self._extract_main_subject(首帧描述_清理)
-            if not 尾帧主体_清理 and 尾帧描述_清理:
-                尾帧主体_清理 = self._extract_main_subject(尾帧描述_清理)
+            if not 首帧主体_清理 and 首帧描述_非必填_清理:
+                首帧主体_清理 = self._extract_main_subject(首帧描述_非必填_清理)
+            if not 尾帧主体_清理 and 尾帧描述_非必填_清理:
+                尾帧主体_清理 = self._extract_main_subject(尾帧描述_非必填_清理)
             
             # 对于人物到人物变化，特别优化主体提取
             if 主要转场方式 == "人物到人物变化":
-                首帧主体_清理 = self._extract_character_subject(首帧描述_清理, 首帧主体_清理)
-                尾帧主体_清理 = self._extract_character_subject(尾帧描述_清理, 尾帧主体_清理)
+                首帧主体_清理 = self._extract_character_subject(首帧描述_非必填_清理, 首帧主体_清理)
+                尾帧主体_清理 = self._extract_character_subject(尾帧描述_非必填_清理, 尾帧主体_清理)
             
             # 确保主体不为空
             首帧主体_清理 = 首帧主体_清理 or "图像1主体"
@@ -136,12 +136,12 @@ class 视频首尾帧转场:
             
             # 生成完整提示词
             完整提示词 = self._generate_full_prompt(
-                首帧描述_清理, 尾帧描述_清理, 转场提示词, 附加描述_清理
+                首帧描述_非必填_清理, 尾帧描述_非必填_清理, 转场提示词, 附加描述_清理
             )
             
             # 生成技术说明
             技术说明 = self._generate_technical_note(
-                主要转场方式, 转场时长, 运动平滑度, 转场节奏,
+                主要转场方式, 转场时长, 运动平滑度, 转场节奏, 视觉连贯性,
                 首帧主体_清理, 尾帧主体_清理, 人物变化类型
             )
             
@@ -253,39 +253,56 @@ class 视频首尾帧转场:
         
         # 根据主要转场方式生成对应的提示词
         if 主要方式 == "运镜提示词转场":
-            return self._generate_motion_transition(运动子类型, 运动方向, 时长格式化, 平滑度描述, 节奏描述)
+            基础提示词 = self._generate_motion_transition(运动子类型, 运动方向, 时长格式化, 平滑度描述, 节奏描述)
             
         elif 主要方式 == "交叉溶解转场":
-            return f"通过柔和的交叉溶解效果自然转场，溶解时长约{时长格式化}秒，{平滑度描述}，{节奏描述}"
+            基础提示词 = f"通过柔和的交叉溶解效果自然转场，溶解时长约{时长格式化}秒，{平滑度描述}，{节奏描述}"
             
         elif 主要方式 == "运动匹配转场":
             方向描述 = f"向{运动方向}" if 运动方向 and 运动方向 != "无" else ""
             运动描述 = 运动子类型 if 运动子类型 and 运动子类型 != "无" else "镜头运动"
-            return f"保持{运动描述}{方向描述}的连贯性，{节奏描述}无缝衔接，{平滑度描述}"
+            基础提示词 = f"保持{运动描述}{方向描述}的连贯性，{节奏描述}无缝衔接，{平滑度描述}"
             
         elif 主要方式 == "形态变形转场":
-            return self._generate_morph_transition(变形子类型, 时长格式化, 平滑度描述)
+            基础提示词 = self._generate_morph_transition(变形子类型, 时长格式化, 平滑度描述)
             
         elif 主要方式 == "遮挡物转场":
-            return self._generate_occlusion_transition(遮挡物类型, 时长格式化, 节奏描述)
+            基础提示词 = self._generate_occlusion_transition(遮挡物类型, 时长格式化, 节奏描述)
             
         elif 主要方式 == "主体变形转场":
-            return self._generate_subject_morph_transition(首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
+            基础提示词 = self._generate_subject_morph_transition(首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
             
         elif 主要方式 == "画面渐变转场":
-            return self._generate_scene_transition(首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
+            基础提示词 = self._generate_scene_transition(首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
             
         elif 主要方式 == "主体遮挡转场":
-            return self._generate_subject_occlusion_transition(首帧主体, 尾帧主体, 时长格式化, 节奏描述)
+            基础提示词 = self._generate_subject_occlusion_transition(首帧主体, 尾帧主体, 时长格式化, 节奏描述)
             
         elif 主要方式 == "多重转场组合":
-            return self._generate_multi_transition(运动子类型, 变形子类型, 时长格式化, 平滑度描述, 节奏描述)
+            基础提示词 = self._generate_multi_transition(运动子类型, 变形子类型, 时长格式化, 平滑度描述, 节奏描述)
             
         elif 主要方式 == "人物到人物变化":
-            return self._generate_character_change_transition(人物变化类型, 首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
+            基础提示词 = self._generate_character_change_transition(人物变化类型, 首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
         
         else:
-            return ""
+            基础提示词 = ""
+
+        # 添加视觉连贯性描述
+        if 基础提示词 and 连贯性 and 连贯性 != "无":
+            连贯性描述 = self._get_visual_consistency_description(连贯性)
+            基础提示词 = f"{基础提示词}，{连贯性描述}"
+        
+        return 基础提示词
+
+    def _get_visual_consistency_description(self, 连贯性):
+        """获取视觉连贯性描述"""
+        连贯性描述映射 = {
+            "高度一致": "保持高度一致的视觉元素和风格",
+            "风格统一": "确保艺术风格的统一性",
+            "色彩渐变": "通过色彩渐变保持视觉连贯",
+            "自由创作": "允许创意性的视觉变化"
+        }
+        return 连贯性描述映射.get(连贯性, "保持视觉连贯性")
 
     def _generate_motion_transition(self, 子类型, 方向, 时长, 平滑度, 节奏):
         """生成运动转场提示词"""
@@ -384,7 +401,7 @@ class 视频首尾帧转场:
         
         return 完整提示词
 
-    def _generate_technical_note(self, 主要方式, 时长, 平滑度, 节奏, 首帧主体, 尾帧主体, 人物变化类型=""):
+    def _generate_technical_note(self, 主要方式, 时长, 平滑度, 节奏, 连贯性, 首帧主体, 尾帧主体, 人物变化类型=""):
         """生成技术说明"""
         技术要点 = []
         
@@ -394,6 +411,10 @@ class 视频首尾帧转场:
             技术要点.append(f"转场时长: {时长格式化}秒")
             技术要点.append(f"运动质量: {平滑度}")
             技术要点.append(f"节奏控制: {节奏}")
+        
+        # 视觉连贯性信息
+        if 连贯性 and 连贯性 != "无":
+            技术要点.append(f"视觉连贯性: {连贯性}")
         
         # 新增主体信息
         if 首帧主体 and 首帧主体 != "图像1主体":
@@ -544,3 +565,214 @@ class 视频运镜提示词:
             技术要点.append("控制抖动幅度避免过度")
         
         return " | ".join(技术要点) if 技术要点 else "无特殊技术要求"
+
+
+class 视频动效提示词:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "基础描述": ("STRING", {
+                    "multiline": True,
+                    "default": "一个美丽的场景",
+                    "display_name": "基础描述"
+                }),
+                "人物动态效果": (CHARACTER_DYNAMIC_EFFECTS, {
+                    "default": "无",
+                    "display_name": "人物动态效果"
+                }),
+                "环境动态效果": (ENVIRONMENT_DYNAMIC_EFFECTS, {
+                    "default": "无",
+                    "display_name": "环境动态效果"
+                }),
+                "镜头特效": (CAMERA_EFFECTS, {
+                    "default": "无",
+                    "display_name": "镜头特效"
+                }),
+                "物理效果": (PHYSICS_EFFECTS, {
+                    "default": "无",
+                    "display_name": "物理效果"
+                }),
+                "效果强度": (EFFECT_INTENSITY, {
+                    "default": "适中",
+                    "display_name": "效果强度"
+                }),
+                "效果时长": (EFFECT_DURATION, {
+                    "default": "中等",
+                    "display_name": "效果时长"
+                }),
+            },
+            "optional": {
+                "附加动态描述": ("STRING", {
+                    "multiline": True,
+                    "default": "",
+                    "display_name": "附加动态描述"
+                }),
+                "动态目标对象": ("STRING", {
+                    "multiline": False,
+                    "default": "",
+                    "display_name": "动态目标对象"
+                }),
+            }
+        }
+    
+    RETURN_TYPES = ("STRING", "STRING", "STRING")
+    RETURN_NAMES = ("动效提示词", "完整提示词", "技术说明")
+    FUNCTION = "生成动效提示词"
+    CATEGORY = "📕提示词公式/图转视频"
+
+    def 生成动效提示词(self, 基础描述, 人物动态效果, 环境动态效果, 镜头特效, 物理效果,
+                    效果强度, 效果时长, 附加动态描述="", 动态目标对象=""):
+        
+        try:
+            # 清理输入文本
+            基础描述_清理 = clean_text(基础描述)
+            附加描述_清理 = clean_text(附加动态描述)
+            目标对象_清理 = clean_text(动态目标对象)
+            
+            # 生成动效提示词
+            动效提示词 = self._generate_dynamic_effects_prompt(
+                人物动态效果, 环境动态效果, 镜头特效, 物理效果,
+                效果强度, 效果时长, 目标对象_清理
+            )
+            
+            # 生成完整提示词
+            完整提示词 = self._generate_full_prompt(
+                基础描述_清理, 动效提示词, 附加描述_清理
+            )
+            
+            # 生成技术说明
+            技术说明 = self._generate_technical_note(
+                人物动态效果, 环境动态效果, 镜头特效, 物理效果,
+                效果强度, 效果时长
+            )
+            
+            return (动效提示词, 完整提示词, 技术说明)
+            
+        except Exception as e:
+            logging.error(f"视频动效提示词生成错误: {str(e)}")
+            error_msg = f"生成动效提示词时出错: {str(e)}"
+            return (error_msg, error_msg, error_msg)
+
+    def _generate_dynamic_effects_prompt(self, 人物效果, 环境效果, 镜头效果, 物理效果,
+                                      强度, 时长, 目标对象):
+        """生成动态效果提示词"""
+        效果组件 = []
+        
+        # 处理人物动态效果
+        if 人物效果 and 人物效果 != "无":
+            人物描述 = DYNAMIC_EFFECT_DESCRIPTIONS.get(人物效果, 人物效果)
+            if 目标对象:
+                人物描述 = f"{目标对象}{人物描述}"
+            效果组件.append(人物描述)
+        
+        # 处理环境动态效果
+        if 环境效果 and 环境效果 != "无":
+            环境描述 = DYNAMIC_EFFECT_DESCRIPTIONS.get(环境效果, 环境效果)
+            效果组件.append(环境描述)
+        
+        # 处理镜头特效
+        if 镜头效果 and 镜头效果 != "无":
+            镜头描述 = DYNAMIC_EFFECT_DESCRIPTIONS.get(镜头效果, 镜头效果)
+            效果组件.append(镜头描述)
+        
+        # 处理物理效果
+        if 物理效果 and 物理效果 != "无":
+            物理描述 = DYNAMIC_EFFECT_DESCRIPTIONS.get(物理效果, 物理效果)
+            效果组件.append(物理描述)
+        
+        # 如果没有选择任何效果，返回空字符串
+        if not 效果组件:
+            return ""
+        
+        # 组合所有效果
+        效果文本 = "，".join(效果组件)
+        
+        # 添加强度和时长描述
+        强度描述 = self._get_intensity_description(强度)
+        时长描述 = self._get_duration_description(时长)
+        
+        return f"{效果文本}，{强度描述}，{时长描述}"
+
+    def _get_intensity_description(self, 强度):
+        """获取强度描述"""
+        强度描述映射 = {
+            "轻微": "效果轻微自然",
+            "适中": "效果适中明显", 
+            "强烈": "效果强烈突出",
+            "非常强烈": "效果非常强烈震撼"
+        }
+        return 强度描述映射.get(强度, "效果适中")
+
+    def _get_duration_description(self, 时长):
+        """获取时长描述"""
+        时长描述映射 = {
+            "短暂": "持续时间短暂",
+            "中等": "持续时间适中",
+            "持久": "效果持久稳定", 
+            "循环持续": "效果循环持续"
+        }
+        return 时长描述映射.get(时长, "持续时间适中")
+
+    def _generate_full_prompt(self, 基础描述, 动效提示词, 附加描述):
+        """生成完整提示词"""
+        组件 = []
+        
+        if 基础描述:
+            组件.append(基础描述)
+        
+        # 处理动效提示词
+        if 动效提示词:
+            组件.append(动效提示词)
+        
+        if 附加描述:
+            组件.append(附加描述)
+        
+        # 如果所有组件都为空，返回空字符串
+        if not 组件:
+            return ""
+        
+        完整提示词 = "，".join(组件)
+        
+        # 最终清理
+        完整提示词 = re.sub(r',\s+,', ',', 完整提示词)
+        完整提示词 = re.sub(r'\s+', ' ', 完整提示词).strip()
+        
+        return 完整提示词
+
+    def _generate_technical_note(self, 人物效果, 环境效果, 镜头效果, 物理效果, 强度, 时长):
+        """生成技术说明"""
+        技术要点 = []
+        
+        # 添加选择的效果信息
+        有效效果 = []
+        if 人物效果 != "无":
+            有效效果.append(f"人物:{人物效果}")
+        if 环境效果 != "无":
+            有效效果.append(f"环境:{环境效果}")
+        if 镜头效果 != "无":
+            有效效果.append(f"镜头:{镜头效果}")
+        if 物理效果 != "无":
+            有效效果.append(f"物理:{物理效果}")
+        
+        if 有效效果:
+            技术要点.append(" | ".join(有效效果))
+        
+        # 添加强度和时长信息
+        技术要点.append(f"强度:{强度}")
+        技术要点.append(f"时长:{时长}")
+        
+        # 根据效果类型提供特定建议
+        if 人物效果 != "无":
+            技术要点.append("确保人物动作自然流畅")
+        
+        if 环境效果 != "无":
+            技术要点.append("环境效果与场景协调")
+        
+        if 镜头效果 != "无":
+            技术要点.append("镜头运动平滑稳定")
+        
+        if 物理效果 != "无":
+            技术要点.append("物理效果符合真实规律")
+        
+        return " | ".join(技术要点) if 技术要点 else "无动态效果配置"

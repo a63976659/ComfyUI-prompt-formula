@@ -47,7 +47,7 @@ except Exception as e:
 
 # 导入图转视频预设节点
 try:
-    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词
+    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词
 except Exception as e:
     logging.error(f"导入图转视频预设节点失败: {str(e)}")
     # 创建空的占位符类
@@ -73,8 +73,20 @@ except Exception as e:
         def placeholder(self, **kwargs):
             return ("视频运镜节点加载失败", "")
     
+    class 视频动效占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("动效提示词", "完整提示词", "技术说明")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("视频动效节点加载失败", "", "")
+    
     视频首尾帧转场 = 视频转场占位符
     视频运镜提示词 = 视频运镜占位符
+    视频动效提示词 = 视频动效占位符
 
 # 导入提示词预设节点
 try:
@@ -197,6 +209,7 @@ NODE_CLASS_MAPPINGS = {
     # 图转视频预设节点
     "视频首尾帧转场": 视频首尾帧转场,
     "视频运镜提示词": 视频运镜提示词,
+    "视频动效提示词": 视频动效提示词,  # 新增节点
 }
 
 # 合并预设节点映射
@@ -232,6 +245,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # 图转视频预设节点
     "视频首尾帧转场": "视频首尾帧转场",
     "视频运镜提示词": "视频运镜提示词",
+    "视频动效提示词": "视频动效提示词",  # 新增节点
 }
 
 # 合并预设节点显示名称
@@ -252,6 +266,7 @@ print(f"✅ 已加载 {len(NODE_CLASS_MAPPINGS)} 个节点")
 print("🔧 工具节点已添加到 '📕提示词公式/工具节点' 分类")
 print("🎬 图转视频预设节点已成功添加")
 print("🎛️  视频首尾帧转场节点已启用动态组件控制")
+print("✨ 视频动效提示词节点已添加 - 120+种动态效果")
 print("📁 提示词预设节点，直接在节点上预览内容")
 print("⚠️  已彻底删除历史记录功能，插件不再读取历史记录文件")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
