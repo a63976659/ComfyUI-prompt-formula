@@ -16,10 +16,6 @@ PRESET_DIR = PLUGIN_DIR / "提示词预设"
 # 确保预设文件夹存在
 PRESET_DIR.mkdir(parents=True, exist_ok=True)
 
-# 删除所有历史记录相关常量
-# HISTORY_FILE = PLUGIN_DIR / "prompt_history.json"
-# MAX_HISTORY_COUNT = 10
-
 # 预设缓存及刷新机制
 _preset_cache = {}
 _last_refresh_time = 0
@@ -42,28 +38,53 @@ register_preset_folder()
 
 def initialize_files():
     """初始化必要的目录和文件"""
-    # 删除历史记录文件初始化
     # 只确保预设文件夹存在
     PRESET_DIR.mkdir(parents=True, exist_ok=True)
 
 def clean_text(text):
-    """清理文本，去除多余符号和空格"""
-    if not text:
+    """清理文本，去除多余符号和空格 - 增强安全性"""
+    if text is None:
         return ""
+    
+    # 确保是字符串类型
+    if not isinstance(text, str):
+        try:
+            text = str(text)
+        except:
+            return ""
+    
+    # 清理文本
     cleaned = re.sub(r',', ' ', text)
-    return re.sub(r'\s+', ' ', cleaned.strip()) or ""
+    cleaned = re.sub(r'\s+', ' ', cleaned.strip())
+    
+    # 确保返回字符串，不为None
+    return cleaned or ""
 
 def apply_weight(text, weight, default_val="无"):
-    """统一处理权重应用，支持默认值过滤"""
+    """统一处理权重应用，支持默认值过滤 - 增强安全性"""
+    if text is None:
+        return ""
+        
     cleaned_text = clean_text(text)
     if not cleaned_text or cleaned_text == default_val:
         return ""
-    if weight == 1.0:
+    
+    # 确保weight是数值类型
+    try:
+        weight_float = float(weight)
+    except (TypeError, ValueError):
+        weight_float = 1.0
+    
+    if weight_float == 1.0:
         return cleaned_text
-    return f"({cleaned_text}:{weight:.1f})"
+    
+    return f"({cleaned_text}:{weight_float:.1f})"
 
 def get_preset_preview(preset_name):
-    """获取预设的预览媒体文件路径"""
+    """获取预设的预览媒体文件路径 - 增强安全性"""
+    if not preset_name:
+        return None, None
+        
     # 首先尝试从注册的预设文件夹中查找
     txt_preset_path = folder_paths.get_full_path("prompt_presets", f"{preset_name}.txt")
     json_preset_path = folder_paths.get_full_path("prompt_presets", f"{preset_name}.json")
@@ -104,7 +125,8 @@ def _actual_load_presets():
     # 方法1: 通过ComfyUI的folder_paths获取
     try:
         preset_files = folder_paths.get_filename_list("prompt_presets")
-        preset_files.sort()  # 按文件名排序
+        if preset_files:
+            preset_files.sort()  # 按文件名排序
     except Exception as e:
         logging.warning(f"通过folder_paths获取预设文件失败: {str(e)}")
         preset_files = []
@@ -116,7 +138,8 @@ def _actual_load_presets():
                 for file_path in PRESET_DIR.glob(f"*{ext}"):
                     if file_path.is_file():
                         preset_files.append(file_path.name)
-            preset_files.sort()
+            if preset_files:
+                preset_files.sort()
         except Exception as e:
             logging.error(f"直接扫描预设文件夹失败: {str(e)}")
             return presets
@@ -182,6 +205,9 @@ def load_presets():
 
 def save_preset(preset_name, content):
     """保存预设，支持TXT和JSON格式"""
+    if not preset_name:
+        return None
+        
     if preset_name.endswith((".txt", ".json")):
         file_name = preset_name
         file_ext = os.path.splitext(preset_name)[1].lower()
@@ -250,6 +276,5 @@ def delete_preset(preset_name):
     
     return True, f"预设 '{preset_name}' 及相关文件已成功删除"
 
-# 彻底删除所有历史记录相关函数
 # 初始化文件系统
 initialize_files()

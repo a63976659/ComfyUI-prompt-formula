@@ -45,6 +45,37 @@ except Exception as e:
     
     视频提示词公式 = 图像提示词公式 = 随机提示词人像 = 节点占位符
 
+# 导入图转视频预设节点
+try:
+    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词
+except Exception as e:
+    logging.error(f"导入图转视频预设节点失败: {str(e)}")
+    # 创建空的占位符类
+    class 视频转场占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("转场提示词", "完整提示词", "技术说明")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("视频转场节点加载失败", "", "")
+    
+    class 视频运镜占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING")
+        RETURN_NAMES = ("运镜提示词", "技术说明")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("视频运镜节点加载失败", "")
+    
+    视频首尾帧转场 = 视频转场占位符
+    视频运镜提示词 = 视频运镜占位符
+
 # 导入提示词预设节点
 try:
     from 提示词预设节点 import (
@@ -134,6 +165,7 @@ except Exception as e:
     
     千问单图编辑_改变视角 = 千问单图编辑_改变镜头 = 千问单图编辑_人物换动作 = 千问单图编辑_物品换材质 = 千问单图编辑_图像变文创产品 = 千问单图编辑_图像转绘 = 千问单图编辑_图像编辑 = 千问编辑占位符
 
+
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
     "提示词预设": 提示词预设,
@@ -161,6 +193,9 @@ NODE_CLASS_MAPPINGS = {
     "千问单图编辑-图像变文创产品": 千问单图编辑_图像变文创产品,
     "千问单图编辑-图像转绘": 千问单图编辑_图像转绘,
     "千问单图编辑-图像编辑": 千问单图编辑_图像编辑,
+    # 图转视频预设节点
+    "视频首尾帧转场": 视频首尾帧转场,
+    "视频运镜提示词": 视频运镜提示词,
 }
 
 # 合并预设节点映射
@@ -193,6 +228,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "千问单图编辑-图像变文创产品": "千问单图编辑-图像变文创产品",
     "千问单图编辑-图像转绘": "千问单图编辑-图像转绘",
     "千问单图编辑-图像编辑": "千问单图编辑-图像编辑",
+    # 图转视频预设节点
+    "视频首尾帧转场": "视频首尾帧转场",
+    "视频运镜提示词": "视频运镜提示词",
 }
 
 # 合并预设节点显示名称
@@ -211,6 +249,7 @@ logger = logging.getLogger(__name__)
 print("📕 提示词公式节点包已加载")
 print(f"✅ 已加载 {len(NODE_CLASS_MAPPINGS)} 个节点")
 print("🔧 工具节点已添加到 '📕提示词公式/工具节点' 分类")
+print("🎬 图转视频预设节点已成功添加")
 print("📁 提示词预设节点，直接在节点上预览内容")
 print("⚠️  已彻底删除历史记录功能，插件不再读取历史记录文件")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
