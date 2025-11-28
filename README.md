@@ -97,6 +97,12 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 2. 修复部分加载错误。
 <img width="557" height="483" alt="节点预览文本" src="https://github.com/user-attachments/assets/ede3e9ab-32dc-4577-8417-026ec5c4ac8c" />
 
+## 20251129
+1. 新增`视频运镜提示词`和`视频首尾帧转场`节点，用于图生视频和首尾帧视频。
+2. 效果过于强，不解释了，自己测试。
+
+
+预告，插件过于强大，以后可能出一个收费版本，我也需要吃饭，希望大家理解。
 
 
 ## 安装说明
