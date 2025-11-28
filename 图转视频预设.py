@@ -85,12 +85,7 @@ class 视频首尾帧转场:
                     "default": "",
                     "display_name": "附加转场描述"
                 }),
-                # 可选运镜输入
-                "运镜提示词": ("STRING", {
-                    "multiline": False,
-                    "default": "",
-                    "display_name": "运镜提示词"
-                }),
+                # 已取消"运镜提示词"输入组件
             }
         }
     
@@ -102,15 +97,13 @@ class 视频首尾帧转场:
     def 生成转场提示词(self, 首帧描述, 尾帧描述, 主要转场方式, 转场时长, 运动平滑度,
                     运动子类型="缩放转场", 运动方向="向前", 变形子类型="有机变形",
                     遮挡物类型="云雾遮挡", 首帧主体="", 尾帧主体="",
-                    转场节奏="缓入缓出", 视觉连贯性="风格统一", 附加转场描述="",
-                    运镜提示词=""):
+                    转场节奏="缓入缓出", 视觉连贯性="风格统一", 附加转场描述=""):
         
         try:
             # 清理输入文本
             首帧描述_清理 = clean_text(首帧描述)
             尾帧描述_清理 = clean_text(尾帧描述)
             附加描述_清理 = clean_text(附加转场描述)
-            运镜提示词_清理 = clean_text(运镜提示词)
             首帧主体_清理 = clean_text(首帧主体)
             尾帧主体_清理 = clean_text(尾帧主体)
             
@@ -133,7 +126,7 @@ class 视频首尾帧转场:
             
             # 生成完整提示词
             完整提示词 = self._generate_full_prompt(
-                首帧描述_清理, 尾帧描述_清理, 转场提示词, 附加描述_清理, 运镜提示词_清理
+                首帧描述_清理, 尾帧描述_清理, 转场提示词, 附加描述_清理
             )
             
             # 生成技术说明
@@ -150,26 +143,64 @@ class 视频首尾帧转场:
             return (error_msg, error_msg, error_msg)
 
     def _extract_main_subject(self, description):
-        """从描述中自动提取主要主体"""
+        """从描述中自动提取主要主体 - 优化版本"""
         if not description:
             return "主体"
         
-        # 简单的主体提取逻辑
+        # 移除标点符号
+        cleaned_desc = re.sub(r'[，。！？；,\.!?;]', ' ', description)
+        
+        # 尝试多种提取模式，按优先级排序
         patterns = [
-            r'一个([^，。]+)',
-            r'([^，。]+)位于',
-            r'([^，。]+)在',
-            r'([^，。]+)的',
+            # 模式1: 量词 + 形容词 + 名词 (如: "一朵含苞待放的荷花")
+            r'(?:一个|一朵|一只|一座|一件|一张|一台)([\u4e00-\u9fa5]{2,10}?(?:的)?[\u4e00-\u9fa5]{2,10})',
+            # 模式2: 直接的名词短语 (如: "绽放的荷花特写")
+            r'([\u4e00-\u9fa5]{2,6}的[\u4e00-\u9fa5]{2,10})',
+            # 模式3: 形容词 + 名词 (如: "美丽的花朵")
+            r'([\u4e00-\u9fa5]{2,6}[\u4e00-\u9fa5]{2,8})',
+            # 模式4: 单独的名词 (至少2个字符)
+            r'([\u4e00-\u9fa5]{2,10})',
         ]
         
         for pattern in patterns:
-            match = re.search(pattern, description)
-            if match:
-                subject = match.group(1).strip()
-                if len(subject) <= 20:  # 避免过长的提取
-                    return subject
+            matches = re.findall(pattern, cleaned_desc)
+            if matches:
+                # 选择第一个匹配且长度适中的结果
+                for match in matches:
+                    subject = match.strip()
+                    if 2 <= len(subject) <= 12:  # 限制长度范围
+                        # 进一步清理，去除可能的修饰词
+                        subject = self._refine_subject(subject)
+                        if subject:
+                            return subject
+        
+        # 如果所有模式都失败，返回描述的前几个词
+        words = cleaned_desc.split()
+        if words:
+            # 取前2-3个词作为主体
+            candidate = ' '.join(words[:min(3, len(words))])
+            if len(candidate) <= 15:
+                return candidate
         
         return "主体"
+
+    def _refine_subject(self, subject):
+        """进一步精炼提取的主体"""
+        # 去除常见的修饰前缀
+        modifiers = ['美丽的', '漂亮的', '可爱的', '大大的', '小小的', '一朵', '一个', '一只']
+        for modifier in modifiers:
+            if subject.startswith(modifier):
+                subject = subject[len(modifier):]
+                break
+        
+        # 去除常见的修饰后缀
+        modifiers_suffix = ['特写', '镜头', '画面', '图像', '照片']
+        for modifier in modifiers_suffix:
+            if subject.endswith(modifier):
+                subject = subject[:-len(modifier)]
+                break
+        
+        return subject.strip()
 
     def _generate_transition_prompt(self, 主要方式, 运动子类型, 运动方向, 变形子类型, 
                                   遮挡物类型, 时长, 平滑度, 节奏, 连贯性,
@@ -279,7 +310,7 @@ class 视频首尾帧转场:
         变形部分 = "形态变形" if not 变形子类型 or 变形子类型 == "无" else 变形子类型
         return f"首先通过{运动部分}开始变化，中途结合{变形部分}强化效果，历时{时长}秒，{平滑度}，{节奏}，整个过程流畅如一体"
 
-    def _generate_full_prompt(self, 首帧, 尾帧, 转场, 附加描述, 运镜提示词):
+    def _generate_full_prompt(self, 首帧, 尾帧, 转场, 附加描述):
         """生成完整提示词"""
         组件 = []
         
@@ -289,10 +320,6 @@ class 视频首尾帧转场:
         # 处理转场提示词
         if 转场:
             组件.append(转场)
-        
-        # 添加运镜提示词（如果提供）
-        if 运镜提示词:
-            组件.append(运镜提示词)
         
         if 尾帧:
             组件.append(尾帧)
