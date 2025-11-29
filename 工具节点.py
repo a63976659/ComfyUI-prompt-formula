@@ -207,11 +207,13 @@ class 批量判断并输出同名图像(基础图像加载器):
     
     @classmethod
     def INPUT_TYPES(cls):
+        # 使用 ComfyUI 的输入目录作为默认路径
+        input_dir = folder_paths.get_input_directory()
         return {
             "required": {
                 "文本内容": ("STRING", {"multiline": True, "default": "内容包含目标名称才会输出图像"}),
                 "目标文本": ("STRING", {"multiline": True, "default": "可输入多个目标文本，用逗号、句号、顿号、斜杠或换行分隔"}),
-                "图像目录": ("STRING", {"default": "S:\ComfyUI-aki-v1.6\ComfyUI\input"}),
+                "图像目录": ("STRING", {"default": input_dir}),  # 修改这里：使用动态获取的输入目录
             }
         }
     
@@ -222,6 +224,15 @@ class 批量判断并输出同名图像(基础图像加载器):
     
     def 加载同名图像(self, 文本内容, 目标文本, 图像目录):
         状态 = ""
+        
+        # 如果图像目录为空，使用默认输入目录
+        if not 图像目录:
+            图像目录 = folder_paths.get_input_directory()
+        
+        # 验证目录是否存在
+        if not os.path.exists(图像目录):
+            状态 = f"目录不存在: {图像目录}"
+            return (None, None, None, 状态)
         
         # 分割目标文本
         目标文本列表 = self.分割目标文本(目标文本)
