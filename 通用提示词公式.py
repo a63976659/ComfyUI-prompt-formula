@@ -250,10 +250,79 @@ class 随机提示词人像:
             if 随机种子 != 0:
                 random.seed(随机种子)
             
-            # 原有的生成逻辑...
-            # ... (保持原有逻辑不变)
+            # 初始化提示词组件列表
+            组件列表 = []
             
-            # 添加异常处理
+            # 处理人物
+            if 人物 != "随机" and 人物 != "无":
+                组件列表.append(人物)
+            
+            # 处理国籍
+            if 国籍 != "随机" and 国籍 != "无":
+                组件列表.append(国籍)
+            
+            # 处理随机特征
+            if 随机脸型:
+                脸型 = random.choice([shape for shape in FACE_SHAPES])
+                组件列表.append(脸型)
+            
+            if 随机发型:
+                发型 = random.choice([style for style in HAIRSTYLES])
+                组件列表.append(发型)
+            
+            if 随机饰品 and random.random() > 0.3:  # 70%概率添加饰品
+                饰品 = random.choice([acc for acc in ACCESSORIES])
+                组件列表.append(饰品)
+            
+            if 随机服装:
+                服装 = random.choice([cloth for cloth in CLOTHING_TYPES])
+                组件列表.append(服装)
+            
+            if 随机眼型:
+                眼型 = random.choice([eye for eye in EYE_SHAPES if eye != "无"])
+                组件列表.append(眼型)
+            
+            # 处理非随机选项
+            if 表情 != "随机" and 表情 != "无":
+                组件列表.append(表情)
+            
+            if 身材 != "随机" and 身材 != "无":
+                组件列表.append(身材)
+            
+            if 动作 != "随机" and 动作 != "无":
+                组件列表.append(动作)
+            
+            if 景别 != "随机" and 景别 != "无":
+                组件列表.append(景别)
+            
+            if 背景类型 != "随机" and 背景类型 != "无":
+                组件列表.append(背景类型)
+            
+            if 艺术风格 != "随机" and 艺术风格 != "无":
+                组件列表.append(艺术风格)
+            
+            # 处理合照类型
+            if 合照类型 != "随机" and 合照类型 != "无":
+                组件列表.append(合照类型)
+            
+            # 处理附加提示词
+            if 附加提示词 and clean_text(附加提示词):
+                组件列表.append(clean_text(附加提示词))
+            
+            # 生成正面提示词
+            if 语言 == "中文":
+                positive_prompt = ", ".join(组件列表)
+            else:
+                # 翻译为英文
+                english_components = []
+                for component in 组件列表:
+                    if component in ENGLISH_TRANSLATION_MAP:
+                        english_components.append(ENGLISH_TRANSLATION_MAP[component])
+                    else:
+                        english_components.append(component)
+                positive_prompt = ", ".join(english_components)
+            
+            # 生成负面提示词
             if 语言 == "中文":
                 negative_prompt = "丑陋，畸形，模糊，坏手，多余手指，缺少手指，缺胳膊，缺腿，多肢体，多手指，多脚趾，多腿，多手臂，畸形手，畸形脸，畸形身体，文字，水印，签名，低质量，噪点，模糊，失焦，曝光不足，曝光过度，jpeg伪影，渲染问题，3D，CGI，不自然，塑料感，卡通，动漫，绘画，素描，油画，版画，雕塑，不真实"
             else:
