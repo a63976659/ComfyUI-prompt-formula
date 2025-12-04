@@ -2,6 +2,7 @@
 import re
 import logging
 from 常量配置 import *
+
 from 工具函数 import clean_text
 
 # 视频首尾帧转场基类（提取公共方法）
@@ -115,6 +116,29 @@ class 视频转场基类:
                 break
         
         return subject.strip()
+
+    def _extract_quoted_text_only(self, description):
+        """仅从描述中提取引号内的内容，如果没有引号则返回None"""
+        if not description:
+            return None
+        
+        # 支持中英文引号
+        引号模式 = [
+            r'["]([^"]+)["]',     # 英文双引号
+            r"[']([^']+)[']",     # 英文单引号
+            r'["]([^"]+)["]',     # 中文双引号
+            r"[']([^']+)[']",     # 中文单引号
+        ]
+        
+        for pattern in 引号模式:
+            matches = re.findall(pattern, description)
+            if matches:
+                # 返回第一个引号内的内容
+                subject = matches[0].strip()
+                if subject:
+                    return subject
+        
+        return None
 
     def _get_default_occlusion_name(self, 遮挡类型):
         """获取不同遮挡物类型的默认名称 - 使用常量配置"""
@@ -251,6 +275,57 @@ class 视频转场基类:
         完整提示词 = re.sub(r'\s+', ' ', 完整提示词).strip()
         
         return 完整提示词
+
+    def _generate_occlusion_transition(self, 遮挡类型, 时长, 节奏, 运动子类型="无", 运动方向="无", 尾帧主体=None, 尾帧描述=None):
+        """生成遮挡物转场提示词 - 优化版：仅使用尾帧描述的引号内容"""
+        if not 遮挡类型 or 遮挡类型 == "无":
+            return f"遮挡物转场，历时{时长}秒，{节奏}"
+        
+        # 安全获取遮挡描述
+        遮挡描述 = OCCLUSION_DESCRIPTIONS.get(遮挡类型, f"遮挡物转场，历时{时长}秒，{节奏}")
+        
+        # 对于"前景物体遮挡"类型，优先从尾帧描述的引号中提取
+        遮挡物名称 = None
+        
+        if 遮挡类型 == "前景物体遮挡" and 尾帧描述:
+            # 仅从尾帧描述中提取引号内容
+            遮挡物名称 = self._extract_quoted_text_only(尾帧描述)
+        
+        # 如果没有提取到引号内容，或者不是前景物体遮挡类型，则使用默认逻辑
+        if not 遮挡物名称:
+            if 尾帧主体 and 尾帧主体 != "图像2主体":
+                遮挡物名称 = 尾帧主体
+            else:
+                # 使用常量配置获取默认的遮挡物名称
+                遮挡物名称 = self._get_default_occlusion_name(遮挡类型)
+        
+        # 如果运动子类型和运动方向不为"无"，则生成包含镜头运动的描述
+        if 运动子类型 != "无" and 运动方向 != "无":
+            # 根据运动子类型生成相应的镜头运动描述
+            运动描述 = self._get_motion_description(运动子类型, 运动方向)
+            
+            # 修改描述模板以包含镜头运动，并替换遮挡物名称
+            描述部分 = self._replace_occlusion_name_with_subject(遮挡描述, 遮挡物名称)
+            
+            # 替换占位符
+            描述部分 = 描述部分.replace("{target}", 遮挡物名称)
+            描述部分 = 描述部分.replace("{时长}", str(时长))
+            描述部分 = 描述部分.replace("{节奏}", 节奏)
+            
+            # 添加镜头运动描述到前面
+            完整描述 = f"镜头{运动描述}，{描述部分}"
+            
+            return 完整描述
+        else:
+            # 不使用镜头运动，直接替换描述中的遮挡物名称
+            描述部分 = self._replace_occlusion_name_with_subject(遮挡描述, 遮挡物名称)
+            
+            # 替换占位符
+            描述部分 = 描述部分.replace("{target}", 遮挡物名称)
+            描述部分 = 描述部分.replace("{时长}", str(时长))
+            描述部分 = 描述部分.replace("{节奏}", 节奏)
+            
+            return 描述部分
 
 
 class 视频首尾帧转场(视频转场基类):
@@ -417,8 +492,8 @@ class 视频首尾帧转场(视频转场基类):
             基础提示词 = self._generate_morph_transition(变形子类型, 时长格式化, 平滑度描述)
             
         elif 主要方式 == "遮挡物转场":
-            # 修改：传递运动子类型、运动方向和尾帧主体参数
-            基础提示词 = self._generate_occlusion_transition(遮挡物类型, 时长格式化, 节奏描述, 运动子类型, 运动方向, 尾帧主体)
+            # 修改：传递尾帧描述参数
+            基础提示词 = self._generate_occlusion_transition(遮挡物类型, 时长格式化, 节奏描述, 运动子类型, 运动方向, 尾帧主体, None)
             
         elif 主要方式 == "主体变形转场":
             基础提示词 = self._generate_subject_morph_transition(首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
@@ -444,49 +519,6 @@ class 视频首尾帧转场(视频转场基类):
             基础提示词 = f"{基础提示词}，{连贯性描述}"
         
         return 基础提示词
-
-    def _generate_occlusion_transition(self, 遮挡类型, 时长, 节奏, 运动子类型="无", 运动方向="无", 尾帧主体=None):
-        """生成遮挡物转场提示词 - 使用具体主体替换通用词汇"""
-        if not 遮挡类型 or 遮挡类型 == "无":
-            return f"遮挡物转场，历时{时长}秒，{节奏}"
-        
-        # 安全获取遮挡描述
-        遮挡描述 = OCCLUSION_DESCRIPTIONS.get(遮挡类型, f"遮挡物转场，历时{时长}秒，{节奏}")
-        
-        # 使用常量配置获取默认的遮挡物名称
-        默认遮挡物名称 = self._get_default_occlusion_name(遮挡类型)
-        
-        # 如果提供了尾帧主体且不是默认值，使用尾帧主体作为遮挡物
-        # 否则使用默认的遮挡物名称
-        遮挡物名称 = 尾帧主体 if 尾帧主体 and 尾帧主体 != "图像2主体" else 默认遮挡物名称
-        
-        # 如果运动子类型和运动方向不为"无"，则生成包含镜头运动的描述
-        if 运动子类型 != "无" and 运动方向 != "无":
-            # 根据运动子类型生成相应的镜头运动描述
-            运动描述 = self._get_motion_description(运动子类型, 运动方向)
-            
-            # 修改描述模板以包含镜头运动，并替换遮挡物名称
-            描述部分 = self._replace_occlusion_name_with_subject(遮挡描述, 遮挡物名称)
-            
-            # 替换占位符
-            描述部分 = 描述部分.replace("{target}", 遮挡物名称)
-            描述部分 = 描述部分.replace("{时长}", str(时长))
-            描述部分 = 描述部分.replace("{节奏}", 节奏)
-            
-            # 添加镜头运动描述到前面
-            完整描述 = f"镜头{运动描述}，{描述部分}"
-            
-            return 完整描述
-        else:
-            # 不使用镜头运动，直接替换描述中的遮挡物名称
-            描述部分 = self._replace_occlusion_name_with_subject(遮挡描述, 遮挡物名称)
-            
-            # 替换占位符
-            描述部分 = 描述部分.replace("{target}", 遮挡物名称)
-            描述部分 = 描述部分.replace("{时长}", str(时长))
-            描述部分 = 描述部分.replace("{节奏}", 节奏)
-            
-            return 描述部分
 
     def _generate_subject_morph_transition(self, 首帧主体, 尾帧主体, 时长, 平滑度, 节奏):
         """生成主体变形转场提示词"""
@@ -698,7 +730,7 @@ class 视频首尾帧转场_增强版(视频转场基类):
             转场提示词 = self._generate_transition_prompt(
                 主要转场方式, 运动子类型, 运动方向, 变形子类型, 遮挡物类型,
                 人物变化类型, 转场时长, 运动平滑度, 转场节奏, 视觉连贯性,
-                首帧主体_清理, 尾帧主体_清理, 运镜方式
+                首帧主体_清理, 尾帧主体_清理, 运镜方式, 尾帧描述_建议填写_清理
             )
             
             # 生成人物动态效果提示词（如果选择了人物动态效果）
@@ -735,7 +767,7 @@ class 视频首尾帧转场_增强版(视频转场基类):
 
     def _generate_transition_prompt(self, 主要方式, 运动子类型, 运动方向, 变形子类型, 
                                   遮挡物类型, 人物变化类型, 时长, 平滑度, 节奏, 连贯性,
-                                  首帧主体, 尾帧主体, 运镜方式="无"):
+                                  首帧主体, 尾帧主体, 运镜方式="无", 尾帧描述=None):
         """生成具体的转场提示词"""
         
         # 如果主要转场方式为"无"，直接返回空字符串
@@ -765,8 +797,8 @@ class 视频首尾帧转场_增强版(视频转场基类):
             基础提示词 = self._generate_morph_transition(变形子类型, 时长格式化, 平滑度描述)
             
         elif 主要方式 == "遮挡物转场":
-            # 修改：传递运动子类型、运动方向和尾帧主体参数
-            基础提示词 = self._generate_occlusion_transition(遮挡物类型, 时长格式化, 节奏描述, 运动子类型, 运动方向, 尾帧主体)
+            # 修改：传递尾帧描述参数
+            基础提示词 = self._generate_occlusion_transition(遮挡物类型, 时长格式化, 节奏描述, 运动子类型, 运动方向, 尾帧主体, 尾帧描述)
             
         elif 主要方式 == "主体变形转场":
             基础提示词 = self._generate_subject_morph_transition(首帧主体, 尾帧主体, 时长格式化, 平滑度描述, 节奏描述)
@@ -803,49 +835,6 @@ class 视频首尾帧转场_增强版(视频转场基类):
             基础提示词 = f"{基础提示词}，{连贯性描述}"
         
         return 基础提示词
-
-    def _generate_occlusion_transition(self, 遮挡类型, 时长, 节奏, 运动子类型="无", 运动方向="无", 尾帧主体=None):
-        """生成遮挡物转场提示词 - 使用具体主体替换通用词汇"""
-        if not 遮挡类型 or 遮挡类型 == "无":
-            return f"遮挡物转场，历时{时长}秒，{节奏}"
-        
-        # 安全获取遮挡描述
-        遮挡描述 = OCCLUSION_DESCRIPTIONS.get(遮挡类型, f"遮挡物转场，历时{时长}秒，{节奏}")
-        
-        # 使用常量配置获取默认的遮挡物名称
-        默认遮挡物名称 = self._get_default_occlusion_name(遮挡类型)
-        
-        # 如果提供了尾帧主体且不是默认值，使用尾帧主体作为遮挡物
-        # 否则使用默认的遮挡物名称
-        遮挡物名称 = 尾帧主体 if 尾帧主体 and 尾帧主体 != "图像2主体" else 默认遮挡物名称
-        
-        # 如果运动子类型和运动方向不为"无"，则生成包含镜头运动的描述
-        if 运动子类型 != "无" and 运动方向 != "无":
-            # 根据运动子类型生成相应的镜头运动描述
-            运动描述 = self._get_motion_description(运动子类型, 运动方向)
-            
-            # 修改描述模板以包含镜头运动，并替换遮挡物名称
-            描述部分 = self._replace_occlusion_name_with_subject(遮挡描述, 遮挡物名称)
-            
-            # 替换占位符
-            描述部分 = 描述部分.replace("{target}", 遮挡物名称)
-            描述部分 = 描述部分.replace("{时长}", str(时长))
-            描述部分 = 描述部分.replace("{节奏}", 节奏)
-            
-            # 添加镜头运动描述到前面
-            完整描述 = f"镜头{运动描述}，{描述部分}"
-            
-            return 完整描述
-        else:
-            # 不使用镜头运动，直接替换描述中的遮挡物名称
-            描述部分 = self._replace_occlusion_name_with_subject(遮挡描述, 遮挡物名称)
-            
-            # 替换占位符
-            描述部分 = 描述部分.replace("{target}", 遮挡物名称)
-            描述部分 = 描述部分.replace("{时长}", str(时长))
-            描述部分 = 描述部分.replace("{节奏}", 节奏)
-            
-            return 描述部分
 
     def _generate_subject_morph_transition(self, 首帧主体, 尾帧主体, 时长, 平滑度, 节奏):
         """生成主体变形转场提示词"""
