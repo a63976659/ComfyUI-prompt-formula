@@ -119,7 +119,10 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 
 https://github.com/user-attachments/assets/58632a87-b7fd-483f-b69e-474f757f27ba
 
-
+## 20251205
+1. 优化“视频首尾帧转场”节点
+2. 新增“视频首尾帧转场_增强版”节点
+3. 前景遮挡物转场效果更容易实现。
 
 ⚠️预告，插件过于强大，以后可能出一个收费版本，我也需要吃饭，希望大家理解。
 
