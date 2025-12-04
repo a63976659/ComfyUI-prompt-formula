@@ -47,7 +47,7 @@ except Exception as e:
 
 # 导入图转视频预设节点
 try:
-    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词
+    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词, 视频首尾帧转场_增强版
 except Exception as e:
     logging.error(f"导入图转视频预设节点失败: {str(e)}")
     # 创建空的占位符类
@@ -84,9 +84,21 @@ except Exception as e:
         def placeholder(self, **kwargs):
             return ("视频动效节点加载失败", "", "")
     
+    class 视频转场增强版占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("转场提示词", "完整提示词", "技术说明")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("视频转场增强版节点加载失败", "", "")
+    
     视频首尾帧转场 = 视频转场占位符
     视频运镜提示词 = 视频运镜占位符
     视频动效提示词 = 视频动效占位符
+    视频首尾帧转场_增强版 = 视频转场增强版占位符
 
 # 导入提示词预设节点
 try:
@@ -209,7 +221,9 @@ NODE_CLASS_MAPPINGS = {
     # 图转视频预设节点
     "视频首尾帧转场": 视频首尾帧转场,
     "视频运镜提示词": 视频运镜提示词,
-    "视频动效提示词": 视频动效提示词,  # 新增节点
+    "视频动效提示词": 视频动效提示词,
+    # 新增增强版节点
+    "视频首尾帧转场-增强版": 视频首尾帧转场_增强版,
 }
 
 # 合并预设节点映射
@@ -245,7 +259,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # 图转视频预设节点
     "视频首尾帧转场": "视频首尾帧转场",
     "视频运镜提示词": "视频运镜提示词",
-    "视频动效提示词": "视频动效提示词",  # 新增节点
+    "视频动效提示词": "视频动效提示词",
+    # 新增增强版节点
+    "视频首尾帧转场-增强版": "视频首尾帧转场-增强版",
 }
 
 # 合并预设节点显示名称
