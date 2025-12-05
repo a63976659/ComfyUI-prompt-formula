@@ -21,11 +21,12 @@ function videoTransitionHandler(node) {
         if (!mainTransitionWidget) return;
 
         // 获取所有需要动态控制的widget
-        // 注意：运动子类型和运动方向不再动态控制，改为持续启用
         const motionSubtypeWidget = findWidgetByName(node, "运动子类型");
         const motionDirectionWidget = findWidgetByName(node, "运动方向");
         const morphSubtypeWidget = findWidgetByName(node, "变形子类型");
         const occlusionTypeWidget = findWidgetByName(node, "遮挡物类型");
+        const foregroundOcclusionWidget = findWidgetByName(node, "前景遮挡物");
+        const unfoldMethodWidget = findWidgetByName(node, "展开方式");
         const characterChangeTypeWidget = findWidgetByName(node, "人物变化类型");
         const transitionRhythmWidget = findWidgetByName(node, "转场节奏");
         const visualConsistencyWidget = findWidgetByName(node, "视觉连贯性");
@@ -33,11 +34,13 @@ function videoTransitionHandler(node) {
         // 根据主要转场方式动态控制其他widget
         const mainTransition = mainTransitionWidget.value;
         
-        // 默认禁用可选widget，但运动子类型和运动方向持续启用
-        toggleWidget(node, motionSubtypeWidget, true); // 持续启用
-        toggleWidget(node, motionDirectionWidget, true); // 持续启用
+        // 默认禁用所有可选widget
+        toggleWidget(node, motionSubtypeWidget, false);
+        toggleWidget(node, motionDirectionWidget, false);
         toggleWidget(node, morphSubtypeWidget, false);
         toggleWidget(node, occlusionTypeWidget, false);
+        toggleWidget(node, foregroundOcclusionWidget, false);
+        toggleWidget(node, unfoldMethodWidget, false);
         toggleWidget(node, characterChangeTypeWidget, false);
         toggleWidget(node, transitionRhythmWidget, false);
         toggleWidget(node, visualConsistencyWidget, false);
@@ -45,13 +48,15 @@ function videoTransitionHandler(node) {
         // 根据选择的转场方式启用相关widget
         switch (mainTransition) {
             case "运镜提示词转场":
-                // 运动子类型和运动方向已持续启用
+                toggleWidget(node, motionSubtypeWidget, true);
+                toggleWidget(node, motionDirectionWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
                 break;
                 
             case "运动匹配转场":
-                // 运动子类型和运动方向已持续启用
+                toggleWidget(node, motionSubtypeWidget, true);
+                toggleWidget(node, motionDirectionWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
                 break;
@@ -66,10 +71,16 @@ function videoTransitionHandler(node) {
                 toggleWidget(node, occlusionTypeWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
+                
+                // 检查遮挡物类型是否为"前景物体遮挡"
+                if (occlusionTypeWidget && occlusionTypeWidget.value === "前景物体遮挡") {
+                    toggleWidget(node, foregroundOcclusionWidget, true);
+                }
                 break;
                 
             case "多重转场组合":
-                // 运动子类型和运动方向已持续启用
+                toggleWidget(node, motionSubtypeWidget, true);
+                toggleWidget(node, motionDirectionWidget, true);
                 toggleWidget(node, morphSubtypeWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
@@ -89,6 +100,13 @@ function videoTransitionHandler(node) {
                 break;
                 
             case "交叉溶解转场":
+                toggleWidget(node, transitionRhythmWidget, true);
+                toggleWidget(node, visualConsistencyWidget, true);
+                break;
+                
+            case "画卷展开式转场":
+                toggleWidget(node, unfoldMethodWidget, true);
+                toggleWidget(node, foregroundOcclusionWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
                 break;
@@ -108,15 +126,16 @@ function enhancedVideoTransitionHandler(node) {
         if (!mainTransitionWidget) return;
 
         // 获取所有需要动态控制的widget
-        // 注意：运动子类型和运动方向不再动态控制，改为持续启用
         const motionSubtypeWidget = findWidgetByName(node, "运动子类型");
         const motionDirectionWidget = findWidgetByName(node, "运动方向");
         const morphSubtypeWidget = findWidgetByName(node, "变形子类型");
         const occlusionTypeWidget = findWidgetByName(node, "遮挡物类型");
+        const foregroundOcclusionWidget = findWidgetByName(node, "前景遮挡物");
+        const unfoldMethodWidget = findWidgetByName(node, "展开方式");
         const characterChangeTypeWidget = findWidgetByName(node, "人物变化类型");
         const transitionRhythmWidget = findWidgetByName(node, "转场节奏");
         const visualConsistencyWidget = findWidgetByName(node, "视觉连贯性");
-        const cameraMovementWidget = findWidgetByName(node, "运镜方式(非运镜转场时使用)");
+        const cameraMovementWidget = findWidgetByName(node, "运镜方式");
         const characterEffectWidget = findWidgetByName(node, "人物动态效果");
         const characterIntensityWidget = findWidgetByName(node, "人物效果强度");
         const environmentEffectWidget = findWidgetByName(node, "环境动态效果");
@@ -125,11 +144,13 @@ function enhancedVideoTransitionHandler(node) {
         // 根据主要转场方式动态控制其他widget
         const mainTransition = mainTransitionWidget.value;
         
-        // 默认禁用可选widget，但运动子类型和运动方向持续启用
-        toggleWidget(node, motionSubtypeWidget, true); // 持续启用
-        toggleWidget(node, motionDirectionWidget, true); // 持续启用
+        // 默认禁用所有可选widget
+        toggleWidget(node, motionSubtypeWidget, false);
+        toggleWidget(node, motionDirectionWidget, false);
         toggleWidget(node, morphSubtypeWidget, false);
         toggleWidget(node, occlusionTypeWidget, false);
+        toggleWidget(node, foregroundOcclusionWidget, false);
+        toggleWidget(node, unfoldMethodWidget, false);
         toggleWidget(node, characterChangeTypeWidget, false);
         toggleWidget(node, transitionRhythmWidget, false);
         toggleWidget(node, visualConsistencyWidget, false);
@@ -142,16 +163,17 @@ function enhancedVideoTransitionHandler(node) {
         // 根据选择的转场方式启用相关widget
         switch (mainTransition) {
             case "运镜提示词转场":
-                // 运动子类型和运动方向已持续启用
+                toggleWidget(node, motionSubtypeWidget, true);
+                toggleWidget(node, motionDirectionWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
-                // 增强版：启用人物和环境动态效果组件
                 toggleWidget(node, characterEffectWidget, true);
                 toggleWidget(node, environmentEffectWidget, true);
                 break;
                 
             case "运动匹配转场":
-                // 运动子类型和运动方向已持续启用
+                toggleWidget(node, motionSubtypeWidget, true);
+                toggleWidget(node, motionDirectionWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
                 toggleWidget(node, cameraMovementWidget, true);
@@ -175,10 +197,16 @@ function enhancedVideoTransitionHandler(node) {
                 toggleWidget(node, cameraMovementWidget, true);
                 toggleWidget(node, characterEffectWidget, true);
                 toggleWidget(node, environmentEffectWidget, true);
+                
+                // 检查遮挡物类型是否为"前景物体遮挡"
+                if (occlusionTypeWidget && occlusionTypeWidget.value === "前景物体遮挡") {
+                    toggleWidget(node, foregroundOcclusionWidget, true);
+                }
                 break;
                 
             case "多重转场组合":
-                // 运动子类型和运动方向已持续启用
+                toggleWidget(node, motionSubtypeWidget, true);
+                toggleWidget(node, motionDirectionWidget, true);
                 toggleWidget(node, morphSubtypeWidget, true);
                 toggleWidget(node, transitionRhythmWidget, true);
                 toggleWidget(node, visualConsistencyWidget, true);
@@ -214,8 +242,18 @@ function enhancedVideoTransitionHandler(node) {
                 toggleWidget(node, environmentEffectWidget, true);
                 break;
                 
+            case "画卷展开式转场":
+                toggleWidget(node, unfoldMethodWidget, true);
+                toggleWidget(node, foregroundOcclusionWidget, true);
+                toggleWidget(node, transitionRhythmWidget, true);
+                toggleWidget(node, visualConsistencyWidget, true);
+                toggleWidget(node, cameraMovementWidget, true);
+                toggleWidget(node, characterEffectWidget, true);
+                toggleWidget(node, environmentEffectWidget, true);
+                break;
+                
             case "无":
-                // 不需要任何额外参数，但允许使用动态效果
+                // 不需要转场参数，但允许使用动态效果
                 toggleWidget(node, characterEffectWidget, true);
                 toggleWidget(node, environmentEffectWidget, true);
                 break;
@@ -229,36 +267,28 @@ function enhancedVideoTransitionHandler(node) {
         
         // 根据人物动态效果的值控制人物效果强度widget
         if (characterEffectWidget) {
-            // 如果人物动态效果组件已启用
             if (!characterEffectWidget.disabled) {
                 const characterEffectValue = characterEffectWidget.value;
-                // 如果人物动态效果为"无"，则禁用人物效果强度
                 if (characterEffectValue === "无") {
                     toggleWidget(node, characterIntensityWidget, false);
                 } else {
-                    // 否则启用人物效果强度
                     toggleWidget(node, characterIntensityWidget, true);
                 }
             } else {
-                // 如果人物动态效果组件被禁用，也禁用人物效果强度
                 toggleWidget(node, characterIntensityWidget, false);
             }
         }
         
         // 根据环境动态效果的值控制环境效果强度widget
         if (environmentEffectWidget) {
-            // 如果环境动态效果组件已启用
             if (!environmentEffectWidget.disabled) {
                 const environmentEffectValue = environmentEffectWidget.value;
-                // 如果环境动态效果为"无"，则禁用环境效果强度
                 if (environmentEffectValue === "无") {
                     toggleWidget(node, environmentIntensityWidget, false);
                 } else {
-                    // 否则启用环境效果强度
                     toggleWidget(node, environmentIntensityWidget, true);
                 }
             } else {
-                // 如果环境动态效果组件被禁用，也禁用环境效果强度
                 toggleWidget(node, environmentIntensityWidget, false);
             }
         }
@@ -328,13 +358,8 @@ app.registerExtension({
             // 原节点处理
             videoTransitionHandler(node);
             
-            // 为所有widget添加值监听（排除已持续启用的运动子类型和运动方向）
+            // 为所有widget添加值监听
             for (const w of node.widgets || []) {
-                // 跳过持续启用的widget，避免添加监听器
-                if (w.name === "运动子类型" || w.name === "运动方向") {
-                    continue;
-                }
-                
                 let widgetValue = w.value;
                 
                 // 存储原始描述符
@@ -368,14 +393,20 @@ app.registerExtension({
             // 增强版节点处理
             enhancedVideoTransitionHandler(node);
             
-            // 找到需要特殊监听的widget（排除已持续启用的运动子类型和运动方向）
+            // 找到需要特殊监听的widget
             const characterEffectWidget = findWidgetByName(node, "人物动态效果");
             const environmentEffectWidget = findWidgetByName(node, "环境动态效果");
             const mainTransitionWidget = findWidgetByName(node, "主要转场方式");
+            const occlusionTypeWidget = findWidgetByName(node, "遮挡物类型");
             
             // 为主转场方式widget添加监听
             if (mainTransitionWidget) {
                 addWidgetValueListener(node, mainTransitionWidget, enhancedVideoTransitionHandler);
+            }
+            
+            // 为遮挡物类型widget添加监听（用于控制前景遮挡物组件）
+            if (occlusionTypeWidget) {
+                addWidgetValueListener(node, occlusionTypeWidget, enhancedVideoTransitionHandler);
             }
             
             // 为人物动态效果widget添加监听
@@ -388,12 +419,11 @@ app.registerExtension({
                 addWidgetValueListener(node, environmentEffectWidget, enhancedVideoTransitionHandler);
             }
             
-            // 为其他相关widget也添加监听（可选，但更全面），排除已持续启用的widget
+            // 为其他相关widget也添加监听
             const relevantWidgetNames = [
-                // 排除已持续启用的"运动子类型"和"运动方向"
-                "变形子类型", "遮挡物类型",
+                "运动子类型", "运动方向", "变形子类型",
                 "人物变化类型", "转场节奏", "视觉连贯性", 
-                "运镜方式(非运镜转场时使用)"
+                "运镜方式", "展开方式"  // 新增展开方式widget监听
             ];
             
             for (const widgetName of relevantWidgetNames) {
