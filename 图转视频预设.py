@@ -479,7 +479,7 @@ class 视频首尾帧转场(视频转场基类):
                 }),
                 "附加转场描述": ("STRING", {
                     "multiline": True,
-                    "default": "",
+                    "default": "动作流畅",
                     "display_name": "附加转场描述"
                 }),
             }
@@ -793,7 +793,7 @@ class 视频首尾帧转场_增强版(视频转场基类):
                 }),
                 "附加转场描述": ("STRING", {
                     "multiline": True,
-                    "default": "",
+                    "default": "动作流畅",
                     "display_name": "附加转场描述"
                 }),
             }
@@ -1165,7 +1165,7 @@ class 视频运镜提示词:
             "optional": {
                 "画面动态描述": ("STRING", {
                     "multiline": False,
-                    "default": "",
+                    "default": "动作流畅",
                     "display_name": "画面动态描述"
                 }),
             }
@@ -1289,7 +1289,7 @@ class 视频动效提示词:
                     "display_name": "物理效果"
                 }),
                 "效果强度": (EFFECT_INTENSITY, {
-                    "default": "适中",
+                    "default": "流畅",
                     "display_name": "效果强度"
                 }),
                 "效果时长": (EFFECT_DURATION, {
@@ -1394,6 +1394,7 @@ class 视频动效提示词:
         强度描述映射 = {
             "轻微": "效果轻微自然",
             "适中": "效果适中明显", 
+            "流畅": "效果动作流畅", 
             "强烈": "效果强烈突出",
             "非常强烈": "效果非常强烈震撼"
         }

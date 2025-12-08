@@ -752,7 +752,7 @@ PHYSICS_EFFECTS = [
 ]
 
 # 动态效果强度选项
-EFFECT_INTENSITY = ["轻微", "适中", "强烈", "非常强烈"]
+EFFECT_INTENSITY = ["轻微", "适中",  "流畅", "强烈", "非常强烈"]
 
 # 动态效果时长选项
 EFFECT_DURATION = ["短暂", "中等", "持久", "循环持续"]
@@ -1035,6 +1035,7 @@ MORPH_TRANSITION_DESCRIPTIONS = {
 EFFECT_INTENSITY_DESCRIPTIONS = {
     "轻微": "效果轻微自然",
     "适中": "效果适中明显", 
+    "流畅": "效果动作流畅", 
     "强烈": "效果强烈突出",
     "非常强烈": "效果非常强烈震撼"
 }
