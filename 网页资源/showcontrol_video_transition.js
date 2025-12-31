@@ -1,5 +1,6 @@
 // 网页资源/showcontrol_video_transition.js
 import { app } from "../../scripts/app.js";
+import { $el } from "../../scripts/ui.js";
 
 // 查找指定名称的widget
 const findWidgetByName = (node, name) => {
@@ -7,11 +8,13 @@ const findWidgetByName = (node, name) => {
 };
 
 // 切换widget的禁用状态
-function toggleWidget(node, widget, show = false, suffix = "") {
+function toggleWidget(node, widget, show = false) {
     if (!widget) return;
     widget.disabled = !show;
-    widget.linkedWidgets?.forEach(w => toggleWidget(node, w, ":" + widget.name, show));
+    // 移除错误的linkedWidgets引用，因为它不存在
 }
+
+// ==================== 原有处理函数 ====================
 
 // 视频首尾帧转场处理函数（原节点）
 function videoTransitionHandler(node) {
@@ -318,7 +321,47 @@ function videoEffectsHandler(node) {
     }
 }
 
-// 辅助函数：为指定widget添加值监听
+// ==================== 新增：视频动态带运镜处理函数 ====================
+
+function videoDynamicWithCameraHandler(node) {
+    if (node.comfyClass === "视频动态带运镜") {
+        const 动态类型Widget = findWidgetByName(node, "动态类型");
+        const 运镜方式Widget = findWidgetByName(node, "运镜方式");
+        
+        // 动态类型相关widget
+        const 具体动态Widget = findWidgetByName(node, "具体动态");
+        const 动态程度Widget = findWidgetByName(node, "动态程度");
+        const 动态速度Widget = findWidgetByName(node, "动态速度");
+        const 动态节奏Widget = findWidgetByName(node, "动态节奏");
+        const 环境互动Widget = findWidgetByName(node, "与环境互动");
+        
+        // 运镜相关widget
+        const 运镜速度Widget = findWidgetByName(node, "运镜速度");
+        const 运镜时长Widget = findWidgetByName(node, "运镜时长");
+        const 视觉连贯性Widget = findWidgetByName(node, "视觉连贯性");
+        
+        // 根据动态类型控制显示
+        const 动态类型 = 动态类型Widget.value;
+        const 运镜方式 = 运镜方式Widget.value;
+        
+        // 动态类型不为"无"时，显示动态相关参数
+        const 显示动态参数 = 动态类型 !== "无";
+        toggleWidget(node, 具体动态Widget, 显示动态参数);
+        toggleWidget(node, 动态程度Widget, 显示动态参数);
+        toggleWidget(node, 动态速度Widget, 显示动态参数);
+        toggleWidget(node, 动态节奏Widget, 显示动态参数);
+        toggleWidget(node, 环境互动Widget, 显示动态参数);
+        
+        // 运镜方式不为"无"时，显示运镜相关参数
+        const 显示运镜参数 = 运镜方式 !== "无";
+        toggleWidget(node, 运镜速度Widget, 显示运镜参数);
+        toggleWidget(node, 运镜时长Widget, 显示运镜参数);
+        toggleWidget(node, 视觉连贯性Widget, 显示运镜参数); // 视觉连贯性只在有运镜时显示
+    }
+}
+
+// ==================== 辅助函数：为指定widget添加值监听 ====================
+
 function addWidgetValueListener(node, widget, handler) {
     if (!widget) return;
     
@@ -351,8 +394,41 @@ function addWidgetValueListener(node, widget, handler) {
     });
 }
 
+// ==================== 主扩展注册 ====================
+
 app.registerExtension({
     name: "video-transition.showcontrol",
+    
+    // 添加全局样式
+    async init() {
+        // 添加CSS样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .wan25-sound-title {
+                font-weight: bold;
+                color: var(--input-text);
+                margin-bottom: 5px;
+                font-size: 12px;
+                padding-left: 4px;
+                border-left: 3px solid var(--border-color);
+                margin-top: 15px;
+                display: block;
+            }
+            
+            /* 优化声音输入框样式 */
+            .node[data-type="Wan2.5图生视频带声音"] textarea[name="声音"] {
+                min-height: 80px;
+                resize: vertical;
+            }
+            
+            /* 视频动态带运镜节点样式优化 */
+            .node[data-type="视频动态带运镜"] {
+                min-width: 350px;
+            }
+        `;
+        document.head.appendChild(style);
+    },
+    
     nodeCreated(node) {
         if (node.comfyClass === "视频首尾帧转场") {
             // 原节点处理
@@ -404,7 +480,7 @@ app.registerExtension({
                 addWidgetValueListener(node, mainTransitionWidget, enhancedVideoTransitionHandler);
             }
             
-            // 为遮挡物类型widget添加监听（用于控制前景遮挡物组件）
+            // 为遮挡物类型widget添加监听
             if (occlusionTypeWidget) {
                 addWidgetValueListener(node, occlusionTypeWidget, enhancedVideoTransitionHandler);
             }
@@ -423,7 +499,7 @@ app.registerExtension({
             const relevantWidgetNames = [
                 "运动子类型", "运动方向", "变形子类型",
                 "人物变化类型", "转场节奏", "视觉连贯性", 
-                "运镜方式", "展开方式"  // 新增展开方式widget监听
+                "运镜方式", "展开方式"
             ];
             
             for (const widgetName of relevantWidgetNames) {
@@ -447,7 +523,6 @@ app.registerExtension({
             }
             
             // 为其他可能影响目标对象的widget也添加监听
-            // 例如：环境动态效果、镜头特效、物理效果
             const otherEffectWidgets = [
                 "环境动态效果",
                 "镜头特效", 
@@ -458,6 +533,34 @@ app.registerExtension({
                 const widget = findWidgetByName(node, widgetName);
                 if (widget) {
                     addWidgetValueListener(node, widget, videoEffectsHandler);
+                }
+            }
+        }
+        // ============ 新增：视频动态带运镜节点处理 ============
+        else if (node.comfyClass === "视频动态带运镜") {
+            // 初始处理widget状态
+            videoDynamicWithCameraHandler(node);
+            
+            // 为相关widget添加监听
+            const 动态类型Widget = findWidgetByName(node, "动态类型");
+            const 运镜方式Widget = findWidgetByName(node, "运镜方式");
+            
+            if (动态类型Widget) {
+                addWidgetValueListener(node, 动态类型Widget, videoDynamicWithCameraHandler);
+            }
+            if (运镜方式Widget) {
+                addWidgetValueListener(node, 运镜方式Widget, videoDynamicWithCameraHandler);
+            }
+            
+            // 为其他可能影响显示的widget也添加监听
+            const relevantWidgetNames = [
+                "动态节奏", "与环境互动", "运镜速度", "运镜时长"
+            ];
+            
+            for (const widgetName of relevantWidgetNames) {
+                const widget = findWidgetByName(node, widgetName);
+                if (widget) {
+                    addWidgetValueListener(node, widget, videoDynamicWithCameraHandler);
                 }
             }
         }
