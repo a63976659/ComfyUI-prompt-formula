@@ -187,6 +187,87 @@ except Exception as e:
     
     千问单图编辑_改变视角 = 千问单图编辑_改变镜头 = 千问单图编辑_人物换动作 = 千问单图编辑_物品换材质 = 千问单图编辑_图像变文创产品 = 千问单图编辑_图像转绘 = 千问单图编辑_图像编辑 = 千问编辑占位符
 
+# ==================== 新增节点导入 ====================
+
+# 导入视频动态带运镜节点
+try:
+    from 视频动态带运镜 import 视频动态带运镜
+except Exception as e:
+    logging.error(f"导入视频动态带运镜节点失败: {str(e)}")
+    class 视频动态带运镜占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("动态提示词", "运镜提示词", "完整提示词")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("视频动态带运镜节点加载失败", "", "")
+    
+    视频动态带运镜 = 视频动态带运镜占位符
+
+# 导入Wan25提示词公式节点
+try:
+    import importlib.util
+    import os
+    # 动态导入包含点号的模块
+    module_path = os.path.join(os.path.dirname(__file__), 'Wan2.5提示词公式.py')
+    module_name = 'Wan2.5提示词公式'
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    Wan25提示词公式_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(Wan25提示词公式_module)
+    Wan25图生视频 = Wan25提示词公式_module.Wan25图生视频
+except Exception as e:
+    logging.error(f"导入Wan25提示词公式节点失败: {str(e)}")
+    class Wan25图生视频占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("视觉提示词", "声音提示词", "完整提示词")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("Wan25图生视频节点加载失败", "", "")
+    
+    Wan25图生视频 = Wan25图生视频占位符
+
+# 导入Wan26图生视频节点
+try:
+    from Wan26图生视频 import Wan26图生视频
+except Exception as e:
+    logging.error(f"导入Wan26图生视频节点失败: {str(e)}")
+    class Wan26图生视频占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("Wan提示词", "完整提示词", "技术说明")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("Wan26节点加载失败", "", "")
+    
+    Wan26图生视频 = Wan26图生视频占位符
+
+# 导入Wan26多镜头节点
+try:
+    from Wan26多镜头 import Wan26多镜头
+except Exception as e:
+    logging.error(f"导入Wan26多镜头节点失败: {str(e)}")
+    class Wan26多镜头占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING", "STRING")
+        RETURN_NAMES = ("多镜头提示词", "完整提示词", "镜头结构表")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/图转视频"
+        def placeholder(self, **kwargs):
+            return ("Wan26多镜头节点加载失败", "", "")
+    
+    Wan26多镜头 = Wan26多镜头占位符
 
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
@@ -221,6 +302,11 @@ NODE_CLASS_MAPPINGS = {
     "视频首尾帧转场-增强版": 视频首尾帧转场_增强版,
     "视频运镜提示词": 视频运镜提示词,
     "视频动效提示词": 视频动效提示词,
+    # 新增节点
+    "视频动态带运镜": 视频动态带运镜,
+    "Wan25图生视频": Wan25图生视频,
+    "Wan26图生视频": Wan26图生视频,
+    "Wan26多镜头": Wan26多镜头,
 }
 
 # 合并预设节点映射
@@ -259,6 +345,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "视频首尾帧转场-增强版": "视频首尾帧转场-增强版",
     "视频运镜提示词": "视频运镜提示词",
     "视频动效提示词": "视频动效提示词",
+    # 新增节点
+    "视频动态带运镜": "视频动态带运镜",
+    "Wan25图生视频": "Wan25图生视频",
+    "Wan26图生视频": "Wan26图生视频",
+    "Wan26多镜头": "Wan26多镜头",
 }
 
 # 合并预设节点显示名称
@@ -281,5 +372,7 @@ print("🎬 图转视频预设节点已成功添加")
 print("🎛️  视频首尾帧转场节点已启用动态组件控制")
 print("✨ 视频动效提示词节点已添加 - 120+种动态效果")
 print("📁 提示词预设节点，直接在节点上预览内容")
+print("🚀 新增视频动态带运镜节点 - 动态+运镜一体化设计")
+print("🎵 新增Wan25图生视频节点 - 支持视觉+音频同步生成")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")
