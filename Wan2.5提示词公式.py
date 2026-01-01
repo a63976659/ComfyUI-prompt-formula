@@ -63,7 +63,7 @@ class Wan25图生视频:
                     "default": 3.0,
                     "min": 1.0,
                     "max": 15.0,
-                    "step": 0.1,
+                    "step": 1.0,
                     "display": "slider",
                     "display_name": "运镜时长(秒)"
                 }),
