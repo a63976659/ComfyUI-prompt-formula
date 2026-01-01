@@ -162,6 +162,7 @@ class Wan26多镜头:
     RETURN_NAMES = ("多镜头提示词", "完整提示词", "镜头结构表")
     FUNCTION = "生成多镜头提示词"
     CATEGORY = "📕提示词公式/图转视频"
+    DESCRIPTION = "可用于Wan2.6API节点"
 
     def 生成多镜头提示词(self, 总体描述, 镜头数量, 启用智能多镜,
                     # 镜头1

@@ -79,6 +79,7 @@ class Wan25图生视频:
     RETURN_NAMES = ("视觉提示词", "声音提示词", "完整提示词")
     FUNCTION = "生成Wan25提示词"
     CATEGORY = "📕提示词公式/图转视频"
+    DESCRIPTION = "可用于Wan2.5API节点"
     
     def 生成Wan25提示词(self, 画面描述, 场景动效, 主体动作, 运镜方式, 
                         镜头目标, 声音描述, 是否添加音效,

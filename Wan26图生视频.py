@@ -90,6 +90,7 @@ class Wan26图生视频:
     RETURN_NAMES = ("Wan提示词", "完整提示词", "技术说明")
     FUNCTION = "生成Wan提示词"
     CATEGORY = "📕提示词公式/图转视频"
+    DESCRIPTION = "可用于Wan2.6API节点"
 
     def 生成Wan提示词(self, 场景描述, 主角A引用名, 主角A动作, 主角B引用名, 主角B动作, 运镜方式,
                     主角A台词="", 主角B台词="", 其他元素动作="", 镜头目标="主体",
