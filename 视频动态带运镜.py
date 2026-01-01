@@ -274,7 +274,7 @@ class 视频动态带运镜:
         # 获取基础运镜描述
         movement_desc = CAMERA_MOVEMENT_DESCRIPTIONS.get(运镜方式, "")
         if not movement_desc:
-            return f"{运镜方式}，历时{运镜时长:.1f}秒"
+            return f"{运镜方式}，历时{运镜时长:.0f}秒"
         
         # 替换目标占位符
         movement_desc = movement_desc.replace("{target}", 镜头目标)
@@ -282,7 +282,7 @@ class 视频动态带运镜:
         # 添加速度和时长信息
         速度描述 = self._get_speed_description(运镜速度)
         
-        return f"{movement_desc}，{速度描述}，历时{运镜时长:.1f}秒"
+        return f"{movement_desc}，{速度描述}，历时{运镜时长:.0f}秒"
     
     def _get_speed_description(self, 速度):
         """获取速度描述"""

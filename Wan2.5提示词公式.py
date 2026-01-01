@@ -79,7 +79,7 @@ class Wan25图生视频:
     RETURN_NAMES = ("视觉提示词", "声音提示词", "完整提示词")
     FUNCTION = "生成Wan25提示词"
     CATEGORY = "📕提示词公式/图转视频"
-    DESCRIPTION = "可用于Wan2.5API节点"
+    DESCRIPTION = "可用于Wan2.5API节点，推荐使用完整提示词。"
     
     def 生成Wan25提示词(self, 画面描述, 场景动效, 主体动作, 运镜方式, 
                         镜头目标, 声音描述, 是否添加音效,
@@ -166,7 +166,7 @@ class Wan25图生视频:
         # 获取基础运镜描述
         movement_desc = CAMERA_MOVEMENT_DESCRIPTIONS.get(运镜方式, "")
         if not movement_desc:
-            return f"{运镜方式}，历时{运镜时长:.1f}秒"
+            return f"{运镜方式}，历时{运镜时长:.0f}秒"
         
         # 替换目标占位符
         movement_desc = movement_desc.replace("{target}", 镜头目标)
@@ -174,7 +174,7 @@ class Wan25图生视频:
         # 添加速度和时长信息
         速度描述 = self._get_speed_description(运镜速度)
         
-        return f"{movement_desc}，{速度描述}，历时{运镜时长:.1f}秒"
+        return f"{movement_desc}，{速度描述}，历时{运镜时长:.0f}秒"
     
     def _get_speed_description(self, 速度):
         """获取速度描述（与其他节点保持一致）"""
