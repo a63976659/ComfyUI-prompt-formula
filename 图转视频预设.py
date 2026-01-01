@@ -415,8 +415,8 @@ class 视频首尾帧转场(视频转场基类):
                 "转场时长": ("FLOAT", {
                     "default": 3.0,
                     "min": 1.0,
-                    "max": 10.0,
-                    "step": 0.1,
+                    "max": 15.0,
+                    "step": 1.0,
                     "display": "slider",
                     "display_name": "转场时长(秒)"
                 }),
@@ -703,8 +703,8 @@ class 视频首尾帧转场_增强版(视频转场基类):
                 "转场时长": ("FLOAT", {
                     "default": 3.0,
                     "min": 1.0,
-                    "max": 10.0,
-                    "step": 0.1,
+                    "max": 15.0,
+                    "step": 1.0,
                     "display": "slider",
                     "display_name": "转场时长(秒)"
                 }),
@@ -1156,8 +1156,8 @@ class 视频运镜提示词:
                 "运镜时长": ("FLOAT", {
                     "default": 3.0, 
                     "min": 1.0, 
-                    "max": 10.0, 
-                    "step": 0.1,  # 步进也改为0.1以保持一致
+                    "max": 15.0, 
+                    "step": 1.0,
                     "display": "slider",
                     "display_name": "运镜时长(秒)"
                 }),

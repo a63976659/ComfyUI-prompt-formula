@@ -14,8 +14,12 @@ class Wan26多镜头:
                     "default": "这个故事以第三人称视角，讲述了一个关于放弃与重拾希望的短剧。",
                     "display_name": "总体描述"
                 }),
-                "镜头数量": ([3, 4, 5], {
+                "镜头数量": ("INT", {
                     "default": 3,
+                    "min": 1,
+                    "max": 5,
+                    "step": 1,
+                    "display": "slider",
                     "display_name": "镜头数量"
                 }),
                 "启用智能多镜": ("BOOLEAN", {
@@ -35,14 +39,14 @@ class Wan26多镜头:
                     "default": "3秒",
                     "display_name": "镜头1结束时间"
                 }),
+                "镜头1运镜方式": (CAMERA_MOVEMENTS, {
+                    "default": "无",
+                    "display_name": "镜头1运镜方式"
+                }),
                 "镜头1描述": ("STRING", {
                     "multiline": True,
                     "default": "一个男孩在操场的角落独自坐着，低头望着手中的信纸，随后轻轻叹气，眼神中透露出迷茫。",
                     "display_name": "镜头1描述"
-                }),
-                "镜头1运镜方式": (CAMERA_MOVEMENTS, {
-                    "default": "无",
-                    "display_name": "镜头1运镜方式"
                 }),
                 
                 # 镜头2
@@ -56,14 +60,14 @@ class Wan26多镜头:
                     "default": "6秒",
                     "display_name": "镜头2结束时间"
                 }),
+                "镜头2运镜方式": (CAMERA_MOVEMENTS, {
+                    "default": "固定镜头",
+                    "display_name": "镜头2运镜方式"
+                }),
                 "镜头2描述": ("STRING", {
                     "multiline": True,
                     "default": "硬切转场，固定机位，聚焦于男孩的眼睛，泪光闪烁，带着失落和无助。",
                     "display_name": "镜头2描述"
-                }),
-                "镜头2运镜方式": (CAMERA_MOVEMENTS, {
-                    "default": "固定镜头",
-                    "display_name": "镜头2运镜方式"
                 }),
                 
                 # 镜头3
@@ -77,14 +81,14 @@ class Wan26多镜头:
                     "default": "10秒",
                     "display_name": "镜头3结束时间"
                 }),
+                "镜头3运镜方式": (CAMERA_MOVEMENTS, {
+                    "default": "无",
+                    "display_name": "镜头3运镜方式"
+                }),
                 "镜头3描述": ("STRING", {
                     "multiline": True,
                     "default": "硬切转场，场景转至一间简朴的教室。一个女孩眼神温和而坚定，穿着朴素的衣着，面带温和而坚定的笑容，走到男孩的身边安慰他。",
                     "display_name": "镜头3描述"
-                }),
-                "镜头3运镜方式": (CAMERA_MOVEMENTS, {
-                    "default": "无",
-                    "display_name": "镜头3运镜方式"
                 }),
                 
                 # 镜头4 (当镜头数量>=4时显示)
@@ -98,17 +102,17 @@ class Wan26多镜头:
                     "default": "13秒",
                     "display_name": "镜头4结束时间"
                 }),
+                "镜头4运镜方式": (CAMERA_MOVEMENTS, {
+                    "default": "无",
+                    "display_name": "镜头4运镜方式"
+                }),
                 "镜头4描述": ("STRING", {
                     "multiline": True,
                     "default": "",
                     "display_name": "镜头4描述"
                 }),
-                "镜头4运镜方式": (CAMERA_MOVEMENTS, {
-                    "default": "无",
-                    "display_name": "镜头4运镜方式"
-                }),
                 
-                # 镜头5 (当镜头数量=5时显示)
+                # 镜头5 (当镜头数量>=5时显示)
                 "镜头5开始时间": ("STRING", {
                     "multiline": False,
                     "default": "14秒",
@@ -119,14 +123,14 @@ class Wan26多镜头:
                     "default": "16秒",
                     "display_name": "镜头5结束时间"
                 }),
+                "镜头5运镜方式": (CAMERA_MOVEMENTS, {
+                    "default": "无",
+                    "display_name": "镜头5运镜方式"
+                }),
                 "镜头5描述": ("STRING", {
                     "multiline": True,
                     "default": "",
                     "display_name": "镜头5描述"
-                }),
-                "镜头5运镜方式": (CAMERA_MOVEMENTS, {
-                    "default": "无",
-                    "display_name": "镜头5运镜方式"
                 }),
                 
                 # 通用参数
@@ -272,7 +276,7 @@ class Wan26多镜头:
                     "运镜": 镜头4运镜方式
                 })
         
-        # 添加镜头5（如果镜头数量=5且描述不为空）
+        # 添加镜头5（如果镜头数量>=5且描述不为空）
         if 镜头数量 >= 5:
             镜头5描述清理 = clean_text(镜头5描述)
             if 镜头5描述清理:
