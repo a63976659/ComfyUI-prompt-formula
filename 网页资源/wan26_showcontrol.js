@@ -54,12 +54,28 @@ function addWidgetValueListener(node, widget, handler) {
     
     let widgetValue = widget.value;
     
+    // 存储原始描述符
+    let originalDescriptor = Object.getOwnPropertyDescriptor(widget, 'value') || 
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(widget), 'value');
+    if (!originalDescriptor) {
+        originalDescriptor = Object.getOwnPropertyDescriptor(widget.constructor.prototype, 'value');
+    }
+    
     Object.defineProperty(widget, 'value', {
         get() {
-            return widgetValue;
+            let valueToReturn = originalDescriptor && originalDescriptor.get
+                ? originalDescriptor.get.call(widget)
+                : widgetValue;
+            return valueToReturn;
         },
         set(newVal) {
-            widgetValue = newVal;
+            if (originalDescriptor && originalDescriptor.set) {
+                originalDescriptor.set.call(widget, newVal);
+            } else { 
+                widgetValue = newVal;
+            }
+            
+            // 值变化时重新处理widget状态
             handler(node);
         }
     });

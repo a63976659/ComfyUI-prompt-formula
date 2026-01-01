@@ -54,13 +54,28 @@ function wan26MultiShotHandler(node) {
         const shotCountWidget = findWidgetByName(node, "镜头数量");
         if (!shotCountWidget) return;
         
-        const shotCount = shotCountWidget.value;
+        const shotCount = parseInt(shotCountWidget.value) || 3;
         
         // 获取智能多镜开关
         const smartMultiShotWidget = findWidgetByName(node, "启用智能多镜");
         const isSmartMode = smartMultiShotWidget ? smartMultiShotWidget.value : false;
         
         // 获取所有镜头相关widget
+        const shot1StartWidget = findWidgetByName(node, "镜头1开始时间");
+        const shot1EndWidget = findWidgetByName(node, "镜头1结束时间");
+        const shot1DescWidget = findWidgetByName(node, "镜头1描述");
+        const shot1CameraWidget = findWidgetByName(node, "镜头1运镜方式");
+        
+        const shot2StartWidget = findWidgetByName(node, "镜头2开始时间");
+        const shot2EndWidget = findWidgetByName(node, "镜头2结束时间");
+        const shot2DescWidget = findWidgetByName(node, "镜头2描述");
+        const shot2CameraWidget = findWidgetByName(node, "镜头2运镜方式");
+        
+        const shot3StartWidget = findWidgetByName(node, "镜头3开始时间");
+        const shot3EndWidget = findWidgetByName(node, "镜头3结束时间");
+        const shot3DescWidget = findWidgetByName(node, "镜头3描述");
+        const shot3CameraWidget = findWidgetByName(node, "镜头3运镜方式");
+        
         const shot4StartWidget = findWidgetByName(node, "镜头4开始时间");
         const shot4EndWidget = findWidgetByName(node, "镜头4结束时间");
         const shot4DescWidget = findWidgetByName(node, "镜头4描述");
@@ -77,6 +92,22 @@ function wan26MultiShotHandler(node) {
         
         // 如果是智能模式，隐藏所有镜头详细参数
         if (isSmartMode) {
+            // 隐藏镜头1-3参数
+            toggleWidget(node, shot1StartWidget, false);
+            toggleWidget(node, shot1EndWidget, false);
+            toggleWidget(node, shot1DescWidget, false);
+            toggleWidget(node, shot1CameraWidget, false);
+            
+            toggleWidget(node, shot2StartWidget, false);
+            toggleWidget(node, shot2EndWidget, false);
+            toggleWidget(node, shot2DescWidget, false);
+            toggleWidget(node, shot2CameraWidget, false);
+            
+            toggleWidget(node, shot3StartWidget, false);
+            toggleWidget(node, shot3EndWidget, false);
+            toggleWidget(node, shot3DescWidget, false);
+            toggleWidget(node, shot3CameraWidget, false);
+            
             // 隐藏镜头4参数
             toggleWidget(node, shot4StartWidget, false);
             toggleWidget(node, shot4EndWidget, false);
@@ -99,6 +130,38 @@ function wan26MultiShotHandler(node) {
             toggleWidget(node, shotCountWidget, true);
             toggleWidget(node, transitionWidget, true);
             toggleWidget(node, timeFormatWidget, true);
+            
+            // 镜头1始终显示（最少1个镜头）
+            toggleWidget(node, shot1StartWidget, true);
+            toggleWidget(node, shot1EndWidget, true);
+            toggleWidget(node, shot1DescWidget, true);
+            toggleWidget(node, shot1CameraWidget, true);
+            
+            // 镜头2在镜头数量>=2时显示
+            if (shotCount >= 2) {
+                toggleWidget(node, shot2StartWidget, true);
+                toggleWidget(node, shot2EndWidget, true);
+                toggleWidget(node, shot2DescWidget, true);
+                toggleWidget(node, shot2CameraWidget, true);
+            } else {
+                toggleWidget(node, shot2StartWidget, false);
+                toggleWidget(node, shot2EndWidget, false);
+                toggleWidget(node, shot2DescWidget, false);
+                toggleWidget(node, shot2CameraWidget, false);
+            }
+            
+            // 镜头3在镜头数量>=3时显示
+            if (shotCount >= 3) {
+                toggleWidget(node, shot3StartWidget, true);
+                toggleWidget(node, shot3EndWidget, true);
+                toggleWidget(node, shot3DescWidget, true);
+                toggleWidget(node, shot3CameraWidget, true);
+            } else {
+                toggleWidget(node, shot3StartWidget, false);
+                toggleWidget(node, shot3EndWidget, false);
+                toggleWidget(node, shot3DescWidget, false);
+                toggleWidget(node, shot3CameraWidget, false);
+            }
             
             // 控制镜头4的显示
             if (shotCount >= 4) {
@@ -141,12 +204,28 @@ function addWidgetValueListener(node, widget, handler) {
     
     let widgetValue = widget.value;
     
+    // 存储原始描述符
+    let originalDescriptor = Object.getOwnPropertyDescriptor(widget, 'value') || 
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(widget), 'value');
+    if (!originalDescriptor) {
+        originalDescriptor = Object.getOwnPropertyDescriptor(widget.constructor.prototype, 'value');
+    }
+    
     Object.defineProperty(widget, 'value', {
         get() {
-            return widgetValue;
+            let valueToReturn = originalDescriptor && originalDescriptor.get
+                ? originalDescriptor.get.call(widget)
+                : widgetValue;
+            return valueToReturn;
         },
         set(newVal) {
-            widgetValue = newVal;
+            if (originalDescriptor && originalDescriptor.set) {
+                originalDescriptor.set.call(widget, newVal);
+            } else { 
+                widgetValue = newVal;
+            }
+            
+            // 值变化时重新处理widget状态
             handler(node);
         }
     });
@@ -174,6 +253,27 @@ app.registerExtension({
             
             if (timeFormatWidget) {
                 addWidgetValueListener(node, timeFormatWidget, wan26MultiShotHandler);
+            }
+            
+            // 监听镜头相关widget的变化
+            const shotWidgets = [
+                // 镜头1相关组件
+                "镜头1开始时间", "镜头1结束时间", "镜头1描述", "镜头1运镜方式",
+                // 镜头2相关组件
+                "镜头2开始时间", "镜头2结束时间", "镜头2描述", "镜头2运镜方式",
+                // 镜头3相关组件
+                "镜头3开始时间", "镜头3结束时间", "镜头3描述", "镜头3运镜方式",
+                // 镜头4相关组件
+                "镜头4开始时间", "镜头4结束时间", "镜头4描述", "镜头4运镜方式",
+                // 镜头5相关组件
+                "镜头5开始时间", "镜头5结束时间", "镜头5描述", "镜头5运镜方式"
+            ];
+            
+            for (const widgetName of shotWidgets) {
+                const widget = findWidgetByName(node, widgetName);
+                if (widget) {
+                    addWidgetValueListener(node, widget, wan26MultiShotHandler);
+                }
             }
         }
     }

@@ -336,6 +336,8 @@ function videoDynamicWithCameraHandler(node) {
         const 环境互动Widget = findWidgetByName(node, "与环境互动");
         
         // 运镜相关widget
+        const 镜头目标Widget = findWidgetByName(node, "镜头目标");
+        const 多个主体Widget = findWidgetByName(node, "多个主体");
         const 运镜速度Widget = findWidgetByName(node, "运镜速度");
         const 运镜时长Widget = findWidgetByName(node, "运镜时长");
         const 视觉连贯性Widget = findWidgetByName(node, "视觉连贯性");
@@ -354,6 +356,8 @@ function videoDynamicWithCameraHandler(node) {
         
         // 运镜方式不为"无"时，显示运镜相关参数
         const 显示运镜参数 = 运镜方式 !== "无";
+        toggleWidget(node, 镜头目标Widget, 显示运镜参数);
+        toggleWidget(node, 多个主体Widget, 显示运镜参数);
         toggleWidget(node, 运镜速度Widget, 显示运镜参数);
         toggleWidget(node, 运镜时长Widget, 显示运镜参数);
         toggleWidget(node, 视觉连贯性Widget, 显示运镜参数); // 视觉连贯性只在有运镜时显示
