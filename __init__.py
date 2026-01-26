@@ -268,6 +268,24 @@ except Exception as e:
     
     Wan26多镜头 = Wan26多镜头占位符
 
+# 导入裁剪节点
+try:
+    from 节点文件.裁剪节点 import 图像裁剪节点
+except Exception as e:
+    logging.error(f"导入裁剪节点失败: {str(e)}")
+    class 图像裁剪占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("IMAGE",)
+        RETURN_NAMES = ("图像",)
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/工具节点"
+        def placeholder(self, **kwargs):
+            return (None,)
+    
+    图像裁剪节点 = 图像裁剪占位符
+
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
     # 基础新手节点
@@ -288,6 +306,7 @@ NODE_CLASS_MAPPINGS = {
     "空图像防报错": 空图像防报错,
     "判断并输出加载的图像": 判断并输出加载的图像,
     "批量判断并输出同名图像": 批量判断并输出同名图像,
+    "图像裁剪节点": 图像裁剪节点,
     # 千问编辑
     "千问单图编辑-改变视角": 千问单图编辑_改变视角,
     "千问单图编辑-改变镜头": 千问单图编辑_改变镜头,
@@ -331,6 +350,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "空图像防报错": "空图像防报错",
     "判断并输出加载的图像": "判断并输出加载的图像",
     "批量判断并输出同名图像": "批量判断并输出同名图像",
+    "图像裁剪节点": "图像裁剪节点",
     # 千问编辑
     "千问单图编辑-改变视角": "千问单图编辑-改变视角",
     "千问单图编辑-改变镜头": "千问单图编辑-改变镜头",
@@ -373,5 +393,6 @@ print("✨ 视频动效提示词节点已添加 - 120+种动态效果")
 print("📁 提示词预设节点，直接在节点上预览内容")
 print("🚀 新增视频动态带运镜节点 - 动态+运镜一体化设计")
 print("🎵 新增Wan25图生视频节点 - 支持视觉+音频同步生成")
+print("✂️ 新增图像裁剪节点 - 快捷处理图像尺寸")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")
