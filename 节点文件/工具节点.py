@@ -451,23 +451,20 @@ class 图像输入反转:
 class 合并多组提示词:
     """合并多组提示词，支持动态增加输入组
     
-    将多个提示词输入合并为一个提示词。支持最多20组输入，可自定义分隔符。
-    默认显示6组输入，当连接满时会自动显示更多输入组。
+    Python端定义了50个可能的输入槽位，
+    前端JS根据连接情况动态显示/隐藏这些槽位。
     """
     
     @classmethod
     def INPUT_TYPES(cls):
-        # 基础输入配置 - 默认显示6组
+        # 基础输入配置
         optional_inputs = {
             "分隔符": (["逗号", "句号", "斜杠", "换行"], {"default": "逗号"}),
         }
         
-        # 添加6组默认输入
-        for i in range(1, 7):
-            optional_inputs[f"提示词{i}"] = ("STRING", {"default": "", "forceInput": True})
-        
-        # 添加额外的14组输入（总共20组）
-        for i in range(7, 21):
+        # 循环创建50个输入槽位
+        # 我们全部在后端注册好，前端JS负责“视觉上”的隐藏和显示
+        for i in range(1, 51):
             optional_inputs[f"提示词{i}"] = ("STRING", {"default": "", "forceInput": True})
         
         return {
@@ -484,12 +481,16 @@ class 合并多组提示词:
         # 收集所有非空的提示词
         提示词列表 = []
         
-        # 获取所有提示词参数
-        for key, value in kwargs.items():
-            if key.startswith("提示词") and value and value.strip():
-                提示词列表.append(value.strip())
+        # 强制按照 1 到 50 的顺序读取，确保合并顺序正确
+        for i in range(1, 51):
+            key = f"提示词{i}"
+            if key in kwargs:
+                value = kwargs[key]
+                # 确保值存在且不为空字符串
+                if value and isinstance(value, str) and value.strip():
+                    提示词列表.append(value.strip())
         
-        # 根据选择的分隔符确定实际分隔符
+        # 映射分隔符
         分隔符映射 = {
             "逗号": ", ",
             "句号": "。",
@@ -498,17 +499,9 @@ class 合并多组提示词:
         }
         实际分隔符 = 分隔符映射.get(分隔符, ", ")
         
-        # 使用分隔符合并提示词
+        # 合并
         合并结果 = 实际分隔符.join(提示词列表)
         return (合并结果,)
-    
-    @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        # 检查是否有任何提示词输入发生变化
-        for key, value in kwargs.items():
-            if key.startswith("提示词") and value:
-                return float("NaN")
-        return 0.0
 
 class 空图像防报错:
     """空图像防报错
