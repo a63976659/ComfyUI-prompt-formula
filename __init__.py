@@ -22,7 +22,7 @@ except Exception as e:
 
 # 导入通用提示词公式节点
 try:
-    from 通用提示词公式 import (
+    from 节点文件.通用提示词公式 import (
         视频提示词公式,
         图像提示词公式,
         随机提示词人像,
@@ -44,7 +44,7 @@ except Exception as e:
 
 # 导入图转视频预设节点
 try:
-    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词, 视频首尾帧转场_增强版
+    from 节点文件.图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词, 视频首尾帧转场_增强版
 except Exception as e:
     logging.error(f"导入图转视频预设节点失败: {str(e)}")
     # 创建空的占位符类
@@ -99,7 +99,7 @@ except Exception as e:
 
 # 导入提示词预设节点
 try:
-    from 提示词预设节点 import (
+    from 节点文件.提示词预设节点 import (
         提示词预设,
         NODE_CLASS_MAPPINGS as PRESET_NODES,
         NODE_DISPLAY_NAME_MAPPINGS as PRESET_DISPLAY_NAMES
@@ -123,7 +123,7 @@ except Exception as e:
 
 # 导入千问提示词公式节点
 try:
-    from 千问提示词公式 import (
+    from 节点文件.千问提示词公式 import (
         LOGO生成,
         艺术字体生成,
         海报生成,
@@ -136,7 +136,7 @@ except Exception as e:
 
 # 导入工具节点
 try:
-    from 工具节点 import (
+    from 节点文件.工具节点 import (
         字符串输入反转,
         图像输入反转,
         合并多组提示词,
@@ -158,12 +158,11 @@ except Exception as e:
         def placeholder(self, **kwargs):
             return ("工具节点加载失败",)
     
-    # 修复：移除未定义的 基础图像加载器 引用
     字符串输入反转 = 图像输入反转 = 合并多组提示词 = 提取视频结束帧 = 空图像防报错 = 判断并输出加载的图像 = 批量判断并输出同名图像 = 工具节点占位符
 
 # 导入千问编辑节点
 try:
-    from 千问编辑 import (
+    from 节点文件.千问编辑 import (
         千问单图编辑_改变视角,
         千问单图编辑_改变镜头, 
         千问单图编辑_人物换动作,
@@ -191,7 +190,7 @@ except Exception as e:
 
 # 导入视频动态带运镜节点
 try:
-    from 视频动态带运镜 import 视频动态带运镜
+    from 节点文件.视频动态带运镜 import 视频动态带运镜
 except Exception as e:
     logging.error(f"导入视频动态带运镜节点失败: {str(e)}")
     class 视频动态带运镜占位符:
@@ -212,7 +211,7 @@ try:
     import importlib.util
     import os
     # 动态导入包含点号的模块
-    module_path = os.path.join(os.path.dirname(__file__), 'Wan2.5提示词公式.py')
+    module_path = os.path.join(os.path.dirname(__file__), '节点文件', 'Wan2.5提示词公式.py')
     module_name = 'Wan2.5提示词公式'
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     Wan25提示词公式_module = importlib.util.module_from_spec(spec)
@@ -235,7 +234,7 @@ except Exception as e:
 
 # 导入Wan26图生视频节点
 try:
-    from Wan26图生视频 import Wan26图生视频
+    from 节点文件.Wan26图生视频 import Wan26图生视频
 except Exception as e:
     logging.error(f"导入Wan26图生视频节点失败: {str(e)}")
     class Wan26图生视频占位符:
@@ -253,7 +252,7 @@ except Exception as e:
 
 # 导入Wan26多镜头节点
 try:
-    from Wan26多镜头 import Wan26多镜头
+    from 节点文件.Wan26多镜头 import Wan26多镜头
 except Exception as e:
     logging.error(f"导入Wan26多镜头节点失败: {str(e)}")
     class Wan26多镜头占位符:
