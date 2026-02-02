@@ -11,11 +11,18 @@
 
 <img width="4958" height="2452" alt="图像提示词公式使用示例" src="https://github.com/user-attachments/assets/5883d566-10c8-40a9-b628-f72c08bae277" />
 
-提示词预设文本可以直接在`提示词预设文件夹`中进行添加、编辑、删除
+---
+
+
+---
+
+## 提示词预设文本可以直接在`提示词预设文件夹`中进行添加、编辑、删除
 <img width="1380" height="528" alt="预设文本png" src="https://github.com/user-attachments/assets/39b9396c-27e3-43c3-92c8-30d00578af42" />
 
+---
+
 ## 更新说明
-20250814
+## 20250814
 1. 增加提示词预设文件格式json支持
 2. 优化读取机制，减少算力占用
 3. 支持输入内容为空，选择项为无时，不输出内容
@@ -62,8 +69,9 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 
 ## 20251104
 1. 修复"提示词预设"节点读取文件时名称混乱。感谢网友 luckyu445 的建议。
-2. 新增工具节点 “合并多组提示词”有20个可输入项，分隔符多种可以选择（逗号，句号，斜杠，换行）。
-<img width="982" height="490" alt="合并多组字符串" src="https://github.com/user-attachments/assets/52d713cb-746b-45e2-b0b6-57a55f3e419b" />
+2. 新增工具节点 “合并多组提示词”有50个可输入项，分隔符多种可以选择（逗号，句号，斜杠，换行）。
+<img width="1950" height="721" alt="image" src="https://github.com/user-attachments/assets/4d515880-dd48-4c8d-8885-e11eac8e7b71" />
+
 
 3. 新增工具节点 “字符串输入反转”与“图像输入反转”作用是交换输入.
 <img width="570" height="520" alt="字符串反转" src="https://github.com/user-attachments/assets/0b101b43-c93e-4f7d-bc32-ebaeb695c07c" />
@@ -90,7 +98,6 @@ https://github.com/user-attachments/assets/645b8ce7-7ed1-4660-9c1e-89c5713c0081
 7. 多格式支持：支持jpg、png、bmp、tiff、webp等常见格式
 8. 实时反馈：提供详细的查找和加载状态。
 
-！！！⚠️功能还不完善，使用可能会报错。
 
 ## 20251117
 1. 🚫删除历史记录相关功能，comfyui图像自带历史工作流，无需手动记录。
@@ -146,8 +153,23 @@ https://github.com/user-attachments/assets/58632a87-b7fd-483f-b69e-474f757f27ba
 2. 优化“视频动态带运镜”节点的组件排列，相关功能安排在一起，使用更方便。
 3. 优化“Wan26多镜头”节点，镜头数量由滑块控制，使用者一眼看懂。
 
+## 20260202
+1. `智能缩放图像及遮罩`
+ 一个接口支持两种输入，图像 (IMAGE) 和 遮罩 (MASK)，输入是什么，输出就是什么，无需区分节点。
+动态 UI 交互、丰富模式、一站式解决，
+参考官方的“调整图像/掩码大小”节点，官方的节点 因前端原因无法进行全面汉化，为方便使用而添加。
 
+2. `智能预览图像及遮罩`
+ 用来匹配上个节点，无论输入的是图像还是遮罩，它会自动转换进行预览，适配任何图像或遮罩。
 
+3. `批量判断并输出同名图像` (优化)
+ 取消了旧版本“最多输出3张”的限制,现在它会全部加载并合并为一个 Batch (批次) 输出。
+该节点会自动以第一张图为基准，将后续所有图像缩放到统一尺寸，确保合并过程 100% 成功。
+
+4. 删除`空图像防报错`节点，ComfyUI中只要有连线必须要有数据，此节点要求不成立。
+<img width="543" height="500" alt="524dc8d0-98d6-43b6-9ae0-0bcc0a3e6ba8" src="https://github.com/user-attachments/assets/1104caee-d367-4ffa-8157-606a3531bb6e" />
+
+---
 
 ## 安装说明
 1. 确保已安装ComfyUI
@@ -168,12 +190,15 @@ git clone https://github.com/a63976659/ComfyUI-prompt-formula.git
 7. 千问编辑节点配合千问编辑工作流使用。
 千问编辑效果参考以下视频：https://www.bilibili.com/video/BV1C21wBZEsf/
 
+---
+
 ## 插件作者
 - BiliBili:猪的飞行梦
 - 企鹅群202018000
 - 觉得插件还不错，支持一下作者
 ![微信图片_2025-08-26_170541_386](https://github.com/user-attachments/assets/b6ae0001-a39f-41b4-af9d-fbefe9d30cd0)
 
+---
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
