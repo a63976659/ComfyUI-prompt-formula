@@ -171,15 +171,16 @@ class 批量输出同名图像(基础图像加载器):
     DESCRIPTION = "1.添加图像读取目录\n2.输入图像名称用符号间隔\n3.节点执行时，自动提取所有图像文件名\n（符号前部分）与输入文本比对。\n 所有匹配成功的图像将合并为 Batch 输出。"
     
     def 加载匹配图像(self, 文本内容, 图像目录):
-        状态 = ""
         if not 图像目录 or not os.path.exists(图像目录):
             return (None, f"目录不存在: {图像目录}")
         
         图像扩展名 = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp')
-        所有文件 = os.listdir(图像目录)
+        所有文件 = sorted(os.listdir(图像目录)) # 排序确保顺序稳定
         找到的图像张量 = []
+        匹配信息列表 = []
         split_pattern = r'[ \(\)\[\]\{\}\-_,\.，。、\（\）\【\】\—\s]'
         
+        count = 1
         for 文件名 in 所有文件:
             name_part, ext_part = os.path.splitext(文件名)
             if ext_part.lower() in 图像扩展名:
@@ -192,12 +193,18 @@ class 批量输出同名图像(基础图像加载器):
                         图像 = Image.open(图像路径)
                         张量, _, _, _ = self.处理图像和遮罩(图像)
                         找到的图像张量.append(张量)
-                        状态 += f"✔ 已匹配: {文件名} (关键字: {match_name})\n"
+                        
+                        # 构建状态：图像n是文件名(无后缀)
+                        匹配信息列表.append(f"图像{count}是{name_part}")
+                        count += 1
                     except Exception as e:
-                        状态 += f"❌ 加载失败 {文件名}: {str(e)}\n"
+                        print(f"加载失败 {文件名}: {str(e)}")
 
         if not 找到的图像张量:
-            return (None, 状态 + "未找到匹配图像。")
+            return (None, "未找到匹配图像。")
+        
+        # 将信息用逗号连接
+        状态 = "，".join(匹配信息列表)
         
         try:
             基准 = 找到的图像张量[0]
@@ -211,7 +218,6 @@ class 批量输出同名图像(基础图像加载器):
                 最终列表.append(img)
             
             最终批次 = torch.cat(最终列表, dim=0)
-            状态 = f"成功加载 {len(最终列表)} 张图像。\n" + 状态
             return (最终批次, 状态)
         except Exception as e:
             return (None, f"合并过程出错: {str(e)}")
