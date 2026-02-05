@@ -42,24 +42,28 @@ app.registerExtension({
         node.onDrawBackground = function(ctx) {
             if (!this.imgCache) return;
 
+            ctx.save(); // 保护上下文，防止 Win10 缩放堆叠
             const img = this.imgCache;
             
-            // 布局计算
+            // 布局计算：确保数值为整数，避免 Canvas 偏移抖动
             const headerHeight = 30;
             const widgetHeight = 32;
             const visibleWidgets = this.widgets ? this.widgets.length : 8;
-            const topMargin = headerHeight + (visibleWidgets * widgetHeight) + 10;
+            const topMargin = Math.floor(headerHeight + (visibleWidgets * widgetHeight) + 15);
             this.layoutTopMargin = topMargin;
 
             // 计算缩放
             const scale = this.size[0] / img.width;
             this.renderScale = scale;
-            const drawH = img.height * scale;
+            const drawH = Math.floor(img.height * scale);
 
-            // 自动调整节点高度
-            const neededHeight = topMargin + drawH + 20;
-            if (Math.abs(this.size[1] - neededHeight) > 5) {
-                this.setSize([this.size[0], neededHeight]);
+            // --- 核心优化：稳定性高度自适应 ---
+            const minH = Math.floor(visibleWidgets * widgetHeight + 60); // 保证组件有位置显示
+            const neededHeight = Math.max(minH, topMargin + drawH + 20);
+            
+            // 只有当高度差距大于 10 像素时才同步，且直接修改 size 属性，避免 setSize 的副作用
+            if (Math.abs(this.size[1] - neededHeight) > 10) {
+                this.size[1] = neededHeight;
             }
 
             // A. 绘制原图
@@ -70,7 +74,10 @@ app.registerExtension({
             const xW = findWidget(this, "裁剪X");
             const yW = findWidget(this, "裁剪Y");
             
-            if (!widthW || !heightW || !xW || !yW) return;
+            if (!widthW || !heightW || !xW || !yW) {
+                ctx.restore();
+                return;
+            }
 
             // B. 计算红框视觉坐标
             const cropW = widthW.value * scale;
@@ -108,6 +115,8 @@ app.registerExtension({
             ctx.font = "12px Arial";
             const text = `${Math.round(widthW.value)} x ${Math.round(heightW.value)}`;
             ctx.fillText(text, cropX + 5, cropY + 15);
+            
+            ctx.restore();
         };
 
         // --- 2. 鼠标交互 ---
@@ -177,7 +186,6 @@ app.registerExtension({
 
             if (!fileW || !fileW.value) return;
 
-            // A. 图像加载
             if (node.imgUrl !== fileW.value) {
                 const img = new Image();
                 img.src = `/view?filename=${encodeURIComponent(fileW.value)}&type=input`;
@@ -210,77 +218,39 @@ app.registerExtension({
 
             let targetW = widthW.value;
             let targetH = heightW.value;
-
-            // 获取图像物理最大限制
             const imgMaxW = Math.floor(img.width / 16) * 16;
             const imgMaxH = Math.floor(img.height / 16) * 16;
 
-            // B. 计算目标宽高
             if (!isCustom) {
-                // --- 预设模式 ---
                 const ratios = { "1:1": 1, "2:3": 2/3, "3:2": 3/2, "3:4": 3/4, "4:3": 4/3, "9:16": 9/16, "16:9": 16/9 };
                 const r = ratios[presetW.value] || 1;
-                
                 let baseW, baseH;
                 if (img.width / img.height > r) {
-                    baseH = img.height;
-                    baseW = baseH * r;
+                    baseH = img.height; baseW = baseH * r;
                 } else {
-                    baseW = img.width;
-                    baseH = baseW / r;
+                    baseW = img.width; baseH = baseW / r;
                 }
-                
-                // 预设模式也应用“防比例破坏”逻辑
                 let effectiveScale = scaleVal;
                 const minScaleW = 16 / baseW;
                 const minScaleH = 16 / baseH;
                 if (effectiveScale < minScaleW) effectiveScale = minScaleW;
                 if (effectiveScale < minScaleH) effectiveScale = minScaleH;
-                
                 targetW = snap16(baseW * effectiveScale);
                 targetH = snap16(baseH * effectiveScale);
-                
                 node.customBase = { w: baseW, h: baseH };
-
             } else {
-                // --- 自定义模式 ---
                 if (scaleChanged) {
-                    // 用户动了缩放滑块
-                    let calcW = node.customBase.w * scaleVal;
-                    let calcH = node.customBase.h * scaleVal;
-
-                    // 1. 检查是否存在“触底”风险，保护比例
-                    // 如果计算出的值小于16，说明该比例会让这一边崩坏。
-                    // 我们需要算出“能维持16px的最小比例”是多少。
                     const minScaleForW = 16 / node.customBase.w;
                     const minScaleForH = 16 / node.customBase.h;
-                    
-                    // 取限制最严格的那个（即较大的Scale值）
-                    // 比如 W只需0.1倍就触底，H需要0.5倍就触底，那我们在0.5倍时就得停下
                     const limitScale = Math.max(minScaleForW, minScaleForH);
-
-                    // 如果用户请求的比例比极限还小，我们强制使用极限比例
-                    let effectiveScale = scaleVal;
-                    if (scaleVal < limitScale) {
-                        effectiveScale = limitScale;
-                    }
-
-                    // 2. 重新计算（使用安全的比例）
-                    calcW = node.customBase.w * effectiveScale;
-                    calcH = node.customBase.h * effectiveScale;
-
-                    // 3. 结果修正（Snap16 和 图片最大限制）
-                    targetW = Math.min(snap16(calcW), imgMaxW);
-                    targetH = Math.min(snap16(calcH), imgMaxH);
-
+                    let effectiveScale = Math.max(scaleVal, limitScale);
+                    targetW = Math.min(snap16(node.customBase.w * effectiveScale), imgMaxW);
+                    targetH = Math.min(snap16(node.customBase.h * effectiveScale), imgMaxH);
                 } else {
-                    // 用户动了宽高滑块：反算 Base
                     targetW = Math.min(widthW.value, imgMaxW);
                     targetH = Math.min(heightW.value, imgMaxH);
-                    
                     const expectedW = snap16(node.customBase.w * scaleVal);
                     const expectedH = snap16(node.customBase.h * scaleVal);
-                    
                     if (Math.abs(targetW - expectedW) > 16 || Math.abs(targetH - expectedH) > 16) {
                         node.customBase.w = targetW / scaleVal;
                         node.customBase.h = targetH / scaleVal;
@@ -288,45 +258,27 @@ app.registerExtension({
                 }
             }
 
-            // C. 应用宽高变更 + 中心缩放修正
             if (widthW.value !== targetW || heightW.value !== targetH) {
                 const oldW = widthW.value;
                 const oldH = heightW.value;
-                
                 widthW.value = targetW;
                 heightW.value = targetH;
-
-                // Center Scaling
                 if (oldW > 0 && oldH > 0) {
                     const oldCenterX = xW.value + oldW / 2;
                     const oldCenterY = yW.value + oldH / 2;
-                    
-                    let newX = oldCenterX - targetW / 2;
-                    let newY = oldCenterY - targetH / 2;
-                    
-                    xW.value = Math.floor(newX);
-                    yW.value = Math.floor(newY);
+                    xW.value = Math.floor(oldCenterX - targetW / 2);
+                    yW.value = Math.floor(oldCenterY - targetH / 2);
                 }
             }
-            
             node.lastScale = scaleVal;
-
-            // D. 强制边界检查
-            if (widthW.value > imgMaxW) widthW.value = imgMaxW;
-            if (heightW.value > imgMaxH) heightW.value = imgMaxH;
-
             const maxSafeX = Math.max(0, img.width - widthW.value);
             const maxSafeY = Math.max(0, img.height - heightW.value);
-
-            if (xW.value > maxSafeX) xW.value = maxSafeX;
-            if (xW.value < 0) xW.value = 0;
-            if (yW.value > maxSafeY) yW.value = maxSafeY;
-            if (yW.value < 0) yW.value = 0;
+            xW.value = Math.max(0, Math.min(xW.value, maxSafeX));
+            yW.value = Math.max(0, Math.min(yW.value, maxSafeY));
 
             node.setDirtyCanvas(true, true);
         };
 
-        // 监听
         node.widgets.forEach(w => {
             if (w.name === "点击居中") return;
             const oldCallback = w.callback;
@@ -336,6 +288,6 @@ app.registerExtension({
             };
         });
 
-        setTimeout(refresh, 100);
+        setTimeout(refresh, 200);
     }
 });
