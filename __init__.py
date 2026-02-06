@@ -315,6 +315,25 @@ except Exception as e:
     
     智能预览图像及遮罩 = 智能预览占位符
 
+# 导入 ACE提示词公式节点
+try:
+    from 节点文件.ACE提示词公式 import (
+        ACE提示词公式,
+        ACE高级流派融合
+    )
+except Exception as e:
+    logging.error(f"导入ACE提示词公式节点失败: {str(e)}")
+    class ACE提示词占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING",)
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/ACE音乐"
+        def placeholder(self, **kwargs):
+            return ("ACE节点加载失败",)
+    ACE提示词公式 = ACE高级流派融合 = ACE提示词占位符
+
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
     # 基础新手节点
@@ -355,6 +374,8 @@ NODE_CLASS_MAPPINGS = {
     "Wan25图生视频": Wan25图生视频,
     "Wan26图生视频": Wan26图生视频,
     "Wan26多镜头": Wan26多镜头,
+    "ACE提示词公式": ACE提示词公式,
+    "ACE高级流派融合": ACE高级流派融合,
 }
 
 # 合并预设节点映射
@@ -400,6 +421,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Wan25图生视频": "Wan25图生视频",
     "Wan26图生视频": "Wan26图生视频",
     "Wan26多镜头": "Wan26多镜头",
+    "ACE提示词公式": "🎵 ACE-Step 1.5 音乐提示词",
+    "ACE高级流派融合": "🎹 ACE-Step 1.5 高级流派融合",
 }
 
 # 合并预设节点显示名称
@@ -427,5 +450,6 @@ print("🎵 新增Wan25图生视频节点 - 支持视觉+音频同步生成")
 print("✂️ 新增图像裁剪节点 - 快捷处理图像尺寸")
 print("📏 新增智能缩放图像及遮罩节点 - 支持多种缩放模式")
 print("👁️ 新增智能预览图像及遮罩节点 - 支持图像和遮罩直接预览") 
+print("🎵 新增ACE-Step 1.5 音乐提示词 - 轻松生成你的歌曲") 
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")
