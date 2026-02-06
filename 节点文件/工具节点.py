@@ -310,7 +310,9 @@ class 图像输入反转:
 class 合并多组提示词:
     @classmethod
     def INPUT_TYPES(cls):
-        optional_inputs = {"分隔符": (["逗号", "句号", "斜杠", "换行", "无"], {"default": "逗号"})}
+        optional_inputs = {
+            "分隔符": (["逗号", "句号", "斜杠", "换行", "无", "下划线", "中划线", "长破折号"], {"default": "逗号"})
+        }
         for i in range(1, 51):
             optional_inputs[f"提示词{i}"] = ("STRING", {"default": "", "forceInput": True})
         return {"required": {}, "optional": optional_inputs}
@@ -326,5 +328,14 @@ class 合并多组提示词:
             key = f"提示词{i}"
             if key in kwargs and kwargs[key] and isinstance(kwargs[key], str) and kwargs[key].strip():
                 提示词列表.append(kwargs[key].strip())
-        分隔符映射 = {"逗号": ", ", "句号": "。", "斜杠": "/", "换行": "\n", "无": ""}
+        分隔符映射 = {
+            "逗号": ", ", 
+            "句号": "。", 
+            "斜杠": "/", 
+            "换行": "\n", 
+            "无": "",
+            "下划线": "_",
+            "中划线": "-",
+            "长破折号": "—"
+        }
         return (分隔符映射.get(分隔符, ", ").join(提示词列表),)
