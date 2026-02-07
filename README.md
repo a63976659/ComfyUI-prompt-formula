@@ -196,6 +196,17 @@ https://github.com/user-attachments/assets/58632a87-b7fd-483f-b69e-474f757f27ba
 * **类名与注册同步**：更新了 `__init__.py` 文件，确保所有更名后的节点（如 `提取视频帧`、`批量输出同名图像`）能够被 ComfyUI 正确识别和加载，避免了“Redefined node”或节点丢失的风险。
 <img width="700" height="700" alt="image" src="https://github.com/user-attachments/assets/5ba70c61-6b8b-4b3a-8646-7b4d7aa61b33" />
 
+## 20260207
+1. 新增`🎵 ACE-Step 1.5 音乐提示词`节点和`🎹 ACE-Step 1.5 高级流派融合`节点。
+2. 提供默认歌词作为参考使用
+
+## 20260208
+1. `🎵 ACE-Step 1.5 音乐提示词`节点改名为`🎵 ACE-Step 1.5 音乐提示词 (手动)`节点，保留节点用作自定义输入。
+2. 新增`🎵 ACE-Step 1.5 音乐提示词 (预设)`节点，节点提供预设曲风，组件随预设改变，也可以自由调节。
+3. 优化`🎹 ACE-Step 1.5 高级流派融合`节点。
+4. 节点说明中增加提示。
+<img width="1502" height="1602" alt="image" src="https://github.com/user-attachments/assets/629fdc3e-fc1b-437b-84c4-10be071a2b13" />
+
 ---
 
 ## 安装说明
