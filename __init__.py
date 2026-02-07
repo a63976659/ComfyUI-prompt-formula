@@ -319,6 +319,7 @@ except Exception as e:
 try:
     from 节点文件.ACE提示词公式 import (
         ACE提示词公式,
+        ACE提示词预设,
         ACE高级流派融合
     )
 except Exception as e:
@@ -332,7 +333,7 @@ except Exception as e:
         CATEGORY = "📕提示词公式/ACE音乐"
         def placeholder(self, **kwargs):
             return ("ACE节点加载失败",)
-    ACE提示词公式 = ACE高级流派融合 = ACE提示词占位符
+    ACE提示词公式 = ACE提示词预设 = ACE高级流派融合 = ACE提示词占位符
 
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
@@ -375,6 +376,7 @@ NODE_CLASS_MAPPINGS = {
     "Wan26图生视频": Wan26图生视频,
     "Wan26多镜头": Wan26多镜头,
     "ACE提示词公式": ACE提示词公式,
+    "ACE提示词预设": ACE提示词预设,
     "ACE高级流派融合": ACE高级流派融合,
 }
 
@@ -421,7 +423,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Wan25图生视频": "Wan25图生视频",
     "Wan26图生视频": "Wan26图生视频",
     "Wan26多镜头": "Wan26多镜头",
-    "ACE提示词公式": "🎵 ACE-Step 1.5 音乐提示词",
+    "ACE提示词公式": "🎵 ACE-Step 1.5 音乐提示词 (手动)",
+    "ACE提示词预设": "🎵 ACE-Step 1.5 音乐提示词 (预设)",
     "ACE高级流派融合": "🎹 ACE-Step 1.5 高级流派融合",
 }
 
