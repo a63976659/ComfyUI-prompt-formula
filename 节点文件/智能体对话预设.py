@@ -51,7 +51,7 @@ class 智能体对话预设:
     RETURN_TYPES = ("STRING", "STRING")
     RETURN_NAMES = ("主体描述", "系统指令")
     FUNCTION = "处理预设"
-    CATEGORY = "📕提示词公式/智能体"
+    CATEGORY = "📕提示词公式"
 
     def 处理预设(self, 模式, 预设_主体描述, 预设_系统指令, 手动_主体描述, 手动_系统指令, 保存为预设):
         current_dir = os.path.dirname(__file__)
