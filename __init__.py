@@ -22,7 +22,7 @@ except Exception as e:
 
 # 导入通用提示词公式节点
 try:
-    from 通用提示词公式 import (
+    from 节点文件.通用提示词公式 import (
         视频提示词公式,
         图像提示词公式,
         随机提示词人像,
@@ -44,10 +44,9 @@ except Exception as e:
 
 # 导入图转视频预设节点
 try:
-    from 图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词, 视频首尾帧转场_增强版
+    from 节点文件.图转视频预设 import 视频首尾帧转场, 视频运镜提示词, 视频动效提示词, 视频首尾帧转场_增强版
 except Exception as e:
     logging.error(f"导入图转视频预设节点失败: {str(e)}")
-    # 创建空的占位符类
     class 视频转场占位符:
         @classmethod
         def INPUT_TYPES(cls):
@@ -99,14 +98,13 @@ except Exception as e:
 
 # 导入提示词预设节点
 try:
-    from 提示词预设节点 import (
+    from 节点文件.提示词预设节点 import (
         提示词预设,
         NODE_CLASS_MAPPINGS as PRESET_NODES,
         NODE_DISPLAY_NAME_MAPPINGS as PRESET_DISPLAY_NAMES
     )
 except Exception as e:
     logging.error(f"导入提示词预设节点失败: {str(e)}")
-    # 创建空的占位符类
     class 提示词预设占位符:
         @classmethod
         def INPUT_TYPES(cls):
@@ -123,7 +121,7 @@ except Exception as e:
 
 # 导入千问提示词公式节点
 try:
-    from 千问提示词公式 import (
+    from 节点文件.千问提示词公式 import (
         LOGO生成,
         艺术字体生成,
         海报生成,
@@ -136,18 +134,16 @@ except Exception as e:
 
 # 导入工具节点
 try:
-    from 工具节点 import (
+    from 节点文件.工具节点 import (
         字符串输入反转,
         图像输入反转,
         合并多组提示词,
-        提取视频结束帧,
-        空图像防报错,
+        提取视频帧, # 修改: 提取视频结束帧 -> 提取视频帧
         判断并输出加载的图像,
-        批量判断并输出同名图像
+        批量输出同名图像 # 修改: 批量判断并输出同名图像 -> 批量输出同名图像
     )
 except Exception as e:
     logging.error(f"导入工具节点失败: {str(e)}")
-    # 创建空的占位符类
     class 工具节点占位符:
         @classmethod
         def INPUT_TYPES(cls):
@@ -158,12 +154,11 @@ except Exception as e:
         def placeholder(self, **kwargs):
             return ("工具节点加载失败",)
     
-    # 修复：移除未定义的 基础图像加载器 引用
-    字符串输入反转 = 图像输入反转 = 合并多组提示词 = 提取视频结束帧 = 空图像防报错 = 判断并输出加载的图像 = 批量判断并输出同名图像 = 工具节点占位符
+    字符串输入反转 = 图像输入反转 = 合并多组提示词 = 提取视频帧 = 判断并输出加载的图像 = 批量输出同名图像 = 工具节点占位符
 
 # 导入千问编辑节点
 try:
-    from 千问编辑 import (
+    from 节点文件.千问编辑 import (
         千问单图编辑_改变视角,
         千问单图编辑_改变镜头, 
         千问单图编辑_人物换动作,
@@ -174,7 +169,6 @@ try:
     )
 except Exception as e:
     logging.error(f"导入千问编辑节点失败: {str(e)}")
-    # 创建空的占位符类
     class 千问编辑占位符:
         @classmethod
         def INPUT_TYPES(cls):
@@ -189,9 +183,27 @@ except Exception as e:
 
 # ==================== 新增节点导入 ====================
 
+# 导入智能体对话预设节点
+try:
+    from 节点文件.智能体对话预设 import 智能体对话预设
+except Exception as e:
+    logging.error(f"导入智能体对话预设节点失败: {str(e)}")
+    class 智能体对话预设占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING")
+        RETURN_NAMES = ("主体描述", "系统指令")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式"
+        def placeholder(self, **kwargs):
+            return ("智能体对话预设节点加载失败", "")
+    
+    智能体对话预设 = 智能体对话预设占位符
+
 # 导入视频动态带运镜节点
 try:
-    from 视频动态带运镜 import 视频动态带运镜
+    from 节点文件.视频动态带运镜 import 视频动态带运镜
 except Exception as e:
     logging.error(f"导入视频动态带运镜节点失败: {str(e)}")
     class 视频动态带运镜占位符:
@@ -211,8 +223,7 @@ except Exception as e:
 try:
     import importlib.util
     import os
-    # 动态导入包含点号的模块
-    module_path = os.path.join(os.path.dirname(__file__), 'Wan2.5提示词公式.py')
+    module_path = os.path.join(os.path.dirname(__file__), '节点文件', 'Wan2.5提示词公式.py')
     module_name = 'Wan2.5提示词公式'
     spec = importlib.util.spec_from_file_location(module_name, module_path)
     Wan25提示词公式_module = importlib.util.module_from_spec(spec)
@@ -235,7 +246,7 @@ except Exception as e:
 
 # 导入Wan26图生视频节点
 try:
-    from Wan26图生视频 import Wan26图生视频
+    from 节点文件.Wan26图生视频 import Wan26图生视频
 except Exception as e:
     logging.error(f"导入Wan26图生视频节点失败: {str(e)}")
     class Wan26图生视频占位符:
@@ -253,7 +264,7 @@ except Exception as e:
 
 # 导入Wan26多镜头节点
 try:
-    from Wan26多镜头 import Wan26多镜头
+    from 节点文件.Wan26多镜头 import Wan26多镜头
 except Exception as e:
     logging.error(f"导入Wan26多镜头节点失败: {str(e)}")
     class Wan26多镜头占位符:
@@ -269,10 +280,84 @@ except Exception as e:
     
     Wan26多镜头 = Wan26多镜头占位符
 
+# 导入裁剪节点
+try:
+    from 节点文件.裁剪节点 import 图像裁剪节点
+except Exception as e:
+    logging.error(f"导入裁剪节点失败: {str(e)}")
+    class 图像裁剪占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("IMAGE",)
+        RETURN_NAMES = ("图像",)
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/工具节点"
+        def placeholder(self, **kwargs):
+            return (None,)
+    
+    图像裁剪节点 = 图像裁剪占位符
+
+# 导入 缩放图像/遮罩 节点
+try:
+    from 节点文件.缩放图像_遮罩 import 智能缩放图像及遮罩
+except Exception as e:
+    logging.error(f"🔴 导入缩放图像节点失败 (Import Failed): {str(e)}")
+    class 缩放图像遮罩占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("IMAGE", "MASK")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/工具节点"
+        def placeholder(self, **kwargs):
+            return (None, None)
+    
+    智能缩放图像及遮罩 = 缩放图像遮罩占位符
+
+# 导入 智能预览节点 (New!)
+try:
+    from 节点文件.智能预览节点 import 智能预览图像及遮罩
+except Exception as e:
+    logging.error(f"🔴 导入智能预览节点失败 (Import Failed): {str(e)}")
+    class 智能预览占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ()
+        OUTPUT_NODE = True
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/工具节点"
+        def placeholder(self, **kwargs):
+            return {"ui": {"images": []}}
+    
+    智能预览图像及遮罩 = 智能预览占位符
+
+# 导入 ACE提示词公式节点
+try:
+    from 节点文件.ACE提示词公式 import (
+        ACE提示词公式,
+        ACE提示词预设,
+        ACE高级流派融合
+    )
+except Exception as e:
+    logging.error(f"导入ACE提示词公式节点失败: {str(e)}")
+    class ACE提示词占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING",)
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式/ACE音乐"
+        def placeholder(self, **kwargs):
+            return ("ACE节点加载失败",)
+    ACE提示词公式 = ACE提示词预设 = ACE高级流派融合 = ACE提示词占位符
+
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
     # 基础新手节点
     "提示词预设": 提示词预设,
+    "智能体对话预设": 智能体对话预设,
     "视频提示词公式": 视频提示词公式,
     "图像提示词公式": 图像提示词公式,
     "随机提示词人像": 随机提示词人像,
@@ -285,10 +370,12 @@ NODE_CLASS_MAPPINGS = {
     "字符串输入反转": 字符串输入反转,
     "图像输入反转": 图像输入反转,
     "合并多组提示词": 合并多组提示词,
-    "提取视频结束帧": 提取视频结束帧,
-    "空图像防报错": 空图像防报错,
+    "提取视频帧": 提取视频帧, # 已更新
     "判断并输出加载的图像": 判断并输出加载的图像,
-    "批量判断并输出同名图像": 批量判断并输出同名图像,
+    "批量输出同名图像": 批量输出同名图像, # 已更新
+    "图像裁剪节点": 图像裁剪节点,
+    "智能缩放图像及遮罩": 智能缩放图像及遮罩,
+    "智能预览图像及遮罩": 智能预览图像及遮罩,
     # 千问编辑
     "千问单图编辑-改变视角": 千问单图编辑_改变视角,
     "千问单图编辑-改变镜头": 千问单图编辑_改变镜头,
@@ -307,6 +394,9 @@ NODE_CLASS_MAPPINGS = {
     "Wan25图生视频": Wan25图生视频,
     "Wan26图生视频": Wan26图生视频,
     "Wan26多镜头": Wan26多镜头,
+    "ACE提示词公式": ACE提示词公式,
+    "ACE提示词预设": ACE提示词预设,
+    "ACE高级流派融合": ACE高级流派融合,
 }
 
 # 合并预设节点映射
@@ -316,6 +406,7 @@ NODE_CLASS_MAPPINGS.update(PRESET_NODES)
 NODE_DISPLAY_NAME_MAPPINGS = {
     # 基础新手节点
     "提示词预设": "提示词预设",
+    "智能体对话预设": "🤖 智能体对话预设",
     "视频提示词公式": "视频提示词公式",
     "图像提示词公式": "图像提示词公式",
     "随机提示词人像": "随机提示词人像",
@@ -328,10 +419,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "字符串输入反转": "字符串输入反转",
     "图像输入反转": "图像输入反转",
     "合并多组提示词": "合并多组提示词",
-    "提取视频结束帧": "提取视频结束帧",
-    "空图像防报错": "空图像防报错",
+    "提取视频帧": "提取视频帧", # 已更新
     "判断并输出加载的图像": "判断并输出加载的图像",
-    "批量判断并输出同名图像": "批量判断并输出同名图像",
+    "批量输出同名图像": "批量输出同名图像", # 已更新
+    "图像裁剪节点": "图像裁剪节点",
+    "智能缩放图像及遮罩": "智能缩放图像及遮罩",
+    "智能预览图像及遮罩": "智能预览图像及遮罩",
     # 千问编辑
     "千问单图编辑-改变视角": "千问单图编辑-改变视角",
     "千问单图编辑-改变镜头": "千问单图编辑-改变镜头",
@@ -350,6 +443,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Wan25图生视频": "Wan25图生视频",
     "Wan26图生视频": "Wan26图生视频",
     "Wan26多镜头": "Wan26多镜头",
+    "ACE提示词公式": "🎵 ACE-Step 1.5 音乐提示词 (手动)",
+    "ACE提示词预设": "🎵 ACE-Step 1.5 音乐提示词 (预设)",
+    "ACE高级流派融合": "🎹 ACE-Step 1.5 高级流派融合",
 }
 
 # 合并预设节点显示名称
@@ -372,7 +468,12 @@ print("🎬 图转视频预设节点已成功添加")
 print("🎛️  视频首尾帧转场节点已启用动态组件控制")
 print("✨ 视频动效提示词节点已添加 - 120+种动态效果")
 print("📁 提示词预设节点，直接在节点上预览内容")
+print("🤖 新增智能体对话预设节点 - 快捷管理提示与系统指令")
 print("🚀 新增视频动态带运镜节点 - 动态+运镜一体化设计")
 print("🎵 新增Wan25图生视频节点 - 支持视觉+音频同步生成")
+print("✂️ 新增图像裁剪节点 - 快捷处理图像尺寸")
+print("📏 新增智能缩放图像及遮罩节点 - 支持多种缩放模式")
+print("👁️ 新增智能预览图像及遮罩节点 - 支持图像和遮罩直接预览") 
+print("🎵 新增ACE-Step 1.5 音乐提示词 - 轻松生成你的歌曲") 
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")
