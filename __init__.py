@@ -183,6 +183,24 @@ except Exception as e:
 
 # ==================== 新增节点导入 ====================
 
+# 导入智能体对话预设节点
+try:
+    from 节点文件.智能体对话预设 import 智能体对话预设
+except Exception as e:
+    logging.error(f"导入智能体对话预设节点失败: {str(e)}")
+    class 智能体对话预设占位符:
+        @classmethod
+        def INPUT_TYPES(cls):
+            return {"required": {}}
+        RETURN_TYPES = ("STRING", "STRING")
+        RETURN_NAMES = ("主体描述", "系统指令")
+        FUNCTION = "placeholder"
+        CATEGORY = "📕提示词公式"
+        def placeholder(self, **kwargs):
+            return ("智能体对话预设节点加载失败", "")
+    
+    智能体对话预设 = 智能体对话预设占位符
+
 # 导入视频动态带运镜节点
 try:
     from 节点文件.视频动态带运镜 import 视频动态带运镜
@@ -339,6 +357,7 @@ except Exception as e:
 NODE_CLASS_MAPPINGS = {
     # 基础新手节点
     "提示词预设": 提示词预设,
+    "智能体对话预设": 智能体对话预设,
     "视频提示词公式": 视频提示词公式,
     "图像提示词公式": 图像提示词公式,
     "随机提示词人像": 随机提示词人像,
@@ -387,6 +406,7 @@ NODE_CLASS_MAPPINGS.update(PRESET_NODES)
 NODE_DISPLAY_NAME_MAPPINGS = {
     # 基础新手节点
     "提示词预设": "提示词预设",
+    "智能体对话预设": "🤖 智能体对话预设",
     "视频提示词公式": "视频提示词公式",
     "图像提示词公式": "图像提示词公式",
     "随机提示词人像": "随机提示词人像",
@@ -448,6 +468,7 @@ print("🎬 图转视频预设节点已成功添加")
 print("🎛️  视频首尾帧转场节点已启用动态组件控制")
 print("✨ 视频动效提示词节点已添加 - 120+种动态效果")
 print("📁 提示词预设节点，直接在节点上预览内容")
+print("🤖 新增智能体对话预设节点 - 快捷管理提示与系统指令")
 print("🚀 新增视频动态带运镜节点 - 动态+运镜一体化设计")
 print("🎵 新增Wan25图生视频节点 - 支持视觉+音频同步生成")
 print("✂️ 新增图像裁剪节点 - 快捷处理图像尺寸")
