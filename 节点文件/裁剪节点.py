@@ -18,8 +18,8 @@ class 图像裁剪节点:
                 "预设": (["自定义", "1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9"], {"default": "自定义"}),
                 "裁剪宽度": ("FLOAT", {"default": 512, "min": 16, "max": 16384, "step": 16, "display": "slider"}),
                 "裁剪高度": ("FLOAT", {"default": 512, "min": 16, "max": 16384, "step": 16, "display": "slider"}),
-                "裁剪X": ("INT", {"default": 0, "min": 0, "max": 16384, "step": 1, "display": "number"}),
-                "裁剪Y": ("INT", {"default": 0, "min": 0, "max": 16384, "step": 1, "display": "number"}),
+                "裁剪X": ("INT", {"default": 0, "min": 0, "max": 16384, "step": 1, "display": "slider"}),
+                "裁剪Y": ("INT", {"default": 0, "min": 0, "max": 16384, "step": 1, "display": "slider"}),
                 # 将缩放比例移动到最后，以便在 UI 上显示在底部
                 "缩放比例": ("FLOAT", {"default": 1.0, "min": 0.1, "max": 1.0, "step": 0.01, "display": "slider"}),
             }
