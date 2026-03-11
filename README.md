@@ -1,4 +1,5 @@
 # ComfyUI-提示公式
+# [![Bilibili](https://img.shields.io/badge/bilibili-猪的飞行梦-00A1D6?logo=bilibili&logoColor=white)](https://space.bilibili.com/2114638644)
 
 ✨ ComfyUI提示词公式，是一个提示词便捷输入插件，专门为中国人开发，无需汉化也能看懂。
 
