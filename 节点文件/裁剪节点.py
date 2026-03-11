@@ -11,13 +11,18 @@ class 图像裁剪节点:
     @classmethod
     def INPUT_TYPES(s):
         input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        # 定义允许的图像后缀名（全部转小写判断）
+        valid_exts = ('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', '.tiff')
+        # 在读取文件时，只保留以这些后缀结尾的文件
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f)) and f.lower().endswith(valid_exts)]
+        
         return {
             "required": {
                 "图像文件": (sorted(files), {"image_upload": True}),
                 "预设": (["自定义", "1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9"], {"default": "自定义"}),
                 "裁剪宽度": ("FLOAT", {"default": 512, "min": 16, "max": 16384, "step": 16, "display": "slider"}),
                 "裁剪高度": ("FLOAT", {"default": 512, "min": 16, "max": 16384, "step": 16, "display": "slider"}),
+                # 将原来的 "number" 改为 "slider"
                 "裁剪X": ("INT", {"default": 0, "min": 0, "max": 16384, "step": 1, "display": "slider"}),
                 "裁剪Y": ("INT", {"default": 0, "min": 0, "max": 16384, "step": 1, "display": "slider"}),
                 # 将缩放比例移动到最后，以便在 UI 上显示在底部
@@ -29,7 +34,7 @@ class 图像裁剪节点:
     RETURN_NAMES = ("图像", "宽度", "高度")
     FUNCTION = "do_crop"
     CATEGORY = "📕提示词公式/工具节点"
-    DESCRIPTION = "ℹ️其它预设缩放会正常生效 \n 裁剪结果自动适配最接近的倍数，确保结果图像，在工作流中使用不报错。 \n 自定义模式下，极限宽高度，按比例缩放会有异常，请谨慎使用！"
+    DESCRIPTION = "ℹ️其它预设缩放会正常生效 \n 自定义模式下，极限宽高度，按比例缩放会有异常，请谨慎使用！"
 
     def do_crop(self, 图像文件, 预设, 缩放比例, 裁剪宽度, 裁剪高度, 裁剪X, 裁剪Y):
         img_path = folder_paths.get_annotated_filepath(图像文件)
