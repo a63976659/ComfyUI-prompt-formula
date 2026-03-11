@@ -6,19 +6,69 @@ const findWidget = (node, name) => node.widgets.find((w) => w.name === name);
 // 辅助：数值修正（16的倍数，且至少为16）
 const snap16 = (val) => Math.max(16, Math.floor(val / 16) * 16);
 
+// 辅助：绘制平滑圆角矩形
+function drawRoundRect(ctx, x, y, w, h, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+    ctx.lineTo(x + radius, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.fill();
+}
+
 app.registerExtension({
     name: "ComfyUI.CropNode.Draggable",
     async nodeCreated(node) {
         if (node.comfyClass !== "图像裁剪节点") return;
+
+        // 默认让节点创建时就宽一些，给右侧九宫格和左侧尺子留够空间
+        if (!node.properties || !node.properties.hasExpanded) {
+            node.size[0] = node.size[0] + 200; 
+            node.properties = node.properties || {};
+            node.properties.hasExpanded = true;
+        }
 
         // 缓存数据
         node.imgCache = null;
         node.imgUrl = "";
         node.dragState = null;
         node.lastScale = 1.0; 
-        
-        // 记录自定义模式下的基准尺寸
+        node.hoveredGrid = null; 
         node.customBase = { w: 512, h: 512 }; 
+        
+        // --- 核心尺寸设定 (完美对称居中) ---
+        const paddingLeft = 30;   // 左侧：尺子 30px
+        const paddingRight = 25;  // 右侧：对称留白 25px (让图片水平居中)
+        const paddingTop = 25;    // 顶部：尺子 25px
+        const paddingBottom = 15; // 底部：留白 15px (让图片垂直居中)
+
+        // --- 接管节点的原生拉伸事件 (onResize) ---
+        const origOnResize = node.onResize;
+        node.onResize = function(size) {
+            if (origOnResize) origOnResize.apply(this, arguments);
+            if (this.imgCache) {
+                // 利用引擎原生 API，获取组件真实占用高度
+                const widgetBottomY = this.computeSize([size[0], 0])[1];
+                const topMargin = widgetBottomY + paddingTop;
+                
+                const drawW = size[0] - paddingLeft - paddingRight;
+                const scale = drawW / this.imgCache.width;
+                const drawH = Math.floor(this.imgCache.height * scale);
+                
+                const btnH = 28, gap = 4, padding = 8;
+                const gridTotalH = btnH * 3 + gap * 2 + padding * 2;
+                const minH = topMargin + gridTotalH + 30; 
+                
+                const neededHeight = Math.max(minH, topMargin + drawH + paddingBottom);
+                size[1] = neededHeight; 
+            }
+        };
 
         // --- 0. 定义居中与9宫格对齐计算方法 ---
         function centerCrop(iw, ih, cw, ch) {
@@ -45,7 +95,6 @@ app.registerExtension({
             const cw = widthW.value;
             const ch = heightW.value;
 
-            // 预设坐标极值与中心点
             const maxX = Math.max(0, iw - cw);
             const maxY = Math.max(0, ih - ch);
             const cX = Math.floor((iw - cw) / 2);
@@ -56,7 +105,7 @@ app.registerExtension({
                 case "中上": xW.value = cX; yW.value = 0; break;
                 case "右上": xW.value = maxX; yW.value = 0; break;
                 case "左中": xW.value = 0; yW.value = cY; break;
-                case "点击居中": xW.value = cX; yW.value = cY; break;
+                case "居中": xW.value = cX; yW.value = cY; break;
                 case "右中": xW.value = maxX; yW.value = cY; break;
                 case "左下": xW.value = 0; yW.value = maxY; break;
                 case "中下": xW.value = cX; yW.value = maxY; break;
@@ -69,55 +118,118 @@ app.registerExtension({
         node.onDrawBackground = function(ctx) {
             if (!this.imgCache) return;
 
-            ctx.save(); // 保护上下文，防止 Win10 缩放堆叠
+            ctx.save();
             const img = this.imgCache;
             
-            const headerHeight = 30;
-            const widgetHeight = 32;
-            const visibleWidgets = this.widgets ? this.widgets.length : 7;
-            
-            // --- 新增：9宫格 UI 尺寸与坐标计算 ---
-            const btnW = 54;
-            const btnH = 46;
-            const gap = 4;
-            const gridTotalW = btnW * 3 + gap * 2;
-            const gridTotalH = btnH * 3 + gap * 2;
-            
-            const gridStartY = headerHeight + (visibleWidgets * widgetHeight) - 10;
-            const gridStartX = (this.size[0] - gridTotalW) / 2;
-            
-            // 缓存给鼠标点击事件用
-            this.gridRect = { x: gridStartX, y: gridStartY, w: gridTotalW, h: gridTotalH, btnW, btnH, gap };
-            
-            const topMargin = Math.floor(gridStartY + gridTotalH + 15);
+            // 获取组件真实占用高度，计算图片起始Y
+            const widgetBottomY = this.computeSize([this.size[0], 0])[1];
+            const topMargin = widgetBottomY + paddingTop;
             this.layoutTopMargin = topMargin;
 
-            // 计算缩放
-            const scale = this.size[0] / img.width;
+            // 计算绘图可用宽度和缩放比
+            const drawW = this.size[0] - paddingLeft - paddingRight;
+            const scale = drawW / img.width;
             this.renderScale = scale;
             const drawH = Math.floor(img.height * scale);
 
-            // --- 核心优化：稳定性高度自适应 ---
-            const minH = Math.floor(gridStartY + gridTotalH + 60); 
-            const neededHeight = Math.max(minH, topMargin + drawH + 20);
+            // 9宫格 UI 尺寸与位置
+            const btnW = 32;
+            const btnH = 28;
+            const gap = 4;
+            const uiPadding = 8;
+            const gridTotalW = btnW * 3 + gap * 2 + uiPadding * 2;
+            const gridTotalH = btnH * 3 + gap * 2 + uiPadding * 2;
             
-            if (Math.abs(this.size[1] - neededHeight) > 10) {
+            // UI 面板与图片右边缘对齐 (减去 paddingRight)
+            const gridStartX = this.size[0] - gridTotalW - paddingRight - 5;
+            const gridStartY = topMargin + 10;
+            
+            this.gridRect = { x: gridStartX, y: gridStartY, w: gridTotalW, h: gridTotalH, btnW, btnH, gap, uiPadding };
+
+            // 高度锁定校验
+            const minH = topMargin + gridTotalH + 30; 
+            const neededHeight = Math.max(minH, topMargin + drawH + paddingBottom);
+            if (Math.round(this.size[1]) !== neededHeight) {
                 this.size[1] = neededHeight;
             }
 
-            // --- A. 绘制9宫格交互区 ---
-            // 浅灰底板
-            ctx.fillStyle = "#e0e0e0"; 
-            ctx.fillRect(gridStartX - gap, gridStartY - gap, gridTotalW + gap*2, gridTotalH + gap*2);
+            // --- A. 绘制动态刻度尺 (Professional Ruler) ---
+            ctx.fillStyle = "rgba(10, 10, 10, 0.3)"; // 尺子底板微透明黑
+            ctx.fillRect(paddingLeft, topMargin - paddingTop, drawW, paddingTop); // 顶部
+            ctx.fillRect(0, topMargin, paddingLeft, drawH); // 左侧
+
+            // 计算合理的动态刻度跨度 (防止数字互相重叠)
+            let step = 100;
+            const minPxGap = 40; // 最小显示间隔像素
+            if (100 * scale < minPxGap) {
+                if (200 * scale >= minPxGap) step = 200;
+                else if (500 * scale >= minPxGap) step = 500;
+                else if (1000 * scale >= minPxGap) step = 1000;
+                else if (2000 * scale >= minPxGap) step = 2000;
+                else step = 5000;
+            }
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#666666";
+            ctx.lineWidth = 1;
+
+            // X轴刻度 (顶部)
+            ctx.textAlign = "center";
+            ctx.textBaseline = "bottom";
+            ctx.font = "10px Arial";
+            ctx.fillStyle = "#aaaaaa";
             
-            const labels = [
+            // 描边主轴线
+            ctx.moveTo(paddingLeft, topMargin); ctx.lineTo(paddingLeft + drawW, topMargin);
+            ctx.moveTo(paddingLeft, topMargin); ctx.lineTo(paddingLeft, topMargin + drawH);
+            ctx.stroke();
+
+            ctx.beginPath();
+            for (let i = 0; i <= img.width; i += step / 2) {
+                const isMajor = (i % step === 0);
+                const tickX = paddingLeft + (i * scale);
+                const tickLen = isMajor ? 6 : 3;
+                
+                ctx.moveTo(tickX, topMargin);
+                ctx.lineTo(tickX, topMargin - tickLen);
+                
+                if (isMajor) {
+                    ctx.fillText(i.toString(), tickX, topMargin - 8);
+                }
+            }
+            
+            // Y轴刻度 (左侧)
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            for (let i = 0; i <= img.height; i += step / 2) {
+                const isMajor = (i % step === 0);
+                const tickY = topMargin + (i * scale);
+                const tickLen = isMajor ? 6 : 3;
+                
+                ctx.moveTo(paddingLeft, tickY);
+                ctx.lineTo(paddingLeft - tickLen, tickY);
+                
+                if (isMajor && tickY > topMargin + 10) { // 避免左上角 0 和 0 重叠
+                    ctx.fillText(i.toString(), paddingLeft - 8, tickY);
+                }
+            }
+            ctx.stroke();
+
+            // --- B. 绘制底图 ---
+            ctx.drawImage(img, paddingLeft, topMargin, drawW, drawH);
+
+            // --- C. 绘制半透明圆角悬浮面板 ---
+            ctx.fillStyle = "rgba(20, 20, 20, 0.75)";
+            drawRoundRect(ctx, gridStartX, gridStartY, gridTotalW, gridTotalH, 10);
+
+            const actions = [
                 ["左上", "中上", "右上"],
-                ["左中", "点击居中", "右中"],
+                ["左中", "居中", "右中"],
                 ["左下", "中下", "右下"]
             ];
             const arrows = [
                 ["\u2196", "\u2191", "\u2197"],
-                ["\u2190", "", "\u2192"],
+                ["\u2190", "居中", "\u2192"],
                 ["\u2199", "\u2193", "\u2198"]
             ];
             
@@ -126,35 +238,24 @@ app.registerExtension({
             
             for (let row = 0; row < 3; row++) {
                 for (let col = 0; col < 3; col++) {
-                    const bx = gridStartX + col * (btnW + gap);
-                    const by = gridStartY + row * (btnH + gap);
+                    const bx = gridStartX + uiPadding + col * (btnW + gap);
+                    const by = gridStartY + uiPadding + row * (btnH + gap);
                     
-                    // 按钮深色底
-                    ctx.fillStyle = "#161616"; 
-                    ctx.fillRect(bx, by, btnW, btnH);
+                    const isHovered = (this.hoveredGrid && this.hoveredGrid.row === row && this.hoveredGrid.col === col);
                     
-                    // 背景方向指示箭头
-                    if (arrows[row][col]) {
-                        ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-                        ctx.font = "bold 34px Arial";
-                        ctx.fillText(arrows[row][col], bx + btnW/2, by + btnH/2 + 2);
-                    }
+                    ctx.fillStyle = isHovered ? "rgba(255, 255, 255, 0.25)" : "rgba(60, 60, 60, 0.5)"; 
+                    drawRoundRect(ctx, bx, by, btnW, btnH, 6);
                     
-                    // 按钮文字
-                    ctx.font = "14px Arial";
-                    ctx.fillStyle = "#ff6a5c"; // 匹配参考图的橙红
-                    if (labels[row][col] === "点击居中") {
-                        // 居中文字换行处理
-                        ctx.fillText("点击", bx + btnW/2, by + btnH/2 - 8);
-                        ctx.fillText("居中", bx + btnW/2, by + btnH/2 + 8);
+                    ctx.fillStyle = isHovered ? "#ffffff" : "#cccccc";
+                    if (row === 1 && col === 1) {
+                        ctx.font = "12px Arial";
+                        ctx.fillText("居中", bx + btnW/2, by + btnH/2);
                     } else {
-                        ctx.fillText(labels[row][col], bx + btnW/2, by + btnH/2);
+                        ctx.font = "bold 16px Arial";
+                        ctx.fillText(arrows[row][col], bx + btnW/2, by + btnH/2 + 1);
                     }
                 }
             }
-
-            // --- B. 绘制原图 ---
-            ctx.drawImage(img, 0, topMargin, this.size[0], drawH);
 
             const widthW = findWidget(this, "裁剪宽度");
             const heightW = findWidget(this, "裁剪高度");
@@ -166,23 +267,23 @@ app.registerExtension({
                 return;
             }
 
-            // --- C. 计算红框视觉坐标 ---
+            // --- D. 计算红框视觉坐标 ---
             const cropW = widthW.value * scale;
             const cropH = heightW.value * scale;
-            const cropX = xW.value * scale; 
+            const cropX = paddingLeft + (xW.value * scale); 
             const cropY = topMargin + (yW.value * scale);
 
             this.cropRect = { x: cropX, y: cropY, w: cropW, h: cropH };
 
-            // --- D. 绘制遮罩 ---
+            // --- E. 绘制遮罩 (完美控制在边框内) ---
             ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-            if (cropY > topMargin) ctx.fillRect(0, topMargin, this.size[0], cropY - topMargin);
+            if (cropY > topMargin) ctx.fillRect(paddingLeft, topMargin, drawW, cropY - topMargin);
             const imgBottom = topMargin + drawH;
-            if (cropY + cropH < imgBottom) ctx.fillRect(0, cropY + cropH, this.size[0], imgBottom - (cropY + cropH));
-            if (cropX > 0) ctx.fillRect(0, cropY, cropX, cropH);
-            if (cropX + cropW < this.size[0]) ctx.fillRect(cropX + cropW, cropY, this.size[0] - (cropX + cropW), cropH);
+            if (cropY + cropH < imgBottom) ctx.fillRect(paddingLeft, cropY + cropH, drawW, imgBottom - (cropY + cropH));
+            if (cropX > paddingLeft) ctx.fillRect(paddingLeft, cropY, cropX - paddingLeft, cropH);
+            if (cropX + cropW < paddingLeft + drawW) ctx.fillRect(cropX + cropW, cropY, (paddingLeft + drawW) - (cropX + cropW), cropH);
 
-            // --- E. 绘制红框 ---
+            // --- F. 绘制红框 ---
             ctx.strokeStyle = "#ff0000";
             ctx.lineWidth = 2;
             ctx.strokeRect(cropX, cropY, cropW, cropH);
@@ -200,30 +301,25 @@ app.registerExtension({
         node.onMouseDown = function(e, localPos) {
             const [mx, my] = localPos;
 
-            // --- 新增：9宫格点击检测 ---
             if (this.gridRect) {
-                const { x, y, w, h, btnW, btnH, gap } = this.gridRect;
-                if (mx >= x && mx <= x + w && my >= y && my <= y + h) {
-                    const col = Math.floor((mx - x) / (btnW + gap));
-                    const row = Math.floor((my - y) / (btnH + gap));
-                    const bx = x + col * (btnW + gap);
-                    const by = y + row * (btnH + gap);
-                    // 确保精准点击在按钮内（排除间隙）
-                    if (mx >= bx && mx <= bx + btnW && my >= by && my <= by + btnH) {
-                        const actions = [
-                            ["左上", "中上", "右上"],
-                            ["左中", "点击居中", "右中"],
-                            ["左下", "中下", "右下"]
-                        ];
-                        if (actions[row] && actions[row][col]) {
-                            this.alignCrop(actions[row][col]);
-                            return true; // 拦截事件，防止触发画布拖动
+                const { x, y, uiPadding, btnW, btnH, gap } = this.gridRect;
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        const bx = x + uiPadding + c * (btnW + gap);
+                        const by = y + uiPadding + r * (btnH + gap);
+                        if (mx >= bx && mx <= bx + btnW && my >= by && my <= by + btnH) {
+                            const actions = [
+                                ["左上", "中上", "右上"],
+                                ["左中", "居中", "右中"],
+                                ["左下", "中下", "右下"]
+                            ];
+                            this.alignCrop(actions[r][c]);
+                            return true; 
                         }
                     }
                 }
             }
 
-            // 原有：红框拖拽检测
             if (!this.cropRect) return false;
             const { x, y, w, h } = this.cropRect;
 
@@ -241,8 +337,30 @@ app.registerExtension({
         };
 
         node.onMouseMove = function(e, localPos) {
-            if (!this.dragState) return;
             const [mx, my] = localPos;
+            
+            let newHover = null;
+            if (this.gridRect) {
+                const { x, y, uiPadding, btnW, btnH, gap } = this.gridRect;
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        const bx = x + uiPadding + c * (btnW + gap);
+                        const by = y + uiPadding + r * (btnH + gap);
+                        if (mx >= bx && mx <= bx + btnW && my >= by && my <= by + btnH) {
+                            newHover = { row: r, col: c };
+                        }
+                    }
+                }
+            }
+            const hoverChanged = (!this.hoveredGrid && newHover) || 
+                                 (this.hoveredGrid && !newHover) ||
+                                 (this.hoveredGrid && newHover && (this.hoveredGrid.row !== newHover.row || this.hoveredGrid.col !== newHover.col));
+            if (hoverChanged) {
+                this.hoveredGrid = newHover;
+                this.setDirtyCanvas(true, false);
+            }
+
+            if (!this.dragState) return;
             const deltaX = (mx - this.dragState.startX) / this.renderScale;
             const deltaY = (my - this.dragState.startY) / this.renderScale;
 
@@ -381,7 +499,6 @@ app.registerExtension({
             node.setDirtyCanvas(true, true);
         };
 
-        // 绑定刷新事件到所有组件
         node.widgets.forEach(w => {
             const oldCallback = w.callback;
             w.callback = (...args) => {
