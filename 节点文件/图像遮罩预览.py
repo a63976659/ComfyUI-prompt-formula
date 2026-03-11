@@ -3,14 +3,15 @@ import torch
 import numpy as np
 import os
 import random
+import time
 from PIL import Image, ImageOps
 import folder_paths 
 
 class 图像遮罩预览节点:
     def __init__(self):
+        # 恢复到最标准的 temp 临时目录模式，保证 UI 绝对能正常显示预览
         self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
-        self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
 
     @classmethod
     def INPUT_TYPES(s):
@@ -66,7 +67,6 @@ class 图像遮罩预览节点:
         elif 遮罩 is not None:
             has_valid_mask = True
             
-        # 如果没有连入遮罩且未手绘，生成防报错的底层全黑遮罩
         if out_mask is None:
             B, H, W, _ = 图像.shape
             out_mask = torch.zeros((B, H, W), dtype=torch.float32, device=图像.device)
@@ -76,28 +76,28 @@ class 图像遮罩预览节点:
         if 图像 is not None:
             images_np = (图像.cpu().numpy() * 255.0).clip(0, 255).astype(np.uint8)
             
-            # 准备透明通道 (Alpha)
             if has_valid_mask and out_mask is not None:
                 mask_np = out_mask.cpu().numpy()
                 if len(mask_np.shape) == 4:
                     mask_np = mask_np[:, :, :, 0]
-                # 在预览图中，被遮罩区域表现为透明镂空，未遮罩区域为实体
                 alpha_np = ((1.0 - mask_np) * 255.0).clip(0, 255).astype(np.uint8)
             else:
                 B, H, W = images_np.shape[0], images_np.shape[1], images_np.shape[2]
                 alpha_np = np.full((B, H, W), 255, dtype=np.uint8)
 
+            # 动态文件名，彻底杜绝前端缓存死结
+            run_prefix = f"_temp_{int(time.time() * 1000)}_{random.randint(1000, 9999)}"
+
             for i in range(images_np.shape[0]):
                 rgb = images_np[i]
                 alpha = alpha_np[i]
-                
-                # 拼接成 RGBA 单图
                 rgba = np.concatenate([rgb, alpha[..., np.newaxis]], axis=-1)
                 img_obj = Image.fromarray(rgba, mode='RGBA')
                 
-                filename = f"preview_img_{self.prefix_append}_{i:05}.png"
+                filename = f"preview_img_{run_prefix}_{i:05}.png"
                 img_obj.save(os.path.join(self.output_dir, filename))
+                
+                # 回归正常 temp 类型
                 results.append({"filename": filename, "subfolder": "", "type": self.type})
 
-        # 返回唯一的复合预览图及底层数据
         return { "ui": { "images": results }, "result": (图像, out_mask) }
