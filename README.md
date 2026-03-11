@@ -208,6 +208,12 @@ https://github.com/user-attachments/assets/58632a87-b7fd-483f-b69e-474f757f27ba
 4. 节点说明中增加提示。
 <img width="1502" height="1602" alt="image" src="https://github.com/user-attachments/assets/629fdc3e-fc1b-437b-84c4-10be071a2b13" />
 
+## 20260312
+1. 新增`图像裁剪节点`优化外观，增加九宫格对齐功能。
+2. 新增`🖼️ 图像与遮罩预览`节点，节点可以快速编辑遮罩并输出遮罩，也可以用于图像带遮罩预览，优化编辑功能。
+<img width="1179" height="839" alt="图像裁剪节点和图像与遮罩预览节点" src="https://github.com/user-attachments/assets/29b39083-9ec9-4b34-b069-c0746534460b" />
+
+
 ---
 
 ## 安装说明
