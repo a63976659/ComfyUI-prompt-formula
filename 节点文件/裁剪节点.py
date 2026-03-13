@@ -34,7 +34,7 @@ class 图像裁剪节点:
     RETURN_NAMES = ("图像", "宽度", "高度")
     FUNCTION = "do_crop"
     CATEGORY = "📕提示词公式/工具节点"
-    DESCRIPTION = "ℹ️其它预设缩放会正常生效 \n 自定义模式下，极限宽高度，按比例缩放会有异常，请谨慎使用！"
+    DESCRIPTION = "鼠标拖动裁剪框可以移动位置\n双击裁剪框裁剪框会跟随鼠标\n用鼠标再拖动一次裁剪框即可取消粘连。\nℹ️其它预设缩放会正常生效 \n 自定义模式下，极限宽高度，按比例缩放会有异常，请谨慎使用！"
 
     def do_crop(self, 图像文件, 预设, 缩放比例, 裁剪宽度, 裁剪高度, 裁剪X, 裁剪Y):
         img_path = folder_paths.get_annotated_filepath(图像文件)
