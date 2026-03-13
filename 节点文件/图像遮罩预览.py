@@ -40,8 +40,8 @@ class 图像遮罩预览节点:
 【核心功能】
 1. 节点预览：预览图像和遮罩，或任意一种。
 2. 遮罩编辑：对图像的遮罩进行编辑。
-2. 双路断线缓存：断开输入后，仍可以使用缓存数据继续工作。
-3.  图像遮罩混合：将遮罩与颜色叠加到原图，输出实心图。"""
+3. 双路断线缓存：断开输入后，仍可以使用缓存数据继续工作。
+4. 图像遮罩混合：将遮罩与颜色叠加到原图，输出实心图。"""
 
     def execute(self, image="", 遮罩颜色="黑色", 图像=None, 遮罩=None, unique_id=None):
         results = []
@@ -207,5 +207,6 @@ class 图像遮罩预览节点:
                 img_obj.save(os.path.join(self.output_dir, filename))
                 
                 results.append({"filename": filename, "subfolder": "", "type": self.type})
+
 
         return { "ui": { "images": results }, "result": (图像, out_mask, masked_image_tensor) }
