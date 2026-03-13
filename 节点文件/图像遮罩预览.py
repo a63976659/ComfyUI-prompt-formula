@@ -208,5 +208,4 @@ class 图像遮罩预览节点:
                 
                 results.append({"filename": filename, "subfolder": "", "type": self.type})
 
-
         return { "ui": { "images": results }, "result": (图像, out_mask, masked_image_tensor) }
