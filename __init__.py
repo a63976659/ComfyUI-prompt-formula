@@ -378,7 +378,8 @@ try:
         H3首尾帧公式,
         H3图生视频公式,
         H3全能参考公式,
-        H3音画多镜头公式
+        H3音画多镜头公式,
+        H3视频编辑公式
     )
 except Exception as e:
     logging.error(f"导入MiniMax H3提示词公式节点失败: {str(e)}")
@@ -392,7 +393,7 @@ except Exception as e:
         CATEGORY = "📕提示词公式/MiniMax H3"
         def placeholder(self, **kwargs):
             return ("MiniMax H3节点加载失败", "")
-    H3文生视频公式 = H3首尾帧公式 = H3图生视频公式 = H3全能参考公式 = H3音画多镜头公式 = H3提示词占位符
+    H3文生视频公式 = H3首尾帧公式 = H3图生视频公式 = H3全能参考公式 = H3音画多镜头公式 = H3视频编辑公式 = H3提示词占位符
 
 # 节点映射表
 NODE_CLASS_MAPPINGS = {
@@ -445,6 +446,7 @@ NODE_CLASS_MAPPINGS = {
     "H3图生视频公式": H3图生视频公式,
     "H3全能参考公式": H3全能参考公式,
     "H3音画多镜头公式": H3音画多镜头公式,
+    "H3视频编辑公式": H3视频编辑公式,
 }
 
 # 合并预设节点映射
@@ -501,6 +503,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "H3图生视频公式": "🎬 MiniMax H3 图生视频公式",
     "H3全能参考公式": "🎬 MiniMax H3 全能参考公式",
     "H3音画多镜头公式": "🎬 MiniMax H3 音画多镜头公式",
+    "H3视频编辑公式": "🎬 MiniMax H3 视频编辑公式",
 }
 
 # 合并预设节点显示名称
@@ -531,6 +534,6 @@ print("📏 新增智能缩放图像及遮罩节点 - 支持多种缩放模式")
 print("👁️ 新增智能预览图像及遮罩节点 - 支持图像和遮罩直接预览") 
 print("🖼️ 新增图像与遮罩预览 - 可直接输出并调用遮罩编辑器")
 print("🎵 新增ACE-Step 1.5 音乐提示词 - 轻松生成你的歌曲") 
-print("🎬 新增MiniMax H3 提示词公式 - 文生视频/首尾帧/图生视频/全能参考/音画多镜头")
+print("🎬 新增MiniMax H3 提示词公式 - 文生视频/首尾帧/图生视频/全能参考/音画多镜头/视频编辑")
 print("插件教程请查看 'https://www.bilibili.com/video/BV1nveMzcES4/' 复制链接用浏览器打开")
 print("进群和小伙伴们一起共同进步 'QQ群202018000' 公告中有资源")

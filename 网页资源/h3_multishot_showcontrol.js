@@ -14,7 +14,7 @@ function toggleWidget(node, widget, show = false) {
 }
 
 // 每个镜头包含的组件字段
-const SHOT_WIDGET_SUFFIXES = ["开始时间", "结束时间", "景别", "描述", "运镜方式", "声音设计"];
+const SHOT_WIDGET_SUFFIXES = ["开始时间", "结束时间", "景别", "描述", "运镜方式", "台词", "声音设计"];
 
 // H3音画多镜头处理函数
 function h3MultiShotHandler(node) {
