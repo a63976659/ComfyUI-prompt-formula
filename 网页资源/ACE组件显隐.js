@@ -1,7 +1,7 @@
 import { app } from "../../scripts/app.js";
 
 app.registerExtension({
-    name: "ACE.Prompt.Visibility",
+    name: "ComfyUI-prompt-formula.ACE.Prompt.Visibility",
     async nodeCreated(node, app) {
         // 修改点：只针对“ACE提示词预设”启用显隐逻辑
         if (node.comfyClass === "ACE提示词预设") {

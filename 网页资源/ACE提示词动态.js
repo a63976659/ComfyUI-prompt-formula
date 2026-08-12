@@ -1,7 +1,7 @@
 import { app } from "../../scripts/app.js";
 
 app.registerExtension({
-    name: "ACE.Prompt.Presets",
+    name: "ComfyUI-prompt-formula.ACE.Prompt.Presets",
     async nodeCreated(node, app) {
         if (node.comfyClass === "ACE提示词预设") {
             const genreWidget = node.widgets.find(w => w.name === "主要流派");
