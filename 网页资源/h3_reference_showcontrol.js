@@ -20,6 +20,7 @@ function toggleWidget(node, widget, show = false) {
 
     if (show) {
         widget.type = widget._h3OrigType;
+        widget.hidden = false;
         if (widget._h3OrigComputeSize !== undefined) widget.computeSize = widget._h3OrigComputeSize;
         else delete widget.computeSize;
 
@@ -27,7 +28,11 @@ function toggleWidget(node, widget, show = false) {
         if (widget.element) widget.element.style.display = "";
     } else {
         widget.type = "hidden";
-        // 返回 [0, -4] 可以完美抵消 ComfyUI 默认增加的 4px 渲染缝隙
+        // 新版前端的组件可见性判断读取 widget.hidden 标志（而非 type），
+        // 不设置该标志会导致隐藏组件仍参与尺寸计算和命中检测，
+        // 造成节点高度计算错乱、末尾组件无法点击
+        widget.hidden = true;
+        // 返回 [0, -4] 可以完美抵消 ComfyUI 默认增加的 4px 渲染缝隙（旧版前端兼容）
         widget.computeSize = () => [0, -4];
 
         if (widget.inputEl) widget.inputEl.style.display = "none";
@@ -90,6 +95,9 @@ function h3ReferenceHandler(node) {
             node.setSize(size);
         }
     }
+    // 串联调用底部留白补齐（h3_bottom_padding.js 提供）：
+    // 等待布局稳定后按组件实际底边补齐底部留白
+    if (window.__h3EnsureBottomPadding) window.__h3EnsureBottomPadding(node);
     node.setDirtyCanvas(true, true);
 }
 
