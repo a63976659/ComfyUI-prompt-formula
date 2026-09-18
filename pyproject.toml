@@ -1,7 +1,7 @@
 [project]
 name = "ComfyUI-prompt-formula"
 description = "ComfyUI提示词公式节点，根据引导便捷输入提示词，无需懂得专业词汇。"
-version = "1.6.0"
+version = "1.6.1"
 license = {file = "LICENSE"} 
 dependencies  = [torch>=2.0.0]
 
