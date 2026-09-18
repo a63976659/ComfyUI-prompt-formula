@@ -1,20 +1,18 @@
 [project]
 name = "ComfyUI-prompt-formula"
-description = "提示词公式节点，根据引导便捷输入提示词，无需懂得专业词汇，"
-version = "251102"
-license = { file = "LICENSE" }
-dependencies = [
-    "import folder_paths"
-]
-classifiers = [
-    "Operating System :: OS Independent"
-]
+description = "ComfyUI提示词公式节点，根据引导便捷输入提示词，无需懂得专业词汇。"
+version = "1.6.0"
+license = {file = "LICENSE"} 
+dependencies  = [torch>=2.0.0]
 
 [project.urls]
 Repository = "https://github.com/a63976659/ComfyUI-prompt-formula"
-Documentation = "https://github.com/a63976659/ComfyUI-prompt-formula/blob/main/README.md"
+#  Used by Comfy Registry https://registry.comfy.org
 
 [tool.comfy]
 PublisherId = "a63976659"
 DisplayName = "ComfyUI-prompt-formula"
 Icon = ""
+includes = [] 
+# "requires-comfyui" = ">=1.0.0"  # ComfyUI version compatibility
+
