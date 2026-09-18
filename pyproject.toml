@@ -1,9 +1,8 @@
 [project]
 name = "ComfyUI-prompt-formula"
 description = "ComfyUI-prompt-formula"
-version = "1.6.2"
+version = "1.6.3"
 license = {file = "LICENSE"} 
-dependencies  = [torch>=2.0.0]
 
 [project.urls]
 Repository = "https://github.com/a63976659/ComfyUI-prompt-formula"
