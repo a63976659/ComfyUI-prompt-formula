@@ -10,8 +10,14 @@ class 提示词预设:
     @classmethod
     def INPUT_TYPES(cls):
         # 递归获取预设文件列表
-        # 修改路径：使用插件目录下的"提示词预设"文件夹
-        预设目录 = os.path.join(os.path.dirname(__file__), "提示词预设")
+        # 修改路径：使用插件根目录下的"提示词预设"文件夹
+        # 获取当前文件所在目录（节点文件夹）
+        current_dir = os.path.dirname(__file__)
+        # 获取插件根目录（节点文件夹的父目录）
+        plugin_root = os.path.dirname(current_dir)
+        # 构建预设目录路径（插件根目录下的"提示词预设"文件夹）
+        预设目录 = os.path.join(plugin_root, "提示词预设")
+        
         预设选项 = ["无"]  # 将"无"放在第一个
         
         # 如果预设目录不存在，创建它
@@ -31,6 +37,7 @@ class 提示词预设:
                         显示名称 = os.path.splitext(文件名)[0]
                     else:
                         显示名称 = f"{相对路径}/{os.path.splitext(文件名)[0]}"
+                    
                     其他选项.append(显示名称)
         
         # 对其他选项进行排序
@@ -44,18 +51,23 @@ class 提示词预设:
                 "预设文件": (预设选项, {"default": "无"}),
             }
         }
-    
+
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("提示词",)
     FUNCTION = "读取预设"
     CATEGORY = "📕提示词公式"
-    
+
     def 读取预设(self, 预设文件):
         if 预设文件 == "无":
             return ("",)
         
-        # 构建文件路径 - 使用插件目录下的"提示词预设"文件夹
-        预设目录 = os.path.join(os.path.dirname(__file__), "提示词预设")
+        # 构建文件路径 - 使用插件根目录下的"提示词预设"文件夹
+        # 获取当前文件所在目录（节点文件夹）
+        current_dir = os.path.dirname(__file__)
+        # 获取插件根目录（节点文件夹的父目录）
+        plugin_root = os.path.dirname(current_dir)
+        # 构建预设目录路径（插件根目录下的"提示词预设"文件夹）
+        预设目录 = os.path.join(plugin_root, "提示词预设")
         
         if '/' in 预设文件:
             文件夹路径, 文件名 = 预设文件.rsplit('/', 1)
@@ -69,14 +81,19 @@ class 提示词预设:
         except Exception as e:
             print(f"读取预设文件失败: {e}")
             预设内容 = ""
-            
+        
         return (预设内容,)
 
 @PromptServer.instance.routes.get("/preset_preview/list")
 async def 获取预设列表(请求):
     """获取所有预设文件及其内容"""
-    # 修改路径：使用插件目录下的"提示词预设"文件夹
-    预设目录 = os.path.join(os.path.dirname(__file__), "提示词预设")
+    # 修改路径：使用插件根目录下的"提示词预设"文件夹
+    # 获取当前文件所在目录（节点文件夹）
+    current_dir = os.path.dirname(__file__)
+    # 获取插件根目录（节点文件夹的父目录）
+    plugin_root = os.path.dirname(current_dir)
+    # 构建预设目录路径（插件根目录下的"提示词预设"文件夹）
+    预设目录 = os.path.join(plugin_root, "提示词预设")
     
     预设数据 = {}
     
@@ -89,7 +106,6 @@ async def 获取预设列表(请求):
             if 文件名.lower().endswith('.txt'):
                 基础文件名 = os.path.splitext(文件名)[0]
                 相对路径 = os.path.relpath(根目录, 预设目录)
-                
                 if 相对路径 == '.':
                     显示名称 = 基础文件名
                 else:
