@@ -1,6 +1,6 @@
 [project]
 name = "ComfyUI-prompt-formula"
-description = "ComfyUI-prompt-formula"
+description = "ComfyUI提示词公式，是一个提示词便捷输入插件，专门为中国人开发，无需汉化也能看懂。"
 version = "1.6.3"
 license = {file = "LICENSE"} 
 
